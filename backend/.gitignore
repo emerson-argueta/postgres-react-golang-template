@@ -1,0 +1,11 @@
+# vscode
+.vscode/
+
+# vendor
+vendor/
+
+# env
+.env
+
+# test.env
+test.env

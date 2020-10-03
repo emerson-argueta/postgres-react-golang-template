@@ -1,0 +1,2 @@
+/api/* http://api.trustdonations.org/api/:splat  200
+/*  /index.html  200

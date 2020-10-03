@@ -1,0 +1,16 @@
+version: '3.6'
+services:
+  church_fund_managing_postgres_test:
+    image: trustdonations/church-fund-managing-service:db-1.0
+    container_name: church_fund_managing_postgres_test
+    volumes:
+      - church-fund-managing-postgres-test-data:/var/lib/postgresql/data
+      - ./.test/db/1-schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
+      - ./.test/db/2-data.sql:/docker-entrypoint-initdb.d/2-data.sql
+    ports:
+      - 5432:5432
+    env_file:
+      - ./.test/db/test.env
+
+volumes: 
+  church-fund-managing-postgres-test-data:

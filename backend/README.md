@@ -1,0 +1,1 @@
+## Trustdonations REST WEB SERVER API written in GO using Domain Driven Design pattern
