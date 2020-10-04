@@ -8,13 +8,13 @@ digraph user{
         password[shape=rectangle]
         subgraph cluster_services{
             label="services"
-            name[shape=rectangle]
-            access[shape=rectangle]
+            service[shape=rectangle]
+            role[shape=rectangle]
 
-            name->access[style=invis]
+            role->service
         }
 
-        id->email->password->name[style=invis]
+        id->email->password->role[style=invis]
     }
     subgraph cluster_processes{
         label="processes"

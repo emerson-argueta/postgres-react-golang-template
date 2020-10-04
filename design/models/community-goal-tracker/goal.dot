@@ -8,8 +8,14 @@ digraph goal{
         subgraph cluster_acheivers{
             label="achievers"
             achiever[shape=rectangle]
+            progress[shape=rectangle]
+            message[shape=rectangle]
+            state[shape=rectangle]
 
-
+            achiever->
+            progress->
+            message->
+            state[style=invis]
         }
         name->id->achiever[style=invis]
     }

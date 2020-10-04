@@ -9,6 +9,7 @@ digraph achiever{
         subgraph cluster_goals{
             label=goals
             goal[shape=rectangle]
+        
         }
         
         name->id->goal[style=invis]
@@ -16,11 +17,14 @@ digraph achiever{
     subgraph cluster_achiever_processes{
         label="processes"
         create_goal[shape=rectangle]
-        achieve_goal[shape=rectangle]
+        update_goal_progress[shape=rectangle]
         abandon_goal[shape=rectangle]
+        delete_goal[shape=rectangle]
 
         create_goal->
-        achieve_goal->
-        abandon_goal[style=invis]
+        update_goal_progress->
+        abandon_goal->
+        delete_goal
+        [style=invis]
     }
 }

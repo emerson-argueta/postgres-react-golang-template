@@ -1,0 +1,11 @@
+digraph service{
+    labelloc=t
+    label="Service"
+    subgraph cluster_properties{
+        label="properties"
+        id[shape=rectangle]
+        name[shape=rectangle]
+        
+        id->name[style=invis]
+    }
+}
