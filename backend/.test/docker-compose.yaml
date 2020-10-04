@@ -1,16 +1,16 @@
 version: '3.6'
 services:
   comunity_goal_tracker_test:
-    image: prgstack/community-goal-tracker-service:db-1.0
+    image: prgstack/community-goal-tracker-service:db1.0
     container_name: comunity_goal_tracker_test
     volumes:
       - community-goal-tracker-postgres-test-data:/var/lib/postgresql/data
-      - ./.test/db/1-schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
-      - ./.test/db/2-data.sql:/docker-entrypoint-initdb.d/2-data.sql
+      - ./db/1-schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
+      - ./db/2-data.sql:/docker-entrypoint-initdb.d/2-data.sql
     ports:
       - 5432:5432
     env_file:
-      - ./.test/db/test.env
+      - ./db/test.env
 
 volumes: 
   community-goal-tracker-postgres-test-data:

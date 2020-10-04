@@ -6,8 +6,9 @@ tests:
 	godotenv -f ./test.env go test ./... -cover
 	docker-compose down -v
 test-database:
+	cd ./.test && docker-compose down -v
 	# build image only if it exists
-	docker image inspect prgstack/community-goal-tracker-service:db-1.0 || (docker build . -t prgstack/community-goal-tracker-service:db-1.0)
-	docker-compose down -v
-	docker-compose up
+	docker image inspect prgstack/community-goal-tracker-service:db-1.0 || (cd ./.test && docker build . -t prgstack/community-goal-tracker-service:db1.0)
+	cd ./.test && docker-compose down -v
+	cd ./.test && docker-compose up
 	
