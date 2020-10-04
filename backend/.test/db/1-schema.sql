@@ -18,7 +18,7 @@ CREATE FUNCTION IDENTITY.SERVICES()
       "^[0-9]+$":{
         "type":"object",
         "properties":{
-          "role":{"type":"string"},
+          "role":{"type":"string"}
         },
         "additionalProperties":false
       }
@@ -70,27 +70,32 @@ DROP SCHEMA IF EXISTS COMMUNITY_GOAL_TRACKER CASCADE;
 CREATE SCHEMA COMMUNITY_GOAL_TRACKER;
 
 -- Creating achievers json schema used by community_goal_tracker models
--- object structure {[achiever_id_number:number]:{progress:string,messages:{[message_number:number]:string}}}
--- ex: {1432:{progress:50,messages:{0:'layed down the concrete for the foundation'}}}
---     in this example achiever_id_numer 1432 is the achiever id 
+-- object structure {[achiever_uuid_number:number]:{state:string,progress:string,messages:{[message_date:date]:string}}}
+-- ex: {1432:{state:'inprogress',progress:50,messages:{"2008-09-09 12:13:45":'layed down the concrete for the foundation'}}} 
 CREATE FUNCTION COMMUNITY_GOAL_TRACKER.ACHIEVERS()
   RETURNS JSONB LANGUAGE SQL IMMUTABLE PARALLEL SAFE AS
   $$SELECT JSONB
   '{
     "type":"object",
     "patternProperties":{
-      "^[0-9]+$":{
+      "^.+$":{
         "type":"object",
         "properties":{
           "state":{"enum":["abandoned","inprogress","completed"]},
           "progress":{"type":"integer"},
-          "messages":{"type":"object","patternProperties":{"^[0-9]+$":{"type":"string"}}}
+          "messages":{
+            "type":"object",
+             "patternProperties":{
+              	"^(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})+$":{"type":"string"}
+             },
+            "additionalProperties":false
+          }
         },
         "additionalProperties":false
       }
     },
     "additionalProperties":false
-  }'
+ }'
   $$
 ;
 
