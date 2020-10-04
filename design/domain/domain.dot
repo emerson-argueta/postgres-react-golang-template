@@ -1,14 +1,14 @@
 digraph domain{
     subgraph cluster_identity{
-        label="Identity Subdomain"
+        label="Identity Sub-domain"
         user[shape=rectangle]
-        administrator[shape=rectangle]
-        administrator->{
+    
+        user->{
             manage_user[label="manage user"]
         }
     }
     subgraph cluster_goals{
-        label="Goals Subdomain"
+        label="Community-Goal-Tracker Core-domain"
         goal[shape=rectangle]
         acheiver[shape=rectangle]
 

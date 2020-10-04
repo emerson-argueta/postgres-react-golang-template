@@ -1,0 +1,29 @@
+digraph user{
+    labelloc=t
+    label="User"
+    subgraph cluster_properties{
+        label="properties"
+        id[shape=rectangle]
+        email[shape=rectangle]
+        password[shape=rectangle]
+        subgraph cluster_services{
+            label="services"
+            name[shape=rectangle]
+            access[shape=rectangle]
+
+            name->access[style=invis]
+        }
+
+        id->email->password->name[style=invis]
+    }
+    subgraph cluster_processes{
+        label="processes"
+        register[shape=rectangle]
+        unregister[shape=rectangle]
+        update[shape=rectangle]
+
+        register->
+        unregister->
+        update[style=invis]
+    }
+}

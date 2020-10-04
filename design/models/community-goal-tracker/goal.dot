@@ -1,0 +1,16 @@
+digraph goal{
+    labelloc=t
+    label="Goal"
+    subgraph cluster_properties{
+        label="properties"
+        id[shape=rectangle]
+        name[shape=rectangle]
+        subgraph cluster_acheivers{
+            label="achievers"
+            achiever[shape=rectangle]
+
+
+        }
+        name->id->achiever[style=invis]
+    }
+}
