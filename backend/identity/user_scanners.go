@@ -1,4 +1,4 @@
-package user
+package identity
 
 import (
 	"database/sql/driver"

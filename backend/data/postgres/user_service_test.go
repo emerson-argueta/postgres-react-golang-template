@@ -1,10 +1,9 @@
 package postgres_test
 
 import (
+	"emersonargueta/m/v1/identity"
 	"reflect"
 	"testing"
-
-	"emersonargueta/m/v1/user"
 )
 
 // Ensure an user can be created and retrieved.
@@ -17,7 +16,7 @@ func TestUserService_CreateUser(t *testing.T) {
 	email_u := "test@test.com"
 	password_u := "test1234"
 
-	u := user.User{
+	u := identity.User{
 		UUID:     &uuid_u,
 		Email:    &email_u,
 		Password: &password_u,
@@ -49,7 +48,7 @@ func TestUserService_CreateUser_ErrUserExists(t *testing.T) {
 	email_u := "test@test.com"
 	password_u := "test1234"
 
-	u := user.User{
+	u := identity.User{
 		Email:    &email_u,
 		Password: &password_u,
 	}
@@ -57,7 +56,7 @@ func TestUserService_CreateUser_ErrUserExists(t *testing.T) {
 	if err := s.Register(&u); err != nil {
 		t.Fatal(err)
 	}
-	if err := s.Register(&u); err != user.ErrUserExists {
+	if err := s.Register(&u); err != identity.ErrUserExists {
 		t.Fatal(err)
 	}
 	// Clean up database
@@ -74,14 +73,14 @@ func TestUserService_UpdateUser(t *testing.T) {
 
 	email_u1 := "hello@test.com"
 	password_u1 := "world1234"
-	user1 := user.User{
+	user1 := identity.User{
 		Email:    &email_u1,
 		Password: &password_u1,
 	}
 
 	email_u2 := "dog@test.com"
 	password_u2 := "people1234"
-	user2 := user.User{
+	user2 := identity.User{
 		Email:    &email_u2,
 		Password: &password_u2,
 	}
@@ -93,7 +92,7 @@ func TestUserService_UpdateUser(t *testing.T) {
 	}
 	email_u1_u := "hello_update@test.com"
 	password_u1_u := "world_update1234"
-	user1Update := user.User{
+	user1Update := identity.User{
 		UUID:     user1.UUID,
 		Email:    &email_u1_u,
 		Password: &password_u1_u,
@@ -101,7 +100,7 @@ func TestUserService_UpdateUser(t *testing.T) {
 
 	email_u2_u := "dog_update@test.com"
 	password_u2_u := "people_update1234"
-	user2Update := user.User{
+	user2Update := identity.User{
 		UUID:     user2.UUID,
 		Email:    &email_u2_u,
 		Password: &password_u2_u,
@@ -146,14 +145,14 @@ func TestUserService_DeleteUser_ErrUserNotFound(t *testing.T) {
 	uuid_u := "TEST"
 	email_u := "hello@world.com"
 	password_u := "XXX"
-	u := user.User{
+	u := identity.User{
 		UUID:     &uuid_u,
 		Email:    &email_u,
 		Password: &password_u,
 	}
 
 	byEmail := true
-	if err := s.UnRegister(&u, byEmail); err != user.ErrUserNotFound {
+	if err := s.UnRegister(&u, byEmail); err != identity.ErrUserNotFound {
 		t.Fatal(err)
 	}
 }

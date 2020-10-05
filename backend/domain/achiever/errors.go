@@ -1,4 +1,4 @@
-package administrator
+package achiever
 
 // Admin errors.
 const (

@@ -1,4 +1,4 @@
-package user
+package identity
 
 // user is part of the identity subdomain to support core domains which need it
 
@@ -8,17 +8,6 @@ type User struct {
 	Email    *string  `db:"email" json:"email"`
 	Password *string  `db:"password" json:"password"`
 	Domains  *Domains `db:"domains" json:"domains"`
-}
-
-//Domain model represents domains which users can be part of
-type Domain struct {
-	ID   *int64  `db:"id" dbignoreinsert:"" json:"id"`
-	Name *string `db:"name" json:"name"`
-}
-
-// Domains is a map where the key represents the domains's id
-type Domains map[int64]struct {
-	Role *string `json:"role,omitempty"`
 }
 
 // Client creates a connection to a service. In this case, an user service.

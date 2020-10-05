@@ -1,4 +1,4 @@
-package church
+package goal
 
 // Church errors.
 const (
