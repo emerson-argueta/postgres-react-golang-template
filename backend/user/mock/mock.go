@@ -4,10 +4,11 @@ import "emersonargueta/m/v1/user"
 
 //UserService is a mock of user.Service
 type UserService struct {
-	RegisterFn   func(a *user.User) error
-	RetrieveFn   func(a *user.User, byEmail bool) (*user.User, error)
-	UpdateFn     func(a *user.User, byEmail bool) error
-	UnRegisterFn func(a *user.User, byEmail bool) error
+	RegisterFn     func(a *user.User) error
+	RetrieveFn     func(a *user.User, byEmail bool) (*user.User, error)
+	UpdateFn       func(a *user.User, byEmail bool) error
+	UnRegisterFn   func(a *user.User, byEmail bool) error
+	LookUpDomainFn func(a *user.Domain) (*user.Domain, error)
 }
 
 // Register mocks user.Service.Register
@@ -28,4 +29,9 @@ func (s *UserService) Update(u *user.User, byEmail bool) error {
 // UnRegister mocks user.Service.UnRegister
 func (s *UserService) UnRegister(u *user.User, byEmail bool) error {
 	return s.UnRegisterFn(u, byEmail)
+}
+
+// LookUpDomain mocks user.Service.UnRegister
+func (s *UserService) LookUpDomain(d *user.Domain) (*user.Domain, error) {
+	return s.LookUpDomainFn(d)
 }

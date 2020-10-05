@@ -16,8 +16,8 @@ type Domain struct {
 	Name *string `db:"name" json:"name"`
 }
 
-// Domains is a map where the key represents a user's UUID
-type Domains map[string]struct {
+// Domains is a map where the key represents the domains's id
+type Domains map[int64]struct {
 	Role *string `json:"role,omitempty"`
 }
 
@@ -32,4 +32,5 @@ type Service interface {
 	Retrieve(u *User, byEmail bool) (*User, error)
 	Update(u *User, byEmail bool) error
 	UnRegister(u *User, byEmail bool) error
+	LookUpDomain(*Domain) (*Domain, error)
 }

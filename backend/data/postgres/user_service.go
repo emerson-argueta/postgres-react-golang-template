@@ -137,3 +137,26 @@ func (s *User) UnRegister(u *user.User, byEmail bool) (e error) {
 
 	return nil
 }
+
+// LookUpDomain by domain's name
+func (s *User) LookUpDomain(domain *user.Domain) (res *user.Domain, e error) {
+	filter := "NAME=?"
+	queryParam := domain.Name
+
+	query, err := NewQuery(domain)
+	if err != nil {
+		return nil, err
+	}
+
+	userSelectQuery := query.Read(schema, userTable, filter)
+	userSelectQuery = s.client.db.Rebind(userSelectQuery)
+
+	res = &user.Domain{}
+	if err := s.client.db.Get(res, userSelectQuery, queryParam); err == sql.ErrNoRows {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}

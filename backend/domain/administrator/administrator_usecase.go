@@ -128,7 +128,14 @@ func (uc *Usecase) registerUserNF(u *user.User, a *Administrator) error {
 	a.Password = &hashstr
 
 	serviceRole := role
-	u.Domains = &user.Domains{domain.ServiceName: {Role: &serviceRole}}
+	coreName := domain.ServiceName
+	d := &user.Domain{Name: &coreName}
+	coreDomain, err := uc.Services.User.LookUpDomain(d)
+	if err != nil {
+		return err
+	}
+
+	u.Domains = &user.Domains{*coreDomain.ID: {Role: &serviceRole}}
 	if err := uc.Services.User.Register(u); err != nil {
 		return err
 	}
