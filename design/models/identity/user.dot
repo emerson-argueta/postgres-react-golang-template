@@ -6,12 +6,12 @@ digraph user{
         id[shape=rectangle]
         email[shape=rectangle]
         password[shape=rectangle]
-        subgraph cluster_services{
-            label="services"
-            service[shape=rectangle]
+        subgraph cluster_domains{
+            label="domains"
+            domain[shape=rectangle]
             role[shape=rectangle]
 
-            role->service
+            role->domain
         }
 
         id->email->password->role[style=invis]

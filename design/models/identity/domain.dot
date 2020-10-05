@@ -1,6 +1,6 @@
 digraph service{
     labelloc=t
-    label="Service"
+    label="Domain"
     subgraph cluster_properties{
         label="properties"
         id[shape=rectangle]
