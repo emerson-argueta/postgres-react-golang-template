@@ -1,21 +1,21 @@
-DELETE FROM IDENTITY.SERVICE;
-INSERT INTO IDENTITY.SERVICE(name) 
+DELETE FROM IDENTITY.DOMAIN;
+INSERT INTO IDENTITY.DOMAIN(name) 
 values
 ('identity'),
 ('community-goal-tracker') RETURNING ID;
 
 -- password mocanela12
 DELETE FROM IDENTITY.USER;
-INSERT INTO IDENTITY.USER(email,password,services) 
+INSERT INTO IDENTITY.USER(email,password,domains) 
 values
 (
     'jargueta1964@gmail.com','$2a$10$fPnqG7PMDRfQMZTqKkr6Iem5Z7/QKSY67Vi53trqX.D5t35AJBWSy',
     (
         '{
-            "'||(SELECT ID FROM IDENTITY.SERVICE WHERE NAME='community-goal-tracker')||'":{
+            "'||(SELECT ID FROM IDENTITY.DOMAIN WHERE NAME='community-goal-tracker')||'":{
                 "role":"user"
             },
-            "'||(SELECT ID FROM IDENTITY.SERVICE WHERE NAME='identity')||'":{
+            "'||(SELECT ID FROM IDENTITY.DOMAIN WHERE NAME='identity')||'":{
                 "role":"administrator"
             }
         }'
@@ -25,7 +25,7 @@ values
     'test1@test.com','$2a$10$fPnqG7PMDRfQMZTqKkr6Iem5Z7/QKSY67Vi53trqX.D5t35AJBWSy',
     (
         '{
-            "'||(SELECT ID FROM IDENTITY.SERVICE WHERE NAME='community-goal-tracker')||'":{
+            "'||(SELECT ID FROM IDENTITY.DOMAIN WHERE NAME='community-goal-tracker')||'":{
                 "role":"user"
             }
         }'
@@ -35,7 +35,7 @@ values
     'test2@test.com','$2a$10$fPnqG7PMDRfQMZTqKkr6Iem5Z7/QKSY67Vi53trqX.D5t35AJBWSy',
     (
         '{
-            "'||(SELECT ID FROM IDENTITY.SERVICE WHERE NAME='community-goal-tracker')||'":{
+            "'||(SELECT ID FROM IDENTITY.DOMAIN WHERE NAME='community-goal-tracker')||'":{
                 "role":"user"
             }
         }'

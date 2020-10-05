@@ -1,7 +1,7 @@
 package http_test
 
 import (
-	"trustdonations.org/m/v2/delivery/http"
+	"emersonargueta/m/v1/delivery/http"
 )
 
 // Handler represents a test wrapper for http.Handler.

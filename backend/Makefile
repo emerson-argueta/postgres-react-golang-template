@@ -1,10 +1,10 @@
 tests:
 	go clean -testcache
-	docker-compose down -v
-	docker-compose up -d
+	cd ./.test && docker-compose down -v
+	cd ./.test && docker-compose up -d
 	sleep 1
 	godotenv -f ./test.env go test ./... -cover
-	docker-compose down -v
+	cd ./.test && docker-compose down -v
 test-database:
 	cd ./.test && docker-compose down -v
 	# build image only if it exists

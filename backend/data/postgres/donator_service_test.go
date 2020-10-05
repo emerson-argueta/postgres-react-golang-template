@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"trustdonations.org/m/v2/domain"
-	"trustdonations.org/m/v2/domain/donator"
+	"emersonargueta/m/v1/domain"
+	"emersonargueta/m/v1/domain/donator"
 )
 
 // Ensure an donator can be created and retrieved.

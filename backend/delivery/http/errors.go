@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"trustdonations.org/m/v2/domain"
-	"trustdonations.org/m/v2/domain/administrator"
+	"emersonargueta/m/v1/domain"
+	"emersonargueta/m/v1/domain/administrator"
 )
 
 // http errors

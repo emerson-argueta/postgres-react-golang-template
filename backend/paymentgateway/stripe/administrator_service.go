@@ -1,9 +1,10 @@
 package stripe
 
 import (
+	"emersonargueta/m/v1/domain/administrator"
+
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/sub"
-	"trustdonations.org/m/v2/domain/administrator"
 )
 
 var _ administrator.SubscriptionActions = &Administrator{}

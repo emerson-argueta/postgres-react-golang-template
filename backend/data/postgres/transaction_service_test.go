@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"trustdonations.org/m/v2/domain/transaction"
+	"emersonargueta/m/v1/domain/transaction"
 )
 
 func TestTransactionService_CreateTransaction(t *testing.T) {

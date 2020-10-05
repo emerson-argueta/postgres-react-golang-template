@@ -1,7 +1,7 @@
 package jwt
 
 import (
-	"trustdonations.org/m/v2/config"
+	"emersonargueta/m/v1/config"
 )
 
 // Client represents a client to the underlying stripe client.

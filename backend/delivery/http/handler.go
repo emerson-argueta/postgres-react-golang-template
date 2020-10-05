@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"trustdonations.org/m/v2/domain"
+	"emersonargueta/m/v1/domain"
 )
 
 // ErrInvalidJSON indicated when a request body is incorrect after decoding

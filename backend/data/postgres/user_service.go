@@ -3,8 +3,9 @@ package postgres
 import (
 	"database/sql"
 
+	"emersonargueta/m/v1/user"
+
 	"github.com/lib/pq"
-	"trustdonations.org/m/v2/user"
 )
 
 const userTable = "user"
@@ -17,24 +18,8 @@ type User struct {
 	client *Client
 }
 
-// CreateManagementSession opens a session to start a series of actions taken to
-// manage an user. Opening a session makes it possible to run multiple
-// queries and rollback if any of the queries fail or commit if all queries are
-// successful.
-func (s *User) CreateManagementSession() error {
-	return s.client.createManagementSession()
-}
-
-// EndManagementSession ends the session created to execute a series of actions
-// taken to manage an user. Ending a session makes it possible to
-// rollback if any of the queries in a management session fail or commit if all
-// queries are successful.
-func (s *User) EndManagementSession() error {
-	return s.client.endManagementSession()
-}
-
-// Create a new user.
-func (s *User) Create(u *user.User) (e error) {
+// Register a new user.
+func (s *User) Register(u *user.User) (e error) {
 	query, e := NewQuery(u)
 	if e != nil {
 		return e
@@ -63,8 +48,8 @@ func (s *User) Create(u *user.User) (e error) {
 	return nil
 }
 
-// Read a user by uuid.
-func (s *User) Read(u *user.User, byEmail bool) (res *user.User, e error) {
+// Retrieve a user by uuid.
+func (s *User) Retrieve(u *user.User, byEmail bool) (res *user.User, e error) {
 	filter := "UUID=?"
 	queryParam := u.UUID
 	if byEmail {
@@ -123,8 +108,8 @@ func (s *User) Update(u *user.User, byEmail bool) (e error) {
 	return nil
 }
 
-// Delete a user searching by uuid or email.
-func (s *User) Delete(u *user.User, byEmail bool) (e error) {
+// UnRegister a user searching by uuid or email.
+func (s *User) UnRegister(u *user.User, byEmail bool) (e error) {
 	filter := "UUID=?"
 	queryParam := u.UUID
 	if byEmail {

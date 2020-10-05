@@ -3,7 +3,7 @@ package postgres_test
 import (
 	"time"
 
-	"trustdonations.org/m/v2/data/postgres"
+	"emersonargueta/m/v1/data/postgres"
 )
 
 // Now is the mocked current time for testing.

@@ -4,10 +4,10 @@ import (
 	"os"
 	"os/signal"
 
-	"trustdonations.org/m/v2/authorization/jwt"
-	"trustdonations.org/m/v2/data/postgres"
-	"trustdonations.org/m/v2/delivery/http"
-	"trustdonations.org/m/v2/paymentgateway/stripe"
+	"emersonargueta/m/v1/authorization/jwt"
+	"emersonargueta/m/v1/data/postgres"
+	"emersonargueta/m/v1/delivery/http"
+	"emersonargueta/m/v1/paymentgateway/stripe"
 )
 
 func main() {

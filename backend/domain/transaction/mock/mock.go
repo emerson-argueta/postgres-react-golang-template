@@ -1,7 +1,7 @@
 package mocktransaction
 
 import (
-	"trustdonations.org/m/v2/domain/transaction"
+	"emersonargueta/m/v1/domain/transaction"
 )
 
 //TransactionService is a mock of transaction.Service

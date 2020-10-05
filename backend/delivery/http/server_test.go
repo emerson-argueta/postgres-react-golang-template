@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"trustdonations.org/m/v2/delivery/http"
+	"emersonargueta/m/v1/delivery/http"
 )
 
 // Now represents the mocked current time.

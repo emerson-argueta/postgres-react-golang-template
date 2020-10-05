@@ -1,7 +1,7 @@
 package mockadministrator
 
 import (
-	"trustdonations.org/m/v2/domain/administrator"
+	"emersonargueta/m/v1/domain/administrator"
 )
 
 //AdministratorService is a mock of administrator.Service

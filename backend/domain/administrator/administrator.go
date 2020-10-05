@@ -1,7 +1,7 @@
 package administrator
 
 import (
-	"trustdonations.org/m/v2/domain"
+	"emersonargueta/m/v1/domain"
 )
 
 const role = "administrator"

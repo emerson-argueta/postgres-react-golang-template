@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"trustdonations.org/m/v2/delivery/http"
+	"emersonargueta/m/v1/delivery/http"
 )
 
 // MustOpenServerClient returns a running server and associated client. Panic on error.

@@ -1,8 +1,9 @@
 package stripe
 
 import (
+	"emersonargueta/m/v1/config"
+
 	"github.com/stripe/stripe-go/client"
-	"trustdonations.org/m/v2/config"
 )
 
 // Client represents a client to the underlying stripe client.

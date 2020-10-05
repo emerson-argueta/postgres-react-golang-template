@@ -3,7 +3,7 @@ package transaction
 import (
 	"time"
 
-	"trustdonations.org/m/v2/domain"
+	"emersonargueta/m/v1/domain"
 )
 
 // TimePeriod can be day, week, month, or year

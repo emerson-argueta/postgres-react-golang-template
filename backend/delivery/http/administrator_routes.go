@@ -4,20 +4,20 @@ import (
 	"strconv"
 	"time"
 
-	"trustdonations.org/m/v2/authorization/jwt"
-	"trustdonations.org/m/v2/domain/administrator"
-	"trustdonations.org/m/v2/domain/church"
-	"trustdonations.org/m/v2/domain/donator"
-	"trustdonations.org/m/v2/domain/transaction"
-	"trustdonations.org/m/v2/paymentgateway/stripe"
-	"trustdonations.org/m/v2/user"
-	"trustdonations.org/m/v2/validation"
+	"emersonargueta/m/v1/authorization/jwt"
+	"emersonargueta/m/v1/domain/administrator"
+	"emersonargueta/m/v1/domain/church"
+	"emersonargueta/m/v1/domain/donator"
+	"emersonargueta/m/v1/domain/transaction"
+	"emersonargueta/m/v1/paymentgateway/stripe"
+	"emersonargueta/m/v1/user"
+	"emersonargueta/m/v1/validation"
 
 	"log"
 	"net/http"
 	"os"
 
-	"trustdonations.org/m/v2/delivery/middleware"
+	"emersonargueta/m/v1/delivery/middleware"
 
 	"github.com/labstack/echo"
 )
@@ -171,7 +171,7 @@ func (h *AdministratorHandler) handleReadAdministrator(ctx echo.Context) error {
 		return NotFound(ctx.Response().Writer)
 	default:
 		byEmail := false
-		uExists, err := h.Usecase.Services.User.Read(&user.User{UUID: exists.UUID}, byEmail)
+		uExists, err := h.Usecase.Services.User.Retrieve(&user.User{UUID: exists.UUID}, byEmail)
 		if err != nil {
 			return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger, "Administrator")
 		}

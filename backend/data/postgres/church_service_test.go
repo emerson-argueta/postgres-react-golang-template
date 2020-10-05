@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"trustdonations.org/m/v2/domain"
-	"trustdonations.org/m/v2/domain/church"
+	"emersonargueta/m/v1/domain"
+	"emersonargueta/m/v1/domain/church"
 )
 
 // Ensure an church can be created and retrieved.

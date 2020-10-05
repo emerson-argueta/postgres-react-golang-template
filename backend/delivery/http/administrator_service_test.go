@@ -8,19 +8,20 @@ import (
 	"strings"
 	"testing"
 
+	"emersonargueta/m/v1/delivery/http"
+	"emersonargueta/m/v1/delivery/middleware"
+	"emersonargueta/m/v1/domain/administrator"
+	mockadministrator "emersonargueta/m/v1/domain/administrator/mock"
+	"emersonargueta/m/v1/domain/church"
+	mockchurch "emersonargueta/m/v1/domain/church/mock"
+	"emersonargueta/m/v1/domain/donator"
+	mockdonator "emersonargueta/m/v1/domain/donator/mock"
+	"emersonargueta/m/v1/domain/transaction"
+	mocktransaction "emersonargueta/m/v1/domain/transaction/mock"
+	"emersonargueta/m/v1/user"
+	mockuser "emersonargueta/m/v1/user/mock"
+
 	"golang.org/x/crypto/bcrypt"
-	"trustdonations.org/m/v2/delivery/http"
-	"trustdonations.org/m/v2/delivery/middleware"
-	"trustdonations.org/m/v2/domain/administrator"
-	mockadministrator "trustdonations.org/m/v2/domain/administrator/mock"
-	"trustdonations.org/m/v2/domain/church"
-	mockchurch "trustdonations.org/m/v2/domain/church/mock"
-	"trustdonations.org/m/v2/domain/donator"
-	mockdonator "trustdonations.org/m/v2/domain/donator/mock"
-	"trustdonations.org/m/v2/domain/transaction"
-	mocktransaction "trustdonations.org/m/v2/domain/transaction/mock"
-	"trustdonations.org/m/v2/user"
-	mockuser "trustdonations.org/m/v2/user/mock"
 )
 
 // AdministratorHandler represents a test wrapper for http.AdminHandler.
@@ -61,7 +62,7 @@ func testAdministratorService_Register(t *testing.T) {
 	defer s.Close()
 
 	// Mock services used by register business logic.
-	s.Handler.AdministratorHandler.UserService.CreateFn = func(u *user.User) error {
+	s.Handler.AdministratorHandler.UserService.RegisterFn = func(u *user.User) error {
 		if *u.Email != "test@test.com" {
 			t.Fatalf("unexpected user email: %v", u.Email)
 		} else if err := bcrypt.CompareHashAndPassword([]byte(*u.Password), []byte("test1234")); err != nil {
@@ -87,12 +88,10 @@ func testAdministratorService_Register(t *testing.T) {
 	}
 
 	s.Handler.AdministratorHandler.AdministratorService.CreateManagementSessionFn = func() error { return nil }
-	s.Handler.AdministratorHandler.UserService.CreateManagementSessionFn = func() error { return nil }
 
 	s.Handler.AdministratorHandler.AdministratorService.EndManagementSessionFn = func() error { return nil }
-	s.Handler.AdministratorHandler.UserService.EndManagementSessionFn = func() error { return nil }
 
-	s.Handler.AdministratorHandler.UserService.ReadFn = func(u *user.User, byEmail bool) (*user.User, error) {
+	s.Handler.AdministratorHandler.UserService.RetrieveFn = func(u *user.User, byEmail bool) (*user.User, error) {
 		return nil, nil
 	}
 	s.Handler.AdministratorHandler.AdministratorService.ReadFn = func(a *administrator.Administrator) (*administrator.Administrator, error) {
@@ -129,12 +128,10 @@ func testAdministratorService_Register_ErrAdministratorExists(t *testing.T) {
 	defer s.Close()
 
 	s.Handler.AdministratorHandler.AdministratorService.CreateManagementSessionFn = func() error { return nil }
-	s.Handler.AdministratorHandler.UserService.CreateManagementSessionFn = func() error { return nil }
 
 	s.Handler.AdministratorHandler.AdministratorService.EndManagementSessionFn = func() error { return nil }
-	s.Handler.AdministratorHandler.UserService.EndManagementSessionFn = func() error { return nil }
 
-	s.Handler.AdministratorHandler.UserService.ReadFn = func(u *user.User, byEmail bool) (*user.User, error) {
+	s.Handler.AdministratorHandler.UserService.RetrieveFn = func(u *user.User, byEmail bool) (*user.User, error) {
 		uuid := "TEST"
 		return &user.User{UUID: &uuid}, nil
 	}
@@ -163,7 +160,7 @@ func testAdministratorService_Login(t *testing.T) {
 	defer s.Close()
 
 	// Mock service used by login business logic.
-	s.Handler.AdministratorHandler.UserService.ReadFn = func(u *user.User, byEmail bool) (*user.User, error) {
+	s.Handler.AdministratorHandler.UserService.RetrieveFn = func(u *user.User, byEmail bool) (*user.User, error) {
 		if *u.Email != "test@test.com" {
 			t.Fatalf("unexpected email: %v", u.Email)
 		} else if *u.Password != "test1234" {
@@ -183,10 +180,8 @@ func testAdministratorService_Login(t *testing.T) {
 	}
 
 	s.Handler.AdministratorHandler.AdministratorService.CreateManagementSessionFn = func() error { return nil }
-	s.Handler.AdministratorHandler.UserService.CreateManagementSessionFn = func() error { return nil }
 
 	s.Handler.AdministratorHandler.AdministratorService.EndManagementSessionFn = func() error { return nil }
-	s.Handler.AdministratorHandler.UserService.EndManagementSessionFn = func() error { return nil }
 
 	// Retrieve admin.
 	email_a := "test@test.com"
@@ -202,7 +197,7 @@ func testAdministratorService_Login_IncorrectPassword(t *testing.T) {
 	defer s.Close()
 
 	// Mock service used by login usecase.
-	s.Handler.AdministratorHandler.UserService.ReadFn = func(u *user.User, byEmail bool) (*user.User, error) {
+	s.Handler.AdministratorHandler.UserService.RetrieveFn = func(u *user.User, byEmail bool) (*user.User, error) {
 		uuid := "TEST"
 		u.UUID = &uuid
 		password, _ := bcrypt.GenerateFromPassword([]byte("XXXXXXXX"), bcrypt.DefaultCost)
@@ -215,10 +210,8 @@ func testAdministratorService_Login_IncorrectPassword(t *testing.T) {
 	}
 
 	s.Handler.AdministratorHandler.AdministratorService.CreateManagementSessionFn = func() error { return nil }
-	s.Handler.AdministratorHandler.UserService.CreateManagementSessionFn = func() error { return nil }
 
 	s.Handler.AdministratorHandler.AdministratorService.EndManagementSessionFn = func() error { return nil }
-	s.Handler.AdministratorHandler.UserService.EndManagementSessionFn = func() error { return nil }
 
 	email_a := "test@test.com"
 	password_a := "test1234"
@@ -232,7 +225,7 @@ func testAdministratorService_Login_NotFound(t *testing.T) {
 	defer s.Close()
 
 	// Mock service used by login usecase.
-	s.Handler.AdministratorHandler.UserService.ReadFn = func(u *user.User, byEmail bool) (*user.User, error) {
+	s.Handler.AdministratorHandler.UserService.RetrieveFn = func(u *user.User, byEmail bool) (*user.User, error) {
 		return nil, nil
 	}
 	s.Handler.AdministratorHandler.AdministratorService.ReadFn = func(a *administrator.Administrator) (*administrator.Administrator, error) {
@@ -240,10 +233,8 @@ func testAdministratorService_Login_NotFound(t *testing.T) {
 	}
 
 	s.Handler.AdministratorHandler.AdministratorService.CreateManagementSessionFn = func() error { return nil }
-	s.Handler.AdministratorHandler.UserService.CreateManagementSessionFn = func() error { return nil }
 
 	s.Handler.AdministratorHandler.AdministratorService.EndManagementSessionFn = func() error { return nil }
-	s.Handler.AdministratorHandler.UserService.EndManagementSessionFn = func() error { return nil }
 
 	email_a := "test@test.com"
 	password_a := "test1234"
@@ -300,7 +291,7 @@ func testAdministratorService_Read(t *testing.T) {
 			Password:  &password,
 		}, nil
 	}
-	s.Handler.AdministratorHandler.UserService.ReadFn = func(u *user.User, byEmail bool) (*user.User, error) {
+	s.Handler.AdministratorHandler.UserService.RetrieveFn = func(u *user.User, byEmail bool) (*user.User, error) {
 
 		return &user.User{
 			UUID:     &uuid,

@@ -1,6 +1,6 @@
 package config
 
-import "trustdonations.org/m/v2/env"
+import "emersonargueta/m/v1/env"
 
 // Config is a struct that contains configuration variables.
 type Config struct {

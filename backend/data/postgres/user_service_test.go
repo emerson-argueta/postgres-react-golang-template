@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"trustdonations.org/m/v2/user"
+	"emersonargueta/m/v1/user"
 )
 
 // Ensure an user can be created and retrieved.
@@ -23,20 +23,20 @@ func TestUserService_CreateUser(t *testing.T) {
 		Password: &password_u,
 	}
 
-	if err := s.Create(&u); err != nil {
+	if err := s.Register(&u); err != nil {
 		t.Fatal(err)
 	}
 
 	// Retrieve user and compare.
 	byEmail := true
-	if other, err := s.Read(&u, byEmail); err != nil {
+	if other, err := s.Retrieve(&u, byEmail); err != nil {
 		t.Fatal(err)
 	} else if !reflect.DeepEqual(&u, other) {
 		t.Fatalf("unexpected user: %#v", other)
 	}
 
 	byEmail = false
-	if err := s.Delete(&u, byEmail); err != nil {
+	if err := s.UnRegister(&u, byEmail); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -54,15 +54,15 @@ func TestUserService_CreateUser_ErrUserExists(t *testing.T) {
 		Password: &password_u,
 	}
 
-	if err := s.Create(&u); err != nil {
+	if err := s.Register(&u); err != nil {
 		t.Fatal(err)
 	}
-	if err := s.Create(&u); err != user.ErrUserExists {
+	if err := s.Register(&u); err != user.ErrUserExists {
 		t.Fatal(err)
 	}
 	// Clean up database
 	byEmail := false
-	if err := s.Delete(&u, byEmail); err != nil {
+	if err := s.UnRegister(&u, byEmail); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -86,9 +86,9 @@ func TestUserService_UpdateUser(t *testing.T) {
 		Password: &password_u2,
 	}
 
-	if err := s.Create(&user1); err != nil {
+	if err := s.Register(&user1); err != nil {
 		t.Fatal(err)
-	} else if err := s.Create(&user2); err != nil {
+	} else if err := s.Register(&user2); err != nil {
 		t.Fatal(err)
 	}
 	email_u1_u := "hello_update@test.com"
@@ -115,14 +115,14 @@ func TestUserService_UpdateUser(t *testing.T) {
 	}
 
 	// Verify user1 updated searching user1.
-	if d, err := s.Read(&user1, byEmail); err != nil {
+	if d, err := s.Retrieve(&user1, byEmail); err != nil {
 		t.Fatal(err)
 	} else if !reflect.DeepEqual(&user1Update, d) {
 		t.Fatalf("unexpected user: %#v", d)
 	}
 
 	// Verify user2 updated searching user2.
-	if d, err := s.Read(&user2, byEmail); err != nil {
+	if d, err := s.Retrieve(&user2, byEmail); err != nil {
 		t.Fatal(err)
 	} else if !reflect.DeepEqual(&user2Update, d) {
 		t.Fatalf("unexpected user: %#v", d)
@@ -130,9 +130,9 @@ func TestUserService_UpdateUser(t *testing.T) {
 
 	// Clean up database.
 	byEmail = true
-	if err := s.Delete(&user1Update, byEmail); err != nil {
+	if err := s.UnRegister(&user1Update, byEmail); err != nil {
 		t.Fatal(err)
-	} else if err := s.Delete(&user2Update, byEmail); err != nil {
+	} else if err := s.UnRegister(&user2Update, byEmail); err != nil {
 		t.Fatal(err)
 	}
 
@@ -153,7 +153,7 @@ func TestUserService_DeleteUser_ErrUserNotFound(t *testing.T) {
 	}
 
 	byEmail := true
-	if err := s.Delete(&u, byEmail); err != user.ErrUserNotFound {
+	if err := s.UnRegister(&u, byEmail); err != user.ErrUserNotFound {
 		t.Fatal(err)
 	}
 }

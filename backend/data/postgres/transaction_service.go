@@ -3,8 +3,8 @@ package postgres
 import (
 	"database/sql"
 
-	"trustdonations.org/m/v2/domain"
-	"trustdonations.org/m/v2/domain/transaction"
+	"emersonargueta/m/v1/domain"
+	"emersonargueta/m/v1/domain/transaction"
 )
 
 const transactionTable = "transaction"

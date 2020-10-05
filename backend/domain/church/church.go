@@ -1,7 +1,7 @@
 package church
 
 import (
-	"trustdonations.org/m/v2/domain"
+	"emersonargueta/m/v1/domain"
 )
 
 // Administrators represensts a map of administrators within a church where the

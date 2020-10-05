@@ -1,7 +1,7 @@
 package mockchurch
 
 import (
-	"trustdonations.org/m/v2/domain/church"
+	"emersonargueta/m/v1/domain/church"
 )
 
 //ChurchService is a mock of church.Service

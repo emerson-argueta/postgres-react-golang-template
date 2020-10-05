@@ -1,7 +1,7 @@
 package authorization
 
 import (
-	"trustdonations.org/m/v2/delivery/middleware"
+	"emersonargueta/m/v1/delivery/middleware"
 )
 
 // Actions provides functions that can be used to manage

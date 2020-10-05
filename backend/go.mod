@@ -1,4 +1,4 @@
-module trustdonations.org/m/v2
+module emersonargueta/m/v1
 
 go 1.13
 

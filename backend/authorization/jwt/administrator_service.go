@@ -1,10 +1,11 @@
 package jwt
 
 import (
+	"emersonargueta/m/v1/authorization"
+	"emersonargueta/m/v1/delivery/middleware"
+	"emersonargueta/m/v1/domain/administrator"
+
 	"github.com/dgrijalva/jwt-go"
-	"trustdonations.org/m/v2/authorization"
-	"trustdonations.org/m/v2/delivery/middleware"
-	"trustdonations.org/m/v2/domain/administrator"
 )
 
 var _ authorization.Actions = &Administrator{}

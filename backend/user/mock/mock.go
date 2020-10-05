@@ -1,25 +1,23 @@
 package mockuser
 
-import "trustdonations.org/m/v2/user"
+import "emersonargueta/m/v1/user"
 
 //UserService is a mock of user.Service
 type UserService struct {
-	CreateManagementSessionFn func() error
-	EndManagementSessionFn    func() error
-	CreateFn                  func(a *user.User) error
-	ReadFn                    func(a *user.User, byEmail bool) (*user.User, error)
-	UpdateFn                  func(a *user.User, byEmail bool) error
-	DeleteFn                  func(a *user.User, byEmail bool) error
+	RegisterFn   func(a *user.User) error
+	RetrieveFn   func(a *user.User, byEmail bool) (*user.User, error)
+	UpdateFn     func(a *user.User, byEmail bool) error
+	UnRegisterFn func(a *user.User, byEmail bool) error
 }
 
-// Create mocks user.Service.Create
-func (s *UserService) Create(u *user.User) error {
-	return s.CreateFn(u)
+// Register mocks user.Service.Register
+func (s *UserService) Register(u *user.User) error {
+	return s.RegisterFn(u)
 }
 
-// Read mocks user.Service.Read
-func (s *UserService) Read(u *user.User, byEmail bool) (*user.User, error) {
-	return s.ReadFn(u, byEmail)
+// Retrieve mocks user.Service.Retrieve
+func (s *UserService) Retrieve(u *user.User, byEmail bool) (*user.User, error) {
+	return s.RetrieveFn(u, byEmail)
 }
 
 // Update mocks user.Service.Update
@@ -27,17 +25,7 @@ func (s *UserService) Update(u *user.User, byEmail bool) error {
 	return s.UpdateFn(u, byEmail)
 }
 
-// Delete mocks user.Service.Delete
-func (s *UserService) Delete(u *user.User, byEmail bool) error {
-	return s.DeleteFn(u, byEmail)
-}
-
-// CreateManagementSession mocks user.Service.CreateManagementSession
-func (s *UserService) CreateManagementSession() error {
-	return s.CreateManagementSessionFn()
-}
-
-// EndManagementSession mocks user.Service.EndManagementSession
-func (s *UserService) EndManagementSession() error {
-	return s.EndManagementSessionFn()
+// UnRegister mocks user.Service.UnRegister
+func (s *UserService) UnRegister(u *user.User, byEmail bool) error {
+	return s.UnRegisterFn(u, byEmail)
 }

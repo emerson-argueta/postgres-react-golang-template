@@ -1,11 +1,11 @@
 package http
 
 import (
-	"trustdonations.org/m/v2/delivery/middleware"
-	"trustdonations.org/m/v2/domain/administrator"
-	"trustdonations.org/m/v2/domain/church"
-	"trustdonations.org/m/v2/domain/donator"
-	"trustdonations.org/m/v2/domain/transaction"
+	"emersonargueta/m/v1/delivery/middleware"
+	"emersonargueta/m/v1/domain/administrator"
+	"emersonargueta/m/v1/domain/church"
+	"emersonargueta/m/v1/domain/donator"
+	"emersonargueta/m/v1/domain/transaction"
 )
 
 type administratorRequest struct {

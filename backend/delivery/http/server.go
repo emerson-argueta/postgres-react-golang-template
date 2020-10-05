@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"trustdonations.org/m/v2/config"
+	"emersonargueta/m/v1/config"
 )
 
 // Server represents an HTTP server.

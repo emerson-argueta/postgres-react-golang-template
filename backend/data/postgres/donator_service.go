@@ -3,8 +3,9 @@ package postgres
 import (
 	"database/sql"
 
+	"emersonargueta/m/v1/domain/donator"
+
 	"github.com/lib/pq"
-	"trustdonations.org/m/v2/domain/donator"
 )
 
 const donatorTable = "donator"

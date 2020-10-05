@@ -5,13 +5,14 @@ import (
 	"strings"
 	"time"
 
+	"emersonargueta/m/v1/domain"
+	"emersonargueta/m/v1/domain/church"
+	"emersonargueta/m/v1/domain/donator"
+	"emersonargueta/m/v1/domain/transaction"
+	"emersonargueta/m/v1/user"
+	"emersonargueta/m/v1/validation"
+
 	"golang.org/x/crypto/bcrypt"
-	"trustdonations.org/m/v2/domain"
-	"trustdonations.org/m/v2/domain/church"
-	"trustdonations.org/m/v2/domain/donator"
-	"trustdonations.org/m/v2/domain/transaction"
-	"trustdonations.org/m/v2/user"
-	"trustdonations.org/m/v2/validation"
 )
 
 //TODO: refactor function parameters that are domain structs with only id field value present to int64 type
@@ -73,39 +74,6 @@ type Services struct {
 	Transaction   transaction.Service
 }
 
-func (uc *Usecase) startManagmentSession() error {
-
-	if err := uc.Services.User.CreateManagementSession(); err != nil {
-		return err
-	} else if err := uc.Services.Administrator.CreateManagementSession(); err != nil {
-		return err
-	} else if err := uc.Services.Church.CreateManagementSession(); err != nil {
-		return err
-	} else if err := uc.Services.Donator.CreateManagementSession(); err != nil {
-		return err
-	} else if err := uc.Services.Transaction.CreateManagementSession(); err != nil {
-		return err
-	}
-
-	return nil
-}
-func (uc *Usecase) endManagmentSession() error {
-
-	if err := uc.Services.User.EndManagementSession(); err != nil {
-		return err
-	} else if err := uc.Services.Administrator.EndManagementSession(); err != nil {
-		return err
-	} else if err := uc.Services.Church.EndManagementSession(); err != nil {
-		return err
-	} else if err := uc.Services.Donator.EndManagementSession(); err != nil {
-		return err
-	} else if err := uc.Services.Transaction.EndManagementSession(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // Register an administrator using the following business logic: Search user by
 // email and administrator by user UUID
 //  case0:If user does not exists and administrator does not exists --> create user and administrator
@@ -117,23 +85,13 @@ func (uc *Usecase) endManagmentSession() error {
 //  case2:If user exists and administrator exists --> return error administrator already registered
 func (uc *Usecase) Register(a *Administrator) (e error) {
 
-	if err := uc.startManagmentSession(); err != nil {
-		return err
-	}
-
-	defer func() {
-		if err := uc.endManagmentSession(); err != nil {
-			e = err
-		}
-	}()
-
 	if a.Email == nil || a.Password == nil {
 		return ErrAdministratorIncompleteDetails
 	}
 
 	byEmail := true
 	u := user.User{Email: a.Email, Password: a.Password}
-	userRead, _ := uc.Services.User.Read(&u, byEmail)
+	userRead, _ := uc.Services.User.Retrieve(&u, byEmail)
 	// case0
 	if userRead == nil {
 		if err := validation.ValidateUserEmail(*a.Email); err != nil {
@@ -170,9 +128,8 @@ func (uc *Usecase) registerUserNF(u *user.User, a *Administrator) error {
 	a.Password = &hashstr
 
 	serviceRole := role
-	serviceAccess := user.Restricted
-	u.Services = &user.Services{domain.ServiceName: {Role: &serviceRole, Access: &serviceAccess}}
-	if err := uc.Services.User.Create(u); err != nil {
+	u.Domains = &user.Domains{domain.ServiceName: {Role: &serviceRole}}
+	if err := uc.Services.User.Register(u); err != nil {
 		return err
 	}
 	a.UUID = u.UUID
@@ -230,7 +187,7 @@ func (uc *Usecase) Login(a *Administrator) (res *Administrator, e error) {
 	byEmail := true
 	u := user.User{Email: a.Email, Password: a.Password}
 
-	userRead, _ := uc.Services.User.Read(&u, byEmail)
+	userRead, _ := uc.Services.User.Retrieve(&u, byEmail)
 
 	// case0
 	if userRead == nil {

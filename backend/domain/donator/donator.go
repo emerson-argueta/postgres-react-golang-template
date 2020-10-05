@@ -3,7 +3,7 @@ package donator
 import (
 	"time"
 
-	"trustdonations.org/m/v2/domain"
+	"emersonargueta/m/v1/domain"
 )
 
 // Churches represents a map of churches that a donator donates to where the key

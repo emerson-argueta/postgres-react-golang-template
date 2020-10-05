@@ -1,7 +1,7 @@
 package mockdonator
 
 import (
-	"trustdonations.org/m/v2/domain/donator"
+	"emersonargueta/m/v1/domain/donator"
 )
 
 //DonatorService is a mock of administrator.Service

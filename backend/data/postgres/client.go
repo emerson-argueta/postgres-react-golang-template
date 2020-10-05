@@ -8,13 +8,13 @@ import (
 	"strings"
 	"time"
 
-	"trustdonations.org/m/v2/config"
-	"trustdonations.org/m/v2/domain"
-	"trustdonations.org/m/v2/domain/administrator"
-	"trustdonations.org/m/v2/domain/church"
-	"trustdonations.org/m/v2/domain/donator"
-	"trustdonations.org/m/v2/domain/transaction"
-	"trustdonations.org/m/v2/user"
+	"emersonargueta/m/v1/config"
+	"emersonargueta/m/v1/domain"
+	"emersonargueta/m/v1/domain/administrator"
+	"emersonargueta/m/v1/domain/church"
+	"emersonargueta/m/v1/domain/donator"
+	"emersonargueta/m/v1/domain/transaction"
+	"emersonargueta/m/v1/user"
 
 	"github.com/jmoiron/sqlx"
 	// using postgres implementation of sqlx
