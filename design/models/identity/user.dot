@@ -21,9 +21,11 @@ digraph user{
         register[shape=rectangle]
         unregister[shape=rectangle]
         update[shape=rectangle]
+        retrieve[shape=rectangle]
 
         register->
         unregister->
-        update[style=invis]
+        update->
+        retrieve[style=invis]
     }
 }
