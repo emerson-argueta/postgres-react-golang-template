@@ -1,8 +1,8 @@
-package domain
+package communitygoaltracker
 
 // Domain errors.
 const (
-	ErrDomainInternal = Error("domain internal error")
+	ErrInternal = Error("internal domain error")
 )
 
 // Error represents a general domain error.

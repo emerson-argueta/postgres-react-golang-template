@@ -1,9 +1,19 @@
 package achiever
 
-import "emersonargueta/m/v1/domain/goal"
+// Role represents access role for an achiever within the communitygoaltracker domain
+type Role int
 
-const UserRole = "user"
-const AdministratorRole = "administrator"
+const (
+	// UserRole has access to manage their own information
+	UserRole Role = iota
+	// AdministratorRole has access to manage users within their own goals
+	AdministratorRole
+)
+
+func (s Role) String() string {
+	return [...]string{"user", "administrator"}[s]
+
+}
 
 // Achiever model in the communinty_goal_tracker domain
 type Achiever struct {
@@ -20,15 +30,10 @@ type Achiever struct {
 // Goals represents a slice goals ids for an achiever
 type Goals []int64
 
-// Client creates a connection to a service. In this case, an administrator service.
-type Client interface {
-	Service() Service
-}
-
 // Service provides processes that can be achieved by an achiever.
 type Service interface {
-	CreateGoal(*Achiever, *goal.Goal) (*goal.Goal, error)
-	UpdateGoalProgress(*Achiever, *goal.Goal) error
-	AbandonGoal(*Achiever, *goal.Goal) error
-	DeleteGoal(*Achiever, *goal.Goal) error
+	CreateAchiever(*Achiever) (*Achiever, error)
+	RetrieveAchiever(email string, password string) (*Achiever, error)
+	UpdateAchiever(*Achiever) error
+	DeleteAchiever(*Achiever) error
 }

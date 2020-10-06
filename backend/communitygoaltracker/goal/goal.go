@@ -1,5 +1,7 @@
 package goal
 
+import "emersonargueta/m/v1/communitygoaltracker/achiever"
+
 // Goal represents a goal that an achiever is trying to complete.
 type Goal struct {
 	ID        *int64     `db:"id" dbignoreinsert:"" json:"id"`
@@ -31,20 +33,21 @@ type Achiever struct {
 }
 
 // State represents the state of the goal for a particular achiever.
-type State string
+type State int
 
-func (a State) String() string {
-	return string(a)
+const (
+	// InProgress when a goal is below 100 in Progress.
+	InProgress State = iota
+	// Abondoned when a goal is no long inprogress.
+	Abondoned
+	// Completed when a goal is 100 in Progress.
+	Completed
+)
+
+func (s State) String() string {
+	return [...]string{"inprogress", "abandoned", "completed"}[s]
+
 }
-
-// InProgress when a goal is below 100 in Progress.
-const InProgress = State("inprogress")
-
-// Abondoned when a goal is no long inprogress.
-const Abondoned = State("abondoned")
-
-// Completed when a goal is 100 in Progress.
-const Completed = State("completed")
 
 // Messages represents a map of messages for an achiever within a goal
 // where the key is a timestamp and the value is the message
@@ -60,4 +63,12 @@ func (m *Messages) Keys() []string {
 		i++
 	}
 	return keys
+}
+
+// Service provides processes provided by the identity domain.
+type Service interface {
+	CreateGoal(*achiever.Achiever, *Goal) (*Goal, error)
+	RetrieveGoal(*Goal) (*Goal, error)
+	UpdateGoal(*achiever.Achiever, *Goal) error
+	DeleteGoal(*achiever.Achiever, *Goal) error
 }
