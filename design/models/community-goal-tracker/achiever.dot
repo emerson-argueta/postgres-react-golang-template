@@ -16,11 +16,19 @@ digraph achiever{
     }
     subgraph cluster_achiever_processes{
         label="processes"
+        register[shape=rectangle]
+        update[shape=rectangle]
+        login[shape=rectangle]
+        unregister[shape=rectangle]
         create_goal[shape=rectangle]
         update_goal_progress[shape=rectangle]
         abandon_goal[shape=rectangle]
         delete_goal[shape=rectangle]
 
+        register->
+        update->
+        login->
+        unregister->
         create_goal->
         update_goal_progress->
         abandon_goal->

@@ -23,11 +23,15 @@ digraph user{
         update[shape=rectangle]
         retrieve[shape=rectangle]
         lookUpDomain[shape=rectangle]
+        createDomain[shape=rectangle]
+        updateDomain[shape=rectangle]
 
         register->
         unregister->
         update->
         retrieve->
-        lookUpDomain[style=invis]
+        lookUpDomain->
+        createDomain->
+        updateDomain[style=invis]
     }
 }
