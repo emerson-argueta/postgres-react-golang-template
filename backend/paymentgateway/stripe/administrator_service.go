@@ -1,70 +1,70 @@
 package stripe
 
 import (
-	"emersonargueta/m/v1/domain/administrator"
+	"emersonargueta/m/v1/paymentgateway"
 
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/sub"
 )
 
-var _ administrator.SubscriptionActions = &Administrator{}
+var _ paymentgateway.Service = &Stripe{}
 
-// Administrator represents a service for managing stripe subscriptions.
-type Administrator struct {
-	client  *Client
-	Usecase administrator.Usecase
+// Stripe represents a service for managing stripe subscriptions.
+type Stripe struct {
+	client *Client
 }
 
-// NewSubscription for an administrator with stripe. A new subscription for an
-// administrator can be created so that the administrator can gain access to the
-// church_fund_managing service after reaching the free usage limit
-// (100 automated donation entries and 400 manual donation entries).
-func (s *Administrator) NewSubscription(sb *administrator.Subscription, a *administrator.Administrator) error {
-	newCustomer, err := createCustomer(s, sb)
+// NewSubscription for a user with stripe. A new subscription for a
+// user can be created so that the user can gain access to
+// a domain.
+func (s *Stripe) NewSubscription(email string, planType string, paymentMethodID string) (re *stripe.Subscription, e error) {
+	newCustomer, err := s.createCustomer(email)
 	if err != nil {
-		return ErrStripeNewSubscription
+		return nil, ErrStripeNewSubscription
 	}
 
-	newSubscription, err := createSubscription(s, sb, newCustomer)
-
-	subscriptionID := newSubscription.ID
-	subscriptionEnd := newSubscription.CurrentPeriodEnd
-	subscription := map[string]interface{}{
-		"subscriptionID":  subscriptionID,
-		"subscriptionEnd": subscriptionEnd,
+	newSubscription, err := s.createSubscription(planType, paymentMethodID, newCustomer)
+	if err != nil {
+		return nil, err
 	}
 
-	customerID := newSubscription.Customer.ID
-	customerEmail := newSubscription.Customer.Email
-	customer := map[string]interface{}{
-		"customerID":    customerID,
-		"customerEmail": customerEmail,
-	}
+	// subscriptionID := newSubscription.ID
+	// subscriptionEnd := newSubscription.CurrentPeriodEnd
+	// subscription := map[string]interface{}{
+	// 	"subscriptionID":  subscriptionID,
+	// 	"subscriptionEnd": subscriptionEnd,
+	// }
 
-	planID := newSubscription.Items.Data[0].Plan.ID
-	planName := newSubscription.Items.Data[0].Plan.Nickname
-	planAmount := newSubscription.Items.Data[0].Plan.Amount
-	planProductID := newSubscription.Items.Data[0].Plan.Product.ID
-	plan := map[string]interface{}{
-		"planID":        planID,
-		"planName":      planName,
-		"planAmount":    planAmount,
-		"planProductID": planProductID,
-	}
+	// customerID := newSubscription.Customer.ID
+	// customerEmail := newSubscription.Customer.Email
+	// customer := map[string]interface{}{
+	// 	"customerID":    customerID,
+	// 	"customerEmail": customerEmail,
+	// }
 
-	paymentGateway := *sb.Paymentgateway
-	paymentGateway["subscription"] = subscription
-	paymentGateway["customer"] = customer
-	paymentGateway["plan"] = plan
+	// planID := newSubscription.Items.Data[0].Plan.ID
+	// planName := newSubscription.Items.Data[0].Plan.Nickname
+	// planAmount := newSubscription.Items.Data[0].Plan.Amount
+	// planProductID := newSubscription.Items.Data[0].Plan.Product.ID
+	// plan := map[string]interface{}{
+	// 	"planID":        planID,
+	// 	"planName":      planName,
+	// 	"planAmount":    planAmount,
+	// 	"planProductID": planProductID,
+	// }
 
-	// Execute business logic to finalize the new subscription.
-	s.Usecase.NewSubscription(sb, a)
+	// paymentGateway := *sb.Paymentgateway
+	// paymentGateway["subscription"] = subscription
+	// paymentGateway["customer"] = customer
+	// paymentGateway["plan"] = plan
 
-	return nil
+	// // Execute business logic to finalize the new subscription.
+	// s.Usecase.NewSubscription(sb, a)
+
+	return newSubscription, nil
 }
-func createCustomer(s *Administrator, sb *administrator.Subscription) (*stripe.Customer, error) {
-	stripeEmail := sb.Customeremail
-	customerParams := stripe.CustomerParams{Email: stripeEmail}
+func (s *Stripe) createCustomer(email string) (*stripe.Customer, error) {
+	customerParams := stripe.CustomerParams{Email: &email}
 	newCustomer, err := s.client.stripe.Customers.New(&customerParams)
 	if err != nil {
 		return nil, err
@@ -72,13 +72,13 @@ func createCustomer(s *Administrator, sb *administrator.Subscription) (*stripe.C
 
 	return newCustomer, nil
 }
-func createSubscription(s *Administrator, sb *administrator.Subscription, newCustomer *stripe.Customer) (*stripe.Subscription, error) {
-	paymentMethod, err := attachPaymentMethod(s, sb, newCustomer)
+func (s *Stripe) createSubscription(planType string, paymentMethodID string, newCustomer *stripe.Customer) (*stripe.Subscription, error) {
+	paymentMethod, err := s.attachPaymentMethod(paymentMethodID, newCustomer)
 	if err != nil {
 		return nil, ErrStripeNewSubscription
 	}
 
-	if err := updateInvoiceSettingsToDefault(s, paymentMethod, newCustomer); err != nil {
+	if err := s.updateInvoiceSettingsToDefault(paymentMethod, newCustomer); err != nil {
 		return nil, ErrStripeNewSubscription
 	}
 
@@ -86,7 +86,7 @@ func createSubscription(s *Administrator, sb *administrator.Subscription, newCus
 		Customer: &newCustomer.ID,
 		Items: []*stripe.SubscriptionItemsParams{
 			{
-				Plan: stripe.String(sb.Type.String()),
+				Plan: stripe.String(planType),
 			},
 		},
 	}
@@ -94,12 +94,7 @@ func createSubscription(s *Administrator, sb *administrator.Subscription, newCus
 
 	return sub.New(subscriptionParams)
 }
-func attachPaymentMethod(s *Administrator, sb *administrator.Subscription, newCustomer *stripe.Customer) (*stripe.PaymentMethod, error) {
-	paymentGateway := *sb.Paymentgateway
-	paymentMethodID, ok := paymentGateway["paymentMethodID"].(string)
-	if !ok {
-		return nil, administrator.ErrAdministratorSubscriptionPaymentGateway
-	}
+func (s *Stripe) attachPaymentMethod(paymentMethodID string, newCustomer *stripe.Customer) (*stripe.PaymentMethod, error) {
 
 	params := &stripe.PaymentMethodAttachParams{
 		Customer: &newCustomer.ID,
@@ -108,7 +103,7 @@ func attachPaymentMethod(s *Administrator, sb *administrator.Subscription, newCu
 	return s.client.stripe.PaymentMethods.Attach(paymentMethodID, params)
 
 }
-func updateInvoiceSettingsToDefault(s *Administrator, pm *stripe.PaymentMethod, nc *stripe.Customer) error {
+func (s *Stripe) updateInvoiceSettingsToDefault(pm *stripe.PaymentMethod, nc *stripe.Customer) error {
 	customerParams := &stripe.CustomerParams{
 		InvoiceSettings: &stripe.CustomerInvoiceSettingsParams{
 			DefaultPaymentMethod: stripe.String(pm.ID),

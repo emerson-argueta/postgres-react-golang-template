@@ -17,13 +17,13 @@ type Client struct {
 
 // Services represents the services that jwt service provides
 type Services struct {
-	Administrator Administrator
+	Jwt Jwt
 }
 
 // NewClient function
 func NewClient() *Client {
 	c := &Client{}
-	c.Services.Administrator.client = c
+	c.Services.Jwt.client = c
 
 	// get configuration stucts via .env file
 	config, err := config.NewConfig()
@@ -47,5 +47,5 @@ func (c *Client) Initialize() {
 	**/
 }
 
-// AdministratorService returns the admin service associated with the client.
-func (c *Client) AdministratorService() Administrator { return c.Services.Administrator }
+// JwtService returns the jwt service associated with the client.
+func (c *Client) JwtService() Jwt { return c.Services.Jwt }

@@ -19,13 +19,13 @@ type Client struct {
 
 // Services represents the services that http service provides
 type Services struct {
-	Administrator Administrator
+	Stripe Stripe
 }
 
 // NewClient function
 func NewClient() *Client {
 	c := &Client{}
-	c.Services.Administrator.client = c
+	c.Services.Stripe.client = c
 
 	// get configuration stucts via .env file
 	config, err := config.NewConfig()
@@ -45,10 +45,7 @@ func (c *Client) Initialize() {
 	c.stripe = stripe
 }
 
-// AdministratorService returns the admin service associated with the client.
-// func (c *Client) AdministratorService() administrator.SubscriptionActions {
-// 	return &c.Services.Administrator
-// }
-func (c *Client) AdministratorService() Administrator {
-	return c.Services.Administrator
+// StripeService returns the stripe service associated with the client.
+func (c *Client) StripeService() Stripe {
+	return c.Services.Stripe
 }
