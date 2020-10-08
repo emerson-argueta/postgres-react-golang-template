@@ -4,13 +4,13 @@ import (
 	"emersonargueta/m/v1/config"
 )
 
-// Client represents a client to the underlying stripe client.
+// Client represents a client to connect to the communitygoaltracker services.
 type Client struct {
 	config   *config.Config
 	Services Services
 }
 
-// Services represents the services that jwt service provides
+// Services represents the services that communitygoaltracker service provides
 type Services struct {
 	Communitygoaltracker Communitygoaltracker
 }

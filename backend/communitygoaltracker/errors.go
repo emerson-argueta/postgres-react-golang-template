@@ -5,6 +5,9 @@ const (
 	ErrGoalExists            = Error("goal exists")
 	ErrGoalNotFound          = Error("goal not found")
 	ErrIncompleteGoalDetails = Error("incomplete details for goal")
+	ErrInvalidProgress       = Error("invalid progress value for goal")
+	ErrGoalWithNoAchievers   = Error("goal does not have achievers")
+	ErrCannotDeleteGoal      = Error("cannot delete goal which contains more than 1 achiever")
 )
 
 // Achiever moodel errors.

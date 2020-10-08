@@ -12,7 +12,8 @@ type Client struct {
 
 // Services represents the services that jwt service provides
 type Services struct {
-	Administrator Administrator
+	Administrator        Administrator
+	Communitygoaltracker Communitygoaltracker
 }
 
 // NewClient returns a new instance of Client.
@@ -24,3 +25,6 @@ func NewClient() *Client {
 
 // AdministratorService returns the admin service associated with the client.
 func (c *Client) AdministratorService() AdministratorActions { return &c.Services.Administrator }
+
+// CommunitygoaltrackerService returns the service associated with the client.
+func (c *Client) CommunitygoaltrackerService() AdministratorActions { return &c.Services.Administrator }

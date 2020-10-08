@@ -35,7 +35,19 @@ type Achiever struct {
 }
 
 // Goals represents a slice goals ids for an achiever
-type Goals []int64
+type Goals map[int64]bool
+
+// Keys represent the goal ids
+func (g *Goals) Keys() []int64 {
+	keys := make([]int64, len(*g))
+
+	i := 0
+	for k := range *g {
+		keys[i] = k
+		i++
+	}
+	return keys
+}
 
 // Service provides processes that can be achieved by an achiever.
 type Service interface {

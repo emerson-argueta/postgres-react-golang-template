@@ -26,7 +26,7 @@ func (c *Achievers) Keys() []string {
 // Achiever represents an Achievers within a goal.
 type Achiever struct {
 	State    *State    `json:"state,omitempty"`
-	Progress *int64    `json:"progress,omitempty"`
+	Progress *int      `json:"progress,omitempty"`
 	Messages *Messages `json:"messages,omitempty"`
 }
 
@@ -68,6 +68,7 @@ type Service interface {
 	CreateGoal(*Goal) (*Goal, error)
 	RetrieveGoal(id int64) (*Goal, error)
 	UpdateGoal(*Goal) error
+	DeleteGoal(id int64) error
 	RetrieveGoals(ids []int64) ([]*Goal, error)
 	UpdateGoals(goals []*Goal) error
 }
