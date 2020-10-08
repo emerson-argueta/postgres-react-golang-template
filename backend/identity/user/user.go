@@ -30,7 +30,7 @@ func (d *Domains) Keys() []int64 {
 // Service provides processes that can be achieved by user.
 type Service interface {
 	CreateUser(*User) error
-	RetrieveUser(u *User, byEmail bool) (*User, error)
-	UpdateUser(u *User, byEmail bool) error
-	DeleteUser(u *User, byEmail bool) error
+	RetrieveUser(uuid string) (*User, error)
+	UpdateUser(*User) error
+	DeleteUser(uuid string) error
 }

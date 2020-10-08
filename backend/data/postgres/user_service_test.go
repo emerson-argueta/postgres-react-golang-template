@@ -28,15 +28,13 @@ func TestUserService_CreateUser(t *testing.T) {
 	}
 
 	// Retrieve user and compare.
-	byEmail := true
-	if other, err := s.RetrieveUser(&u, byEmail); err != nil {
+	if other, err := s.RetrieveUser(*u.UUID); err != nil {
 		t.Fatal(err)
 	} else if !reflect.DeepEqual(&u, other) {
 		t.Fatalf("unexpected user: %#v", other)
 	}
 
-	byEmail = false
-	if err := s.DeleteUser(&u, byEmail); err != nil {
+	if err := s.DeleteUser(*u.UUID); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -61,8 +59,7 @@ func TestUserService_CreateUser_ErrUserExists(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Clean up database
-	byEmail := false
-	if err := s.DeleteUser(&u, byEmail); err != nil {
+	if err := s.DeleteUser(*u.UUID); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -107,32 +104,30 @@ func TestUserService_UpdateUser(t *testing.T) {
 		Password: &password_u2_u,
 	}
 
-	byEmail := false
-	if err := s.UpdateUser(&user1Update, byEmail); err != nil {
+	if err := s.UpdateUser(&user1Update); err != nil {
 		t.Fatal(err)
-	} else if err := s.UpdateUser(&user2Update, byEmail); err != nil {
+	} else if err := s.UpdateUser(&user2Update); err != nil {
 		t.Fatal(err)
 	}
 
 	// Verify user1 updated searching user1.
-	if d, err := s.RetrieveUser(&user1, byEmail); err != nil {
+	if d, err := s.RetrieveUser(*user1.UUID); err != nil {
 		t.Fatal(err)
 	} else if !reflect.DeepEqual(&user1Update, d) {
 		t.Fatalf("unexpected user: %#v", d)
 	}
 
 	// Verify user2 updated searching user2.
-	if d, err := s.RetrieveUser(&user2, byEmail); err != nil {
+	if d, err := s.RetrieveUser(*user2.UUID); err != nil {
 		t.Fatal(err)
 	} else if !reflect.DeepEqual(&user2Update, d) {
 		t.Fatalf("unexpected user: %#v", d)
 	}
 
 	// Clean up database.
-	byEmail = true
-	if err := s.DeleteUser(&user1Update, byEmail); err != nil {
+	if err := s.DeleteUser(*user1Update.UUID); err != nil {
 		t.Fatal(err)
-	} else if err := s.DeleteUser(&user2Update, byEmail); err != nil {
+	} else if err := s.DeleteUser(*user2Update.UUID); err != nil {
 		t.Fatal(err)
 	}
 
@@ -152,8 +147,7 @@ func TestUserService_DeleteUser_ErrUserNotFound(t *testing.T) {
 		Password: &password_u,
 	}
 
-	byEmail := true
-	if err := s.DeleteUser(&u, byEmail); err != identity.ErrUserNotFound {
+	if err := s.DeleteUser(*u.UUID); err != identity.ErrUserNotFound {
 		t.Fatal(err)
 	}
 }

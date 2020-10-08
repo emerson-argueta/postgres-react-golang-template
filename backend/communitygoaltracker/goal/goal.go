@@ -1,7 +1,5 @@
 package goal
 
-import "emersonargueta/m/v1/communitygoaltracker/achiever"
-
 // Goal represents a goal that an achiever is trying to complete.
 type Goal struct {
 	ID        *int64     `db:"id" dbignoreinsert:"" json:"id"`
@@ -67,8 +65,9 @@ func (m *Messages) Keys() []string {
 
 // Service provides processes provided by the identity domain.
 type Service interface {
-	CreateGoal(*achiever.Achiever, *Goal) (*Goal, error)
-	RetrieveGoal(*Goal) (*Goal, error)
-	UpdateGoal(*achiever.Achiever, *Goal) error
-	DeleteGoal(*achiever.Achiever, *Goal) error
+	CreateGoal(*Goal) (*Goal, error)
+	RetrieveGoal(id int64) (*Goal, error)
+	UpdateGoal(*Goal) error
+	RetrieveGoals(ids []int64) ([]*Goal, error)
+	UpdateGoals(goals []*Goal) error
 }

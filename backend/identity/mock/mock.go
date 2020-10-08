@@ -7,44 +7,44 @@ import (
 
 //IdentityService is a mock of identity.Service
 type IdentityService struct {
-	RegisterFn       func(*user.User) error
-	RetrieveFn       func(u *user.User, byEmail bool) (*user.User, error)
-	UpdateFn         func(u *user.User, byEmail bool) error
-	UnRegisterFn     func(u *user.User, byEmail bool) error
-	CreateDomainFn   func(*domain.Domain) error
-	RetrieveDomainFn func(*domain.Domain) (*domain.Domain, error)
+	RegisterUserFn   func(*user.User) error
+	LoginUserFn      func(email string, password string) (res *user.User, e error)
+	UpdateUserFn     func(u *user.User) error
+	UnRegisterUserFn func(u *user.User) error
+	AddDomainFn      func(*domain.Domain) error
+	LookUpDomainFn   func(*domain.Domain) (*domain.Domain, error)
 	UpdateDomainFn   func(*domain.Domain) error
-	DeleteDomainFn   func(*domain.Domain) error
+	RemoveDomainFn   func(*domain.Domain) error
 }
 
-// Register mocks identity.Service.Register
-func (s *IdentityService) Register(u *user.User) error {
-	return s.RegisterFn(u)
+// RegisterUser mocks identity.Service.RegisterUser
+func (s *IdentityService) RegisterUser(u *user.User) error {
+	return s.RegisterUserFn(u)
 }
 
-// Retrieve mocks identity.Service.Retrieve
-func (s *IdentityService) Retrieve(u *user.User, byEmail bool) (*user.User, error) {
-	return s.RetrieveFn(u, byEmail)
+// LoginUser mocks identity.Service.LoginUser
+func (s *IdentityService) LoginUser(email string, password string) (res *user.User, e error) {
+	return s.LoginUserFn(email, password)
 }
 
-// Update mocks identity.Service.Update
-func (s *IdentityService) Update(u *user.User, byEmail bool) error {
-	return s.UpdateFn(u, byEmail)
+// UpdateUser mocks identity.Service.UpdateUser
+func (s *IdentityService) UpdateUser(u *user.User) error {
+	return s.UpdateUserFn(u)
 }
 
 // UnRegister mocks identity.Service.UnRegister
-func (s *IdentityService) UnRegister(u *user.User, byEmail bool) error {
-	return s.UnRegisterFn(u, byEmail)
+func (s *IdentityService) UnRegister(u *user.User) error {
+	return s.UnRegisterUserFn(u)
 }
 
-// CreateDomain mockes identity.Service.CreateDomain
-func (s *IdentityService) CreateDomain(d *domain.Domain) error {
-	return s.CreateDomainFn(d)
+// AddDomain mockes identity.Service.AddDomain
+func (s *IdentityService) AddDomain(d *domain.Domain) error {
+	return s.AddDomainFn(d)
 }
 
-// RetrieveDomain mockes identity.Service.RetrieveDomain
-func (s *IdentityService) RetrieveDomain(d *domain.Domain) (*domain.Domain, error) {
-	return s.RetrieveDomainFn(d)
+// LookUpDomain mockes identity.Service.LookUpDomain
+func (s *IdentityService) LookUpDomain(d *domain.Domain) (*domain.Domain, error) {
+	return s.LookUpDomainFn(d)
 }
 
 // UpdateDomain mockes identity.Service.UpdateDomain
@@ -52,7 +52,7 @@ func (s *IdentityService) UpdateDomain(d *domain.Domain) error {
 	return s.UpdateDomainFn(d)
 }
 
-// DeleteDomain mockes identity.Service.DeleteDomain
-func (s *IdentityService) DeleteDomain(d *domain.Domain) error {
-	return s.DeleteDomainFn(d)
+// RemoveDomain mockes identity.Service.RemoveDomain
+func (s *IdentityService) RemoveDomain(d *domain.Domain) error {
+	return s.RemoveDomainFn(d)
 }

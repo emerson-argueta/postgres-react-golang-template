@@ -1,8 +1,17 @@
 package communitygoaltracker
 
-// Domain errors.
+// Goal model errors.
 const (
-	ErrInternal = Error("internal domain error")
+	ErrGoalExists            = Error("goal exists")
+	ErrGoalNotFound          = Error("goal not found")
+	ErrIncompleteGoalDetails = Error("incomplete details for goal")
+)
+
+// Achiever moodel errors.
+const (
+	ErrAchieverExists            = Error("achiever exists")
+	ErrAchieverNotFound          = Error("achiever not found")
+	ErrIncompleteAchieverDetails = Error("incomplete details for achiever")
 )
 
 // Error represents a general domain error.

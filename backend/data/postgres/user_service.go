@@ -51,16 +51,12 @@ func (s *User) CreateUser(u *user.User) (e error) {
 	return nil
 }
 
-// RetrieveUser a user by uuid or email.
-func (s *User) RetrieveUser(u *user.User, byEmail bool) (res *user.User, e error) {
+// RetrieveUser a user by uuid.
+func (s *User) RetrieveUser(uuid string) (res *user.User, e error) {
 	filter := "UUID=?"
-	queryParam := u.UUID
-	if byEmail {
-		filter = "EMAIL=?"
-		queryParam = u.Email
-	}
+	queryParam := uuid
 
-	query, err := NewQuery(u)
+	query, err := NewQuery(&user.User{})
 	if err != nil {
 		return nil, err
 	}
@@ -79,14 +75,10 @@ func (s *User) RetrieveUser(u *user.User, byEmail bool) (res *user.User, e error
 
 }
 
-// UpdateUser searching by email or uuid.
-func (s *User) UpdateUser(u *user.User, byEmail bool) (e error) {
+// UpdateUser searching by uuid.
+func (s *User) UpdateUser(u *user.User) (e error) {
 	filter := "UUID=?"
 	queryParam := u.UUID
-	if byEmail {
-		filter = "EMAIL=?"
-		queryParam = u.Email
-	}
 
 	query, e := NewQuery(u)
 	if e != nil {
@@ -111,16 +103,12 @@ func (s *User) UpdateUser(u *user.User, byEmail bool) (e error) {
 	return nil
 }
 
-// DeleteUser searching by uuid or email.
-func (s *User) DeleteUser(u *user.User, byEmail bool) (e error) {
+// DeleteUser searching by uuid.
+func (s *User) DeleteUser(uuid string) (e error) {
 	filter := "UUID=?"
-	queryParam := u.UUID
-	if byEmail {
-		filter = "EMAIL=?"
-		queryParam = u.Email
-	}
+	queryParam := uuid
 
-	query, e := NewQuery(u)
+	query, e := NewQuery(&user.User{})
 	if e != nil {
 		return e
 	}
@@ -128,9 +116,9 @@ func (s *User) DeleteUser(u *user.User, byEmail bool) (e error) {
 	userDeleteQuery = s.client.db.Rebind(userDeleteQuery)
 
 	if s.client.transaction != nil {
-		e = s.client.transaction.Get(u, userDeleteQuery, queryParam)
+		e = s.client.transaction.Get(&user.User{}, userDeleteQuery, queryParam)
 	} else {
-		e = s.client.db.Get(u, userDeleteQuery, queryParam)
+		e = s.client.db.Get(&user.User{}, userDeleteQuery, queryParam)
 	}
 	if e != nil && e == sql.ErrNoRows {
 		return identity.ErrUserNotFound
