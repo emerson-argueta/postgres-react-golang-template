@@ -4,6 +4,7 @@ import (
 	"emersonargueta/m/v1/authorization/jwt"
 	"emersonargueta/m/v1/communitygoaltracker"
 	"emersonargueta/m/v1/delivery/middleware"
+	"emersonargueta/m/v1/identity"
 	"emersonargueta/m/v1/paymentgateway/stripe"
 	"log"
 	"net/http"
@@ -45,7 +46,7 @@ func NewCommunitygoaltrackerHandler() *CommunitygoaltrackerHandler {
 
 	public := h.Group(RoutePrefix)
 	public.POST(AchieverURL, h.handleRegister)
-	public.POST("/administrator/login", h.handleLogin)
+	public.POST(AchieverLoginURL, h.handleLogin)
 	// TODO: post method to handle authorization for achiever
 
 	restricted := h.Group(RoutePrefix)
@@ -69,15 +70,14 @@ func (h *CommunitygoaltrackerHandler) handleRegister(ctx echo.Context) (e error)
 		return ResponseError(ctx.Response().Writer, ErrInvalidJSON, http.StatusBadRequest, h.Logger)
 	}
 
-	a := req.Achiever
-	switch registeredAchiever, e := h.Communitygoaltracker.Register(a); e {
+	switch registeredAchiever, e := h.Communitygoaltracker.Register(req.Achiever); e {
 	case nil:
-		tokenPair, e := middleware.GenerateTokenPair(*a.UUID, middleware.AccestokenLimit, middleware.RefreshtokenLimit)
+		tokenPair, e := middleware.GenerateTokenPair(*registeredAchiever.UUID, middleware.AccestokenLimit, middleware.RefreshtokenLimit)
 		if e != nil {
 			return ResponseError(ctx.Response().Writer, e, http.StatusInternalServerError, h.Logger)
 		}
 		// Do not send password to avoid exploits.
-		a.Password = nil
+		registeredAchiever.Password = nil
 		encodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: registeredAchiever, Token: tokenPair}, h.Logger)
 	case communitygoaltracker.ErrIncompleteAchieverDetails:
 		return ResponseError(ctx.Response().Writer, e, http.StatusBadRequest, h.Logger)
@@ -89,6 +89,28 @@ func (h *CommunitygoaltrackerHandler) handleRegister(ctx echo.Context) (e error)
 }
 
 func (h *CommunitygoaltrackerHandler) handleLogin(ctx echo.Context) error {
+	var req achieverRequest
+
+	// Decode the request.
+	if err := ctx.Bind(&req); err != nil || req.Achiever == nil || req.Achiever.Email == nil || req.Achiever.Password == nil {
+		return ResponseError(ctx.Response().Writer, ErrInvalidJSON, http.StatusBadRequest, h.Logger)
+	}
+
+	switch registeredAchiever, e := h.Communitygoaltracker.Login(*req.Achiever.Email, *req.Achiever.Password); e {
+	case nil:
+		tokenPair, e := middleware.GenerateTokenPair(*registeredAchiever.UUID, middleware.AccestokenLimit, middleware.RefreshtokenLimit)
+		if e != nil {
+			return ResponseError(ctx.Response().Writer, e, http.StatusInternalServerError, h.Logger)
+		}
+		// Do not send password to avoid exploits.
+		registeredAchiever.Password = nil
+		encodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: registeredAchiever, Token: tokenPair}, h.Logger)
+	case identity.ErrIncorrectCredentials:
+		return ResponseError(ctx.Response().Writer, e, http.StatusUnauthorized, h.Logger)
+	default:
+		return ResponseError(ctx.Response().Writer, e, http.StatusInternalServerError, h.Logger)
+	}
+
 	return nil
 }
 

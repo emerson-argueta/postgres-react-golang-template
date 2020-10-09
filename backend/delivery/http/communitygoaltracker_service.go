@@ -19,7 +19,7 @@ type Communitygoaltracker struct {
 // Register is an http implementation of the communitygoaltracker process.
 func (cgt *Communitygoaltracker) Register(a *achiever.Achiever) (res *achiever.Achiever, e error) {
 	u := cgt.client.URL
-	u.Path = "/api/administrator"
+	u.Path = RoutePrefix + AchieverURL
 
 	// Encode request body.
 	reqBody, e := json.Marshal(achieverRequest{Achiever: a})
@@ -49,6 +49,32 @@ func (cgt *Communitygoaltracker) Register(a *achiever.Achiever) (res *achiever.A
 
 // Login is an http implementation of the communitygoaltracker process.
 func (cgt *Communitygoaltracker) Login(email string, password string) (res *achiever.Achiever, e error) {
+	u := cgt.client.URL
+	u.Path = RoutePrefix + AchieverLoginURL
+
+	// Encode request body.
+	reqBody, e := json.Marshal(achieverRequest{Achiever: &achiever.Achiever{Email: &email, Password: &password}})
+	if e != nil {
+		return nil, e
+	}
+
+	// Execute request.
+	url := u.String()
+	resp, e := http.Post(url, "application/json", bytes.NewReader(reqBody))
+	if e != nil {
+		return nil, e
+	}
+	defer resp.Body.Close()
+
+	// Decode response into JSON.
+	var respBody achieverResponse
+	if e = json.NewDecoder(resp.Body).Decode(&respBody); e != nil {
+		return nil, e
+	} else if respBody.Error != "" {
+		return nil, communitygoaltracker.Error(respBody.Error)
+	}
+	res = respBody.Achiever
+
 	return res, e
 }
 
