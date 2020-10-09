@@ -4,7 +4,7 @@ package user
 
 //User model
 type User struct {
-	UUID     *string  `json:"uuid"`
+	UUID     *string  `db:"uuid" dbignoreinsert:"" json:"uuid"`
 	Email    *string  `db:"email" json:"email"`
 	Password *string  `db:"password" json:"password"`
 	Domains  *Domains `db:"domains" json:"domains"`
@@ -29,8 +29,11 @@ func (d *Domains) Keys() []int64 {
 
 // Service provides processes that can be achieved by user.
 type Service interface {
-	CreateUser(*User) error
-	RetrieveUser(uuid string) (*User, error)
+	// CreateUser implementations should check if user exists before creating the user.
+	CreateUser(*User) (*User, error)
+	RetrieveUser(email string) (*User, error)
+	// UpdateUser implementation should search the user by uuid before updating the user.
 	UpdateUser(*User) error
+	// DeleteUser implementation should search the user by uuid before deleting the user.
 	DeleteUser(uuid string) error
 }

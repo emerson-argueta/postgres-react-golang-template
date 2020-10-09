@@ -3,6 +3,9 @@ package identity
 import (
 	"emersonargueta/m/v1/identity/domain"
 	"emersonargueta/m/v1/identity/user"
+	"emersonargueta/m/v1/validation"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // DomainName of this package
@@ -29,24 +32,84 @@ type Service interface {
 }
 
 // RegisterUser using the following business logic
+// Verify email and password.
+// Check if user exists.
+// Create user with hash password.
 func (i *Identity) RegisterUser(u *user.User) (res *user.User, e error) {
+	if u.Email == nil || u.Password == nil {
+		return nil, ErrUserIncompleteDetails
+	}
 
-	return res, e
+	if e = validation.ValidateUserEmail(*u.Email); e != nil {
+		return nil, e
+	}
+	if e = validation.ValidatePassword(*u.Password); e != nil {
+		return nil, e
+	}
+
+	hash, e := bcrypt.GenerateFromPassword([]byte(*u.Password), bcrypt.DefaultCost)
+	hashString := string(hash)
+	u.Password = &hashString
+
+	return i.User.CreateUser(u)
 }
 
-//LoginUser using the following business logic
+// LoginUser using the following business logic:
+// Check if user exists.
+// Check if password matches.
 func (i *Identity) LoginUser(email string, password string) (res *user.User, e error) {
+	res, e = i.User.RetrieveUser(email)
+	if e != nil {
+		return nil, e
+	}
+
+	e = bcrypt.CompareHashAndPassword([]byte(*res.Password), []byte(password))
+	if e != nil && e == bcrypt.ErrMismatchedHashAndPassword {
+		return nil, ErrUserIncorrectCredentials
+	} else if e != nil {
+		return nil, e
+	}
+
 	return res, e
 }
 
-//UpdateUser using the following business logic
+// UpdateUser using the following business logic
+// Validate email and password
+// Update the user searching by uuid.
 func (i *Identity) UpdateUser(u *user.User) (e error) {
-	return e
+	if u.UUID == nil {
+		return ErrUserIncompleteDetails
+	}
+
+	if u.Email != nil {
+		if e = validation.ValidateUserEmail(*u.Email); e != nil {
+			return e
+		}
+	}
+	if u.Password != nil {
+		if e = validation.ValidatePassword(*u.Password); e != nil {
+			return e
+		}
+	}
+
+	return i.User.UpdateUser(u)
 }
 
-//UnRegisterUser using the following business logic
+// UnRegisterUser using the following business logic
+// Validate email and password.
+// Delete the user.
 func (i *Identity) UnRegisterUser(u *user.User) (e error) {
-	return e
+	if u.UUID == nil || u.Email == nil || u.Password == nil {
+		return ErrUserIncompleteDetails
+	}
+
+	if exists, e := i.User.RetrieveUser(*u.UUID); e != nil {
+		return e
+	} else if *exists.Email != *u.Email || bcrypt.CompareHashAndPassword([]byte(*exists.Password), []byte(*u.Password)) == bcrypt.ErrMismatchedHashAndPassword {
+		return ErrUserIncorrectCredentials
+	}
+
+	return i.User.DeleteUser(*u.UUID)
 }
 
 //AddDomain using the following business logic

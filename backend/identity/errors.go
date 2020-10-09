@@ -2,9 +2,10 @@ package identity
 
 // User model errors.
 const (
-	ErrUserNotFound         = Error("user not found")
-	ErrUserExists           = Error("user exists")
-	ErrIncorrectCredentials = Error("incorrect credentials")
+	ErrUserNotFound             = Error("user not found")
+	ErrUserExists               = Error("user exists")
+	ErrUserIncompleteDetails    = Error("incomplete details for user")
+	ErrUserIncorrectCredentials = Error("incorrect credentials")
 )
 
 // Domain model errors

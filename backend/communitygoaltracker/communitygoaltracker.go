@@ -37,14 +37,10 @@ type Service interface {
 }
 
 // Register using the following business logic:
-// Using the identity subdomain service register the achiever using the
-// provided achiever.
-// If the identity service is unable to process the request return the error
+// Using the identity subdomain service register the achiever.
+// If there is an existing user, retrieve the user.
+// Create the achiever.
 func (cgt *Communitygoaltracker) Register(a *achiever.Achiever) (res *achiever.Achiever, e error) {
-	if a.Email == nil || a.Password == nil {
-		return nil, ErrIncompleteAchieverDetails
-	}
-
 	domainName := DomainName
 	d, e := cgt.Identity.LookupDomain(&domain.Domain{Name: &domainName})
 	if e != nil {
@@ -58,7 +54,9 @@ func (cgt *Communitygoaltracker) Register(a *achiever.Achiever) (res *achiever.A
 	}{Role: &role}
 
 	u, e := cgt.Identity.RegisterUser(&user.User{Email: a.Email, Password: a.Password, Domains: &domains})
-	if e != nil {
+	if e == identity.ErrUserExists {
+		u, e = cgt.Identity.LoginUser(*a.Email, *a.Password)
+	} else if e != nil {
 		return nil, e
 	}
 
@@ -80,7 +78,7 @@ func (cgt *Communitygoaltracker) Login(email string, password string) (res *achi
 }
 
 // UpdateAchiever using the following business logic: If email or password is
-// updated update the identity user then update the communitygoaltracker
+// updated update the identity domain user then update the communitygoaltracker
 // achiever.
 func (cgt *Communitygoaltracker) UpdateAchiever(a *achiever.Achiever) (e error) {
 	if a.Email != nil || a.Password != nil {
@@ -114,7 +112,7 @@ func (cgt *Communitygoaltracker) UnRegister(a *achiever.Achiever) (e error) {
 //
 func (cgt *Communitygoaltracker) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
 	if g.Achievers == nil {
-		return nil, ErrIncompleteGoalDetails
+		return nil, ErrGoalIncompleteDetails
 	}
 	achieverUUID := g.Achievers.Keys()[0]
 
@@ -131,7 +129,7 @@ func (cgt *Communitygoaltracker) CreateGoal(g *goal.Goal) (res *goal.Goal, e err
 // complete.
 func (cgt *Communitygoaltracker) UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (e error) {
 	if progress < 0 || progress > 100 {
-		return ErrInvalidProgress
+		return ErrGoalInvalidProgress
 	}
 
 	g, e := cgt.Goal.RetrieveGoal(goalID)
@@ -185,7 +183,7 @@ func (cgt *Communitygoaltracker) DeleteGoal(achieverUUID string, goalID int64) (
 		return ErrGoalNotFound
 	}
 	if len((*g.Achievers).Keys()) > 1 {
-		return ErrCannotDeleteGoal
+		return ErrGoalCannotDelete
 	}
 
 	return cgt.Goal.DeleteGoal(goalID)

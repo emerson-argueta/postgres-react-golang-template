@@ -23,7 +23,7 @@ func TestUserService_CreateUser(t *testing.T) {
 		Password: &password_u,
 	}
 
-	if err := s.CreateUser(&u); err != nil {
+	if _, err := s.CreateUser(&u); err != nil {
 		t.Fatal(err)
 	}
 
@@ -52,10 +52,10 @@ func TestUserService_CreateUser_ErrUserExists(t *testing.T) {
 		Password: &password_u,
 	}
 
-	if err := s.CreateUser(&u); err != nil {
+	if _, err := s.CreateUser(&u); err != nil {
 		t.Fatal(err)
 	}
-	if err := s.CreateUser(&u); err != identity.ErrUserExists {
+	if _, err := s.CreateUser(&u); err != identity.ErrUserExists {
 		t.Fatal(err)
 	}
 	// Clean up database
@@ -83,9 +83,9 @@ func TestUserService_UpdateUser(t *testing.T) {
 		Password: &password_u2,
 	}
 
-	if err := s.CreateUser(&user1); err != nil {
+	if _, err := s.CreateUser(&user1); err != nil {
 		t.Fatal(err)
-	} else if err := s.CreateUser(&user2); err != nil {
+	} else if _, err := s.CreateUser(&user2); err != nil {
 		t.Fatal(err)
 	}
 	email_u1_u := "hello_update@test.com"

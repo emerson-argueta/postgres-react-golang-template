@@ -79,7 +79,7 @@ func (h *CommunitygoaltrackerHandler) handleRegister(ctx echo.Context) (e error)
 		// Do not send password to avoid exploits.
 		registeredAchiever.Password = nil
 		encodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: registeredAchiever, Token: tokenPair}, h.Logger)
-	case communitygoaltracker.ErrIncompleteAchieverDetails:
+	case communitygoaltracker.ErrAchieverIncompleteDetails:
 		return ResponseError(ctx.Response().Writer, e, http.StatusBadRequest, h.Logger)
 	default:
 		return ResponseError(ctx.Response().Writer, e, http.StatusInternalServerError, h.Logger)
@@ -105,7 +105,7 @@ func (h *CommunitygoaltrackerHandler) handleLogin(ctx echo.Context) error {
 		// Do not send password to avoid exploits.
 		registeredAchiever.Password = nil
 		encodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: registeredAchiever, Token: tokenPair}, h.Logger)
-	case identity.ErrIncorrectCredentials:
+	case identity.ErrUserIncorrectCredentials:
 		return ResponseError(ctx.Response().Writer, e, http.StatusUnauthorized, h.Logger)
 	default:
 		return ResponseError(ctx.Response().Writer, e, http.StatusInternalServerError, h.Logger)

@@ -22,10 +22,10 @@ type User struct {
 }
 
 // CreateUser a new user.
-func (s *User) CreateUser(u *user.User) (e error) {
+func (s *User) CreateUser(u *user.User) (res *user.User, e error) {
 	query, e := NewQuery(u)
 	if e != nil {
-		return e
+		return nil, e
 	}
 
 	userInsertQuery := query.Create(Schema, UserTable)
@@ -34,44 +34,42 @@ func (s *User) CreateUser(u *user.User) (e error) {
 	includeNil := true
 	queryParams := query.ModelValues(includeNil)
 
-	if s.client.transaction != nil {
-		e = s.client.transaction.Get(u, userInsertQuery, queryParams...)
-	} else {
-		e = s.client.db.Get(u, userInsertQuery, queryParams...)
-	}
+	res = &user.User{}
+
+	e = s.client.db.Get(u, userInsertQuery, queryParams...)
+
 	var uniqueViolation pq.ErrorCode = "23505"
 	if pqError, ok := e.(*pq.Error); e != nil && !ok {
-		return e
+		return nil, e
 	} else if pqError != nil && pqError.Code == uniqueViolation {
-		return identity.ErrUserExists
+		return nil, identity.ErrUserExists
 	} else if pqError != nil {
-		return pqError
+		return nil, pqError
 	}
 
-	return nil
+	return res, e
 }
 
-// RetrieveUser a user by uuid.
-func (s *User) RetrieveUser(uuid string) (res *user.User, e error) {
-	filter := "UUID=?"
-	queryParam := uuid
+// RetrieveUser a user by email.
+func (s *User) RetrieveUser(email string) (res *user.User, e error) {
+	filter := "EMAIL=?"
+	queryParam := email
 
-	query, err := NewQuery(&user.User{})
-	if err != nil {
-		return nil, err
+	query, e := NewQuery(&user.User{})
+	if e != nil {
+		return nil, e
 	}
 
 	userSelectQuery := query.Read(Schema, UserTable, filter)
 	userSelectQuery = s.client.db.Rebind(userSelectQuery)
 
 	res = &user.User{}
-	if err := s.client.db.Get(res, userSelectQuery, queryParam); err == sql.ErrNoRows {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+	e = s.client.db.Get(res, userSelectQuery, queryParam)
+	if e == sql.ErrNoRows {
+		return nil, identity.ErrUserNotFound
 	}
 
-	return res, nil
+	return res, e
 
 }
 
@@ -91,16 +89,12 @@ func (s *User) UpdateUser(u *user.User) (e error) {
 	includeNil := true
 	queryParams := append(query.ModelValues(includeNil), queryParam)
 
-	if s.client.transaction != nil {
-		e = s.client.transaction.Get(u, userUpdateQuery, queryParams...)
-	} else {
-		e = s.client.db.Get(u, userUpdateQuery, queryParams...)
-	}
-	if e != nil {
-		return e
+	e = s.client.db.Get(u, userUpdateQuery, queryParams...)
+	if e == sql.ErrNoRows {
+		return identity.ErrUserNotFound
 	}
 
-	return nil
+	return e
 }
 
 // DeleteUser searching by uuid.
@@ -115,16 +109,10 @@ func (s *User) DeleteUser(uuid string) (e error) {
 	userDeleteQuery := query.Delete(Schema, UserTable, filter)
 	userDeleteQuery = s.client.db.Rebind(userDeleteQuery)
 
-	if s.client.transaction != nil {
-		e = s.client.transaction.Get(&user.User{}, userDeleteQuery, queryParam)
-	} else {
-		e = s.client.db.Get(&user.User{}, userDeleteQuery, queryParam)
-	}
-	if e != nil && e == sql.ErrNoRows {
+	e = s.client.db.Get(&user.User{}, userDeleteQuery, queryParam)
+	if e == sql.ErrNoRows {
 		return identity.ErrUserNotFound
-	} else if e != nil {
-		return e
 	}
 
-	return nil
+	return e
 }
