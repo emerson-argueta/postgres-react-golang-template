@@ -11,18 +11,29 @@ import (
 // DomainName of this package
 const DomainName = "community-goal-tracker"
 
+var _ Service = &Communitygoaltracker{}
+
 // Communitygoaltracker exposes Communitygoaltracker domain processes.
 type Communitygoaltracker struct {
 	client *Client
+	Service
 	// Communitygoaltacker services used internally in processes.
 	Achiever achiever.Service
 	Goal     goal.Service
-	supportingservices
+	// From identity domain used internally in communitygaoltracker processes.
+	Identity identity.Service
 }
 
-// supportingservices from supporting domains used internally in communitygaoltracker processes.
-type supportingservices struct {
-	identity.Services
+// Service an interface for communitygoaltracker domain processes.
+type Service interface {
+	Register(a *achiever.Achiever) (*achiever.Achiever, error)
+	Login(email string, password string) (*achiever.Achiever, error)
+	UpdateAchiever(a *achiever.Achiever) error
+	UnRegister(a *achiever.Achiever) error
+	CreateGoal(g *goal.Goal) (*goal.Goal, error)
+	UpdateGoalProgress(achieverUUID string, goalID int64, progress int) error
+	AbandonGoal(achieverUUID string, goalID int64) error
+	DeleteGoal(achieverUUID string, goalID int64) error
 }
 
 // Register using the following business logic:

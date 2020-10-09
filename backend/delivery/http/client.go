@@ -1,6 +1,7 @@
 package http
 
 import (
+	"emersonargueta/m/v1/communitygoaltracker"
 	"net/url"
 )
 
@@ -12,19 +13,17 @@ type Client struct {
 
 // Services represents the services that jwt service provides
 type Services struct {
-	Administrator        Administrator
 	Communitygoaltracker Communitygoaltracker
 }
 
 // NewClient returns a new instance of Client.
 func NewClient() *Client {
 	c := &Client{}
-	c.Services.Administrator.client = c
+	c.Services.Communitygoaltracker.client = c
 	return c
 }
 
-// AdministratorService returns the admin service associated with the client.
-func (c *Client) AdministratorService() AdministratorActions { return &c.Services.Administrator }
-
 // CommunitygoaltrackerService returns the service associated with the client.
-func (c *Client) CommunitygoaltrackerService() AdministratorActions { return &c.Services.Administrator }
+func (c *Client) CommunitygoaltrackerService() communitygoaltracker.Service {
+	return &c.Services.Communitygoaltracker
+}

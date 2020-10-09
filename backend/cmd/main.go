@@ -26,7 +26,7 @@ func main() {
 
 	httpServer := http.NewServer()
 	httpServer.Handler = &http.Handler{
-		AdministratorHandler: http.NewAdministratorHandler(),
+		CommunitygoaltrackerHandler: http.NewCommunitygoaltrackerHandler(),
 	}
 	setUpHTTPServer(httpServer, databaseClient, authorizationClient, paymentgatewayClient)
 
@@ -44,18 +44,13 @@ func main() {
 }
 
 func setUpPaymentgateway(paymentgatewayClient *stripe.Client, databaseClient *postgres.Client) {
-	paymentgatewayClient.Services.Administrator.Usecase.Services.Administrator = databaseClient.AdministratorService()
 
-	paymentgatewayClient.Services.Administrator.Usecase.Services.User = databaseClient.UserService()
 }
 
 func setUpHTTPServer(httpServer *http.Server, databaseClient *postgres.Client, authorizationClient *jwt.Client, paymentgatewayClient *stripe.Client) {
-	httpServer.Handler.AdministratorHandler.Authorization.Administrator = authorizationClient.AdministratorService()
-	httpServer.Handler.AdministratorHandler.PaymentGateway.Administrator = paymentgatewayClient.AdministratorService()
 
-	httpServer.Handler.AdministratorHandler.Usecase.Services.User = databaseClient.UserService()
 }
 
 func setUpAuthorization(authorizationClient *jwt.Client, databaseClient *postgres.Client) {
-	authorizationClient.Services.Administrator.Usecase.Services.Administrator = databaseClient.AdministratorService()
+
 }

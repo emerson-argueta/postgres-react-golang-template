@@ -16,6 +16,18 @@ type Identity struct {
 	Domain domain.Service
 }
 
+// Service an interface for identity domain processes.
+type Service interface {
+	RegisterUser(*user.User) (*user.User, error)
+	LoginUser(email string, password string) (*user.User, error)
+	UpdateUser(*user.User) error
+	UnRegisterUser(*user.User) error
+	AddDomain(*domain.Domain) error
+	LookupDomain(*domain.Domain) (*domain.Domain, error)
+	UpdateDomain(*domain.Domain) error
+	RemoveDomain(*domain.Domain) error
+}
+
 // RegisterUser using the following business logic
 func (i *Identity) RegisterUser(u *user.User) (res *user.User, e error) {
 

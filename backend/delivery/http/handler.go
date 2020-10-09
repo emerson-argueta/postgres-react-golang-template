@@ -7,22 +7,20 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"emersonargueta/m/v1/domain"
 )
 
 // ErrInvalidJSON indicated when a request body is incorrect after decoding
-const ErrInvalidJSON = domain.Error("invalid json")
+const ErrInvalidJSON = Error("invalid json")
 
 // Handler is a collection of all the service handlers.
 type Handler struct {
-	AdministratorHandler *AdministratorHandler
+	*CommunitygoaltrackerHandler
 }
 
 // ServeHTTP delegates a request to the appropriate subhandler.
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if strings.HasPrefix(r.URL.Path, "/api/administrator") {
-		h.AdministratorHandler.ServeHTTP(w, r)
+		h.CommunitygoaltrackerHandler.ServeHTTP(w, r)
 	} else {
 		http.NotFound(w, r)
 	}
@@ -37,9 +35,9 @@ func NotFound(w http.ResponseWriter) error {
 }
 
 // encodeJSON encodes v to w in JSON format. Error() is called if encoding fails.
-func encodeJSON(w http.ResponseWriter, v interface{}, logger *log.Logger, serviceType string) {
+func encodeJSON(w http.ResponseWriter, v interface{}, logger *log.Logger) {
 	if err := json.NewEncoder(w).Encode(v); err != nil {
-		ResponseError(w, err, http.StatusInternalServerError, logger, serviceType)
+		ResponseError(w, err, http.StatusInternalServerError, logger)
 	}
 }
 

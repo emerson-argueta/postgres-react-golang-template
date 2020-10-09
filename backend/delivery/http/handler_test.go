@@ -8,15 +8,15 @@ import (
 type Handler struct {
 	*http.Handler
 
-	AdministratorHandler *AdministratorHandler
+	*CommunitygoaltrackerHandler
 }
 
 // NewHandler returns a new instance of Handler.
 func NewHandler() *Handler {
 	h := &Handler{
-		Handler:              &http.Handler{},
-		AdministratorHandler: NewAdministratorHandler(),
+		Handler:                     &http.Handler{},
+		CommunitygoaltrackerHandler: NewCommunitygoaltrackerHandler(),
 	}
-	h.Handler.AdministratorHandler = h.AdministratorHandler.AdministratorHandler
+	h.Handler.CommunitygoaltrackerHandler = h.CommunitygoaltrackerHandler.CommunitygoaltrackerHandler
 	return h
 }
