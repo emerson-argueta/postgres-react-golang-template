@@ -6,10 +6,17 @@ type Domain struct {
 	Name *string `db:"name" json:"name"`
 }
 
-// Service provides processes which affect the domains.
+// Service provides processes used to modify the domain model.
 type Service interface {
-	CreateDomain(*Domain) error
-	RetrieveDomain(*Domain) (*Domain, error)
+	// CreateDomain implementation must return ErrDomainExists if domain exists.
+	CreateDomain(*Domain) (*Domain, error)
+	// RetreiveDomain implementation must return ErrDomainNotFound if domain not found.
+	RetrieveDomain(name string) (*Domain, error)
+	// UpdateDomain implementation must search domain by id and return
+	// ErrDomainNotFound if domain not found. Must return ErrDomainExists if
+	// update name conflicts with another domain.
 	UpdateDomain(*Domain) error
-	DeleteDomain(*Domain) error
+	// DeleteDomain implementation must search domain by id and return
+	// ErrDomainNotFound if domain not found.
+	DeleteDomain(id int64) error
 }

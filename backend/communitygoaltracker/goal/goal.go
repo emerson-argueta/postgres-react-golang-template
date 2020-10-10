@@ -63,12 +63,26 @@ func (m *Messages) Keys() []string {
 	return keys
 }
 
-// Service provides processes provided by the identity domain.
+// Service provides processes used to modify the goal model.
 type Service interface {
+	// CreateGoal implementation must return ErrGoalExists if the goal
+	// exists.
 	CreateGoal(*Goal) (*Goal, error)
+	// RetrieveGoal implementation must return ErrGoalNotFound if the
+	// goal is not found.
 	RetrieveGoal(id int64) (*Goal, error)
+	// UpdateDomain implementation must search goal by id and return
+	// ErrGoalNotFound if goal not found. Must return ErrGoalExists if
+	// the update name conflicts with another goal.
 	UpdateGoal(*Goal) error
+	// DeleteGoal implementation must search goal by id and return
+	// ErrGoalNotFound if goal not found.
 	DeleteGoal(id int64) error
+	// RetrieveGoals implementation must return ErrGoalNotFound if the
+	// none of the goals are found.
 	RetrieveGoals(ids []int64) ([]*Goal, error)
+	// UpdateDomain implementation must search goals by id and return
+	// ErrGoalNotFound if none of the goals not found. Must return ErrGoalExists if
+	// any of the update names conflicts with another goal.
 	UpdateGoals(goals []*Goal) error
 }

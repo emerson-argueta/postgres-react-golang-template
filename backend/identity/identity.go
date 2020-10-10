@@ -8,8 +8,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// DomainName of this package
-const DomainName = "identity"
+const (
+	// DomainName of this package
+	DomainName = "identity"
+)
+
+var _ Service = &Identity{}
 
 // Identity exposes identity domain processes.
 type Identity struct {
@@ -25,10 +29,10 @@ type Service interface {
 	LoginUser(email string, password string) (*user.User, error)
 	UpdateUser(*user.User) error
 	UnRegisterUser(*user.User) error
-	AddDomain(*domain.Domain) error
-	LookupDomain(*domain.Domain) (*domain.Domain, error)
+	AddDomain(*domain.Domain) (*domain.Domain, error)
+	LookupDomain(name string) (*domain.Domain, error)
 	UpdateDomain(*domain.Domain) error
-	RemoveDomain(*domain.Domain) error
+	RemoveDomain(id int64) error
 }
 
 // RegisterUser using the following business logic
@@ -112,22 +116,34 @@ func (i *Identity) UnRegisterUser(u *user.User) (e error) {
 	return i.User.DeleteUser(*u.UUID)
 }
 
-//AddDomain using the following business logic
-func (i *Identity) AddDomain(d *domain.Domain) (e error) {
-	return e
+// AddDomain using the following business logic:
+// Verify domain name.
+// Create the domain.
+func (i *Identity) AddDomain(d *domain.Domain) (res *domain.Domain, e error) {
+	if d.Name == nil {
+		return nil, ErrDomainIncompleteDetails
+	}
+
+	return i.Domain.CreateDomain(d)
 }
 
-//LookupDomain using the following business logic
-func (i *Identity) LookupDomain(d *domain.Domain) (res *domain.Domain, e error) {
-	return res, e
+// LookupDomain using the following business logic:
+// Retrieve the domain.
+func (i *Identity) LookupDomain(name string) (res *domain.Domain, e error) {
+	return i.Domain.RetrieveDomain(name)
 }
 
-//UpdateDomain using the following business logic
+// UpdateDomain using the following business logic
+// Verify the domain name and id
 func (i *Identity) UpdateDomain(d *domain.Domain) (e error) {
-	return e
+	if d.Name == nil || d.ID == nil {
+		return ErrDomainIncompleteDetails
+	}
+	return i.Domain.UpdateDomain(d)
 }
 
-//RemoveDomain using the following business logic
-func (i *Identity) RemoveDomain(d *domain.Domain) (e error) {
-	return e
+//RemoveDomain using the following business logic:
+// Delete the domain.
+func (i *Identity) RemoveDomain(id int64) (e error) {
+	return i.Domain.DeleteDomain(id)
 }

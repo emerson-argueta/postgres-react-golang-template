@@ -10,8 +10,9 @@ const (
 
 // Domain model errors
 const (
-	ErrDomainNotFound = Error("domain not found")
-	ErrDomainExists   = Error("domain exists")
+	ErrDomainNotFound          = Error("domain not found")
+	ErrDomainExists            = Error("domain exists")
+	ErrDomainIncompleteDetails = Error("incomplete details for domain")
 )
 
 // Error represents a general identity error.

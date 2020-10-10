@@ -27,13 +27,17 @@ func (d *Domains) Keys() []int64 {
 	return keys
 }
 
-// Service provides processes that can be achieved by user.
+// Service provides processes used to modify the user model.
 type Service interface {
-	// CreateUser implementations should check if user exists before creating the user.
+	// CreateUser implementation must return ErrUserExists if the user exists.
 	CreateUser(*User) (*User, error)
+	// RetrieveUser implementation must return ErrUserNotFound if the user is not found.
 	RetrieveUser(email string) (*User, error)
-	// UpdateUser implementation should search the user by uuid before updating the user.
+	// UpdateUser implementation must search user by uuid and return
+	// ErrUserNotFound if user is not found. Must return ErrUserExists if
+	// user's new email to be updated conflicts with another user's email.
 	UpdateUser(*User) error
-	// DeleteUser implementation should search the user by uuid before deleting the user.
+	// DeleteUser implementation should search the user by uuid before deleting
+	// the user and must return ErrUserNotFound if the user does not exists.
 	DeleteUser(uuid string) error
 }

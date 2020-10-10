@@ -6,6 +6,21 @@ import (
 	"strings"
 )
 
+const (
+	// CommunitygoaltrackerSchema used to group tables used in the identity domain
+	CommunitygoaltrackerSchema = "COMMUNITY_GOAL_TRACKER"
+	// IdentitySchema used to group tables used in the identity domain
+	IdentitySchema = "IDENTITY"
+	// AchieverTable stores Achiever information for the communitygoaltracker domain
+	AchieverTable = "ACHIEVER"
+	// GoalTable stores goal information for the communitygoaltracker domain
+	GoalTable = "GOAL"
+	// UserTable stores user information for the identity domain
+	UserTable = "USER"
+	// DomainTable stores domain information for the identity domain
+	DomainTable = "DOMAIN"
+)
+
 // Query represents an object to create generic CRUD queries based on a model.
 type Query struct {
 	model interface{}
@@ -80,6 +95,11 @@ func (q *Query) Update(schema string, table string, filter string) string {
 	queryUpdateParameters = strings.TrimSuffix(queryUpdateParameters, ",") + ")"
 
 	return fmt.Sprintf("UPDATE %s.%s SET %s = %s WHERE %s RETURNING *", schema, table, queryFields, queryUpdateParameters, filter)
+}
+
+// UpdateMultiple returns a generic multiple update query for a model.
+func (q *Query) UpdateMultiple(schema string, table string, searchKey string) string {
+	return ""
 }
 
 // Delete returns a generic delete query for a model.

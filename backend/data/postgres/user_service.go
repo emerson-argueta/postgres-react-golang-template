@@ -8,12 +8,6 @@ import (
 	"github.com/lib/pq"
 )
 
-// UserTable stores user information for the identity domain
-const UserTable = "user"
-
-// Schema used to group tables used in the identity domain
-const Schema = "identity"
-
 var _ user.Service = &User{}
 
 // User represents a service for managing a user.
@@ -21,14 +15,15 @@ type User struct {
 	client *Client
 }
 
-// CreateUser a new user.
+// CreateUser if successful. If the user
+// exists, returns ErrUserExists.
 func (s *User) CreateUser(u *user.User) (res *user.User, e error) {
 	query, e := NewQuery(u)
 	if e != nil {
 		return nil, e
 	}
 
-	userInsertQuery := query.Create(Schema, UserTable)
+	userInsertQuery := query.Create(IdentitySchema, UserTable)
 	userInsertQuery = s.client.db.Rebind(userInsertQuery)
 
 	includeNil := true
@@ -36,7 +31,7 @@ func (s *User) CreateUser(u *user.User) (res *user.User, e error) {
 
 	res = &user.User{}
 
-	e = s.client.db.Get(u, userInsertQuery, queryParams...)
+	e = s.client.db.Get(res, userInsertQuery, queryParams...)
 
 	var uniqueViolation pq.ErrorCode = "23505"
 	if pqError, ok := e.(*pq.Error); e != nil && !ok {
@@ -50,7 +45,8 @@ func (s *User) CreateUser(u *user.User) (res *user.User, e error) {
 	return res, e
 }
 
-// RetrieveUser a user by email.
+// RetrieveUser searching by email. If the user does not exists,
+// returns ErrUserNotFound.
 func (s *User) RetrieveUser(email string) (res *user.User, e error) {
 	filter := "EMAIL=?"
 	queryParam := email
@@ -60,7 +56,7 @@ func (s *User) RetrieveUser(email string) (res *user.User, e error) {
 		return nil, e
 	}
 
-	userSelectQuery := query.Read(Schema, UserTable, filter)
+	userSelectQuery := query.Read(IdentitySchema, UserTable, filter)
 	userSelectQuery = s.client.db.Rebind(userSelectQuery)
 
 	res = &user.User{}
@@ -73,7 +69,8 @@ func (s *User) RetrieveUser(email string) (res *user.User, e error) {
 
 }
 
-// UpdateUser searching by uuid.
+// UpdateUser searching by uuid. If the user does not exists, returns
+// ErrUserNotFound.
 func (s *User) UpdateUser(u *user.User) (e error) {
 	filter := "UUID=?"
 	queryParam := u.UUID
@@ -83,7 +80,7 @@ func (s *User) UpdateUser(u *user.User) (e error) {
 		return e
 	}
 
-	userUpdateQuery := query.Update(Schema, UserTable, filter)
+	userUpdateQuery := query.Update(IdentitySchema, UserTable, filter)
 	userUpdateQuery = s.client.db.Rebind(userUpdateQuery)
 
 	includeNil := true
@@ -97,7 +94,8 @@ func (s *User) UpdateUser(u *user.User) (e error) {
 	return e
 }
 
-// DeleteUser searching by uuid.
+// DeleteUser searching by uuid. If the user does not exists, returns
+// ErrUserNotFound.
 func (s *User) DeleteUser(uuid string) (e error) {
 	filter := "UUID=?"
 	queryParam := uuid
@@ -106,7 +104,7 @@ func (s *User) DeleteUser(uuid string) (e error) {
 	if e != nil {
 		return e
 	}
-	userDeleteQuery := query.Delete(Schema, UserTable, filter)
+	userDeleteQuery := query.Delete(IdentitySchema, UserTable, filter)
 	userDeleteQuery = s.client.db.Rebind(userDeleteQuery)
 
 	e = s.client.db.Get(&user.User{}, userDeleteQuery, queryParam)

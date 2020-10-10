@@ -4,12 +4,13 @@ import (
 	"emersonargueta/m/v1/communitygoaltracker/achiever"
 	"emersonargueta/m/v1/communitygoaltracker/goal"
 	"emersonargueta/m/v1/identity"
-	"emersonargueta/m/v1/identity/domain"
 	"emersonargueta/m/v1/identity/user"
 )
 
-// DomainName of this package
-const DomainName = "community-goal-tracker"
+const (
+	// DomainName of this package
+	DomainName = "community-goal-tracker"
+)
 
 var _ Service = &Communitygoaltracker{}
 
@@ -41,8 +42,8 @@ type Service interface {
 // If there is an existing user, retrieve the user.
 // Create the achiever.
 func (cgt *Communitygoaltracker) Register(a *achiever.Achiever) (res *achiever.Achiever, e error) {
-	domainName := DomainName
-	d, e := cgt.Identity.LookupDomain(&domain.Domain{Name: &domainName})
+
+	d, e := cgt.Identity.LookupDomain(DomainName)
 	if e != nil {
 		return nil, e
 	}
@@ -99,7 +100,7 @@ func (cgt *Communitygoaltracker) UnRegister(a *achiever.Achiever) (e error) {
 		return e
 	}
 
-	if e = cgt.Achiever.DeleteAchiever(a); e != nil {
+	if e = cgt.Achiever.DeleteAchiever(*a.UUID); e != nil {
 		return e
 	}
 

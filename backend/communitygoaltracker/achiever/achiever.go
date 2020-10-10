@@ -1,6 +1,7 @@
 package achiever
 
-// Role represents access role for an achiever within the communitygoaltracker domain
+// Role represents access role for an achiever within the communitygoaltracker
+// domain
 type Role int
 
 const (
@@ -49,10 +50,19 @@ func (g *Goals) Keys() []int64 {
 	return keys
 }
 
-// Service provides processes that can be achieved by an achiever.
+// Service provides processes used to modify the achiever model.
 type Service interface {
+	// CreateAchiever implementation must return ErrAchieverExists if achiever
+	// exists.
 	CreateAchiever(*Achiever) (*Achiever, error)
+	// RetrieveAchiever implementation must return ErrAchieverNotFound if the
+	// achiever is not found.
 	RetrieveAchiever(uuid string) (*Achiever, error)
+	// UpdateAchiever implementation must search achiever by uuid and return
+	// ErrAchieverNotFound if achiever is not found.
 	UpdateAchiever(*Achiever) error
-	DeleteAchiever(*Achiever) error
+	// DeleteAchiever implementation should search the achiever by uuid before
+	// deleting the achiever and must return ErrAchieverNotFound if the achiever
+	// does not exists.
+	DeleteAchiever(uuid string) error
 }
