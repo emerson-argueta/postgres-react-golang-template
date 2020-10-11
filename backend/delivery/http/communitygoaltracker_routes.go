@@ -5,7 +5,6 @@ import (
 	"emersonargueta/m/v1/communitygoaltracker"
 	"emersonargueta/m/v1/delivery/middleware"
 	"emersonargueta/m/v1/identity"
-	"emersonargueta/m/v1/paymentgateway/stripe"
 	"log"
 	"net/http"
 	"os"
@@ -32,7 +31,7 @@ type CommunitygoaltrackerHandler struct {
 
 	Authorization jwt.Services
 
-	PaymentGateway stripe.Services
+	// PaymentGateway stripe.Services
 
 	Logger *log.Logger
 }

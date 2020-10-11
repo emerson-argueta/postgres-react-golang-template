@@ -45,11 +45,11 @@ func (s *Achiever) CreateAchiever(a *achiever.Achiever) (res *achiever.Achiever,
 	return res, e
 }
 
-// RetrieveAchiever by email. If the achiever does not exists,
+// RetrieveAchiever by uuid. If the achiever does not exists,
 // returns ErrAchieverNotFound.
-func (s *Achiever) RetrieveAchiever(email string) (res *achiever.Achiever, e error) {
-	filter := "EMAIL=?"
-	queryParam := email
+func (s *Achiever) RetrieveAchiever(uuid string) (res *achiever.Achiever, e error) {
+	filter := "UUID=?"
+	queryParam := uuid
 
 	query, e := NewQuery(&achiever.Achiever{})
 	if e != nil {

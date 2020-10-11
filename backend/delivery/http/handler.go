@@ -19,7 +19,7 @@ type Handler struct {
 
 // ServeHTTP delegates a request to the appropriate subhandler.
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if strings.HasPrefix(r.URL.Path, "/api/administrator") {
+	if strings.HasPrefix(r.URL.Path, RoutePrefix) {
 		h.CommunitygoaltrackerHandler.ServeHTTP(w, r)
 	} else {
 		http.NotFound(w, r)

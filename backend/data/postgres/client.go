@@ -6,7 +6,10 @@ import (
 	"os"
 	"time"
 
+	"emersonargueta/m/v1/communitygoaltracker/achiever"
+	"emersonargueta/m/v1/communitygoaltracker/goal"
 	"emersonargueta/m/v1/config"
+	"emersonargueta/m/v1/identity/domain"
 	"emersonargueta/m/v1/identity/user"
 
 	"github.com/jmoiron/sqlx"
@@ -30,7 +33,10 @@ type Client struct {
 
 // Services represents the services that the postgres service provides
 type Services struct {
-	User User
+	User     User
+	Domain   Domain
+	Achiever Achiever
+	Goal     Goal
 }
 
 // NewClient function
@@ -38,6 +44,9 @@ func NewClient() *Client {
 	c := &Client{Now: time.Now, transaction: nil}
 
 	c.Services.User.client = c
+	c.Services.Domain.client = c
+	c.Services.Achiever.client = c
+	c.Services.Goal.client = c
 
 	// get configuration stucts via .env file
 	config, err := config.NewConfig()
@@ -82,3 +91,12 @@ func (c *Client) Close() error {
 
 // UserService returns the user service associated with the client.
 func (c *Client) UserService() user.Service { return &c.Services.User }
+
+// DomainService returns the domain service associated with the client.
+func (c *Client) DomainService() domain.Service { return &c.Services.Domain }
+
+// AchieverService returns the achiever service associated with the client.
+func (c *Client) AchieverService() achiever.Service { return &c.Services.Achiever }
+
+// GoalService returns the goal service associated with the client.
+func (c *Client) GoalService() goal.Service { return &c.Services.Goal }
