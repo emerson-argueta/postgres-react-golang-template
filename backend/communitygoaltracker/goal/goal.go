@@ -8,7 +8,7 @@ type Goal struct {
 }
 
 // Achievers represensts a map of achievers within a goal where the
-// key is an achiever UUID and the value contains the adminstrator.
+// key is an achiever UUID and the value contains the achiever.
 type Achievers map[string]*Achiever
 
 // Keys represent the achiever uuid
@@ -42,8 +42,15 @@ const (
 	Completed
 )
 
+// Converts State to string representation.
 func (s State) String() string {
 	return [...]string{"inprogress", "abandoned", "completed"}[s]
+
+}
+
+// ToState Converts string to Role enum
+func ToState(s string) State {
+	return map[string]State{"inprogress": InProgress, "abandoned": Abondoned, "completed": Completed}[s]
 
 }
 

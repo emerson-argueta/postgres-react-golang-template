@@ -146,19 +146,21 @@ func (s *Goal) RetrieveGoals(ids []int64) (res []*goal.Goal, e error) {
 // another goal.
 func (s *Goal) UpdateGoals(gg []*goal.Goal) (e error) {
 	// TODO
-	filter := "ID=?"
-	queryParam := gg[0].ID
+	searchKey := "ID"
 
-	query, e := NewQuery(gg)
+	query, e := NewQuery(&goal.Goal{})
 	if e != nil {
 		return e
 	}
 
-	goalUpdateQuery := query.UpdateMultiple(CommunitygoaltrackerSchema, GoalTable, filter)
+	goalUpdateQuery := query.UpdateMultiple(CommunitygoaltrackerSchema, GoalTable, searchKey, len(gg))
 	goalUpdateQuery = s.client.db.Rebind(goalUpdateQuery)
 
-	includeNil := true
-	queryParams := append(query.ModelValues(includeNil), queryParam)
+	models := make([]interface{}, len(gg))
+	for i, g := range gg {
+		models[i] = g
+	}
+	queryParams := MultipleModelValues(models)
 
 	e = s.client.db.Get(gg, goalUpdateQuery, queryParams...)
 

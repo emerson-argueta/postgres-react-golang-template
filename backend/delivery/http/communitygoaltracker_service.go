@@ -5,6 +5,7 @@ import (
 	"emersonargueta/m/v1/communitygoaltracker"
 	"emersonargueta/m/v1/communitygoaltracker/achiever"
 	"emersonargueta/m/v1/communitygoaltracker/goal"
+	"emersonargueta/m/v1/delivery/middleware"
 	"encoding/json"
 	"net/http"
 )
@@ -78,32 +79,98 @@ func (cgt *Communitygoaltracker) Login(email string, password string) (res *achi
 	return res, e
 }
 
-// UpdateAchiever is an http implementation of the communitygoaltracker process.
+// AuthorizedUpdateAchiever is an http implementation of the communitygoaltracker process.
+func (cgt *Communitygoaltracker) AuthorizedUpdateAchiever(a *achiever.Achiever, token *middleware.TokenPair) (e error) {
+	u := cgt.client.URL
+	u.Path = RoutePrefix + AchieverLoginURL
+
+	// Encode request body.
+	reqBody, e := json.Marshal(achieverRequest{Achiever: a})
+	if e != nil {
+		return e
+	}
+
+	// Create a new request using http
+	req, e := http.NewRequest("PATCH", u.String(), bytes.NewReader(reqBody))
+	if e != nil {
+		return e
+	}
+	// Create a Bearer string by appending string access token
+	var bearer = "Bearer " + token.Accesstoken
+	// add authorization header to the req
+	req.Header.Add("Authorization", bearer)
+	req.Header.Add("Content-Type", "application/json")
+
+	resp, e := http.DefaultClient.Do(req)
+	if e != nil {
+		return e
+	}
+
+	defer resp.Body.Close()
+
+	// Decode response into JSON.
+	var respBody achieverResponse
+	if e = json.NewDecoder(resp.Body).Decode(&respBody); e != nil {
+		return e
+	} else if respBody.Error != "" {
+		return communitygoaltracker.Error(respBody.Error)
+	}
+	a = respBody.Achiever
+
+	return e
+}
+
+// UpdateAchiever not used
 func (cgt *Communitygoaltracker) UpdateAchiever(a *achiever.Achiever) (e error) {
 	return e
 }
 
-// UnRegister is an http implementation of the communitygoaltracker process.
+// AuthorizedUnRegister is an http implementation of the communitygoaltracker process.
+func (cgt *Communitygoaltracker) AuthorizedUnRegister(a *achiever.Achiever, token *middleware.TokenPair) (e error) {
+	return e
+}
+
+// UnRegister is not used
 func (cgt *Communitygoaltracker) UnRegister(a *achiever.Achiever) (e error) {
 	return e
 }
 
-// CreateGoal is an http implementation of the communitygoaltracker process.
+// AuthorizedCreateGoal is an http implementation of the communitygoaltracker process.
+func (cgt *Communitygoaltracker) AuthorizedCreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
+	return res, e
+}
+
+// CreateGoal is not used.
 func (cgt *Communitygoaltracker) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
 	return res, e
 }
 
-// UpdateGoalProgress is an http implementation of the communitygoaltracker process.
-func (cgt *Communitygoaltracker) UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (e error) {
+// AuthorizedUpdateGoalProgress is an http implementation of the communitygoaltracker process.
+func (cgt *Communitygoaltracker) AuthorizedUpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
+	return res, e
+}
+
+// UpdateGoalProgress is not used
+func (cgt *Communitygoaltracker) UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
+	return res, e
+}
+
+// AuthorizedAbandonGoal is an http implementation of the communitygoaltracker process.
+func (cgt *Communitygoaltracker) AuthorizedAbandonGoal(achieverUUID string, goalID int64) (e error) {
 	return e
 }
 
-// AbandonGoal is an http implementation of the communitygoaltracker process.
+// AbandonGoal is not used
 func (cgt *Communitygoaltracker) AbandonGoal(achieverUUID string, goalID int64) (e error) {
 	return e
 }
 
-// DeleteGoal is an http implementation of the communitygoaltracker process.
+// AuthorizedDeleteGoal is an http implementation of the communitygoaltracker process.
+func (cgt *Communitygoaltracker) AuthorizedDeleteGoal(achieverUUID string, goalID int64) (e error) {
+	return e
+}
+
+// DeleteGoal is not used
 func (cgt *Communitygoaltracker) DeleteGoal(achieverUUID string, goalID int64) (e error) {
 	return e
 }

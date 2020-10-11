@@ -71,11 +71,11 @@ func (s *Achiever) RetrieveAchiever(email string) (res *achiever.Achiever, e err
 
 // UpdateAchiever searching by uuid. If the achiever does not exists, returns
 // ErrAchieverNotFound.
-func (s *Achiever) UpdateAchiever(u *achiever.Achiever) (e error) {
+func (s *Achiever) UpdateAchiever(a *achiever.Achiever) (e error) {
 	filter := "UUID=?"
-	queryParam := u.UUID
+	queryParam := a.UUID
 
-	query, e := NewQuery(u)
+	query, e := NewQuery(a)
 	if e != nil {
 		return e
 	}
@@ -86,7 +86,7 @@ func (s *Achiever) UpdateAchiever(u *achiever.Achiever) (e error) {
 	includeNil := true
 	queryParams := append(query.ModelValues(includeNil), queryParam)
 
-	e = s.client.db.Get(u, achieverUpdateQuery, queryParams...)
+	e = s.client.db.Get(a, achieverUpdateQuery, queryParams...)
 
 	if e == sql.ErrNoRows {
 		return communitygoaltracker.ErrAchieverNotFound

@@ -58,7 +58,7 @@ func NewQuery(model interface{}) (*Query, error) {
 
 // Create returns a generic create query for a model.
 func (q *Query) Create(schema string, table string) string {
-	fields := structFieldsToStringSlice(q.model)
+	fields := structFields(q.model)
 
 	queryFields := "("
 	queryCreateParameters := "VALUES ("
@@ -81,7 +81,7 @@ func (q *Query) Read(schema string, table string, filter string) string {
 
 // Update returns a generic update query for a model.
 func (q *Query) Update(schema string, table string, filter string) string {
-	fields := structFieldsToStringSlice(q.model)
+	fields := structFields(q.model)
 
 	queryFields := "("
 	queryUpdateParameters := "("
@@ -98,12 +98,32 @@ func (q *Query) Update(schema string, table string, filter string) string {
 }
 
 // UpdateMultiple returns a generic multiple update query for a model.
-func (q *Query) UpdateMultiple(schema string, table string, searchKey string) string {
-	return ""
+func (q *Query) UpdateMultiple(schema string, table string, searchKey string, numValues int) string {
+	fields := updateFields(q.model)
+
+	queryFields := "("
+	queryUpdateParameters := "("
+	for _, field := range fields {
+		queryFields += fmt.Sprintf("%s = COALESCE(VALUELIST.%s,T.%s)", field, field, field)
+		queryUpdateParameters += "?,"
+	}
+	queryFields = strings.TrimSuffix(queryFields, ",") + ")"
+	queryUpdateParameters = strings.TrimSuffix(queryUpdateParameters, ",") + ")"
+
+	values := ""
+	for i := 0; i < numValues; i++ {
+		values += queryUpdateParameters + ","
+	}
+	values = strings.TrimSuffix(queryUpdateParameters, ",")
+
+	filter := fmt.Sprintf("VALUELIST.%s=T.%s", searchKey, searchKey)
+
+	return fmt.Sprintf("UPDATE %s.%s as T SET %s FROM ( VALUES %s ) WHERE %s RETURNING *", schema, table, queryFields, values, filter)
 }
 
 // Delete returns a generic delete query for a model.
 func (q *Query) Delete(schema string, table string, filter string) string {
+
 	return fmt.Sprintf("DELETE FROM %s.%s WHERE %s RETURNING *", schema, table, filter)
 }
 
@@ -129,6 +149,26 @@ func (q *Query) ModelValues(includeNil bool) []interface{} {
 			}
 		}
 
+	}
+
+	return vv
+
+}
+
+// MultipleModelValues returns the values of each field for all all models.
+func MultipleModelValues(models []interface{}) []interface{} {
+	var vv []interface{}
+
+	for i := 0; i < len(models); i++ {
+		modelType := reflect.TypeOf(models[i]).Elem()
+		modelValue := reflect.ValueOf(models[i]).Elem()
+
+		for i := 0; i < modelType.NumField(); i++ {
+			if _, dbTag := modelType.Field(i).Tag.Lookup("db"); dbTag {
+				fieldValue := modelValue.Field(i).Interface()
+				vv = append(vv, fieldValue)
+			}
+		}
 	}
 
 	return vv
@@ -215,7 +255,7 @@ func (q *Query) CreateMultipleValueFilter(field string, valuesLen int) string {
 	return filter
 }
 
-func structFieldsToStringSlice(model interface{}) []string {
+func structFields(model interface{}) []string {
 	var ss []string
 	modelType := reflect.TypeOf(model).Elem()
 
@@ -223,6 +263,20 @@ func structFieldsToStringSlice(model interface{}) []string {
 		if _, ignore := modelType.Field(i).Tag.Lookup("dbignoreinsert"); ignore {
 			continue
 		} else if _, dbTag := modelType.Field(i).Tag.Lookup("db"); dbTag {
+			fieldName := modelType.Field(i).Tag.Get("db")
+			ss = append(ss, fieldName)
+		}
+	}
+
+	return ss
+}
+
+func updateFields(model interface{}) []string {
+	var ss []string
+	modelType := reflect.TypeOf(model).Elem()
+
+	for i := 0; i < modelType.NumField(); i++ {
+		if _, dbTag := modelType.Field(i).Tag.Lookup("db"); dbTag {
 			fieldName := modelType.Field(i).Tag.Get("db")
 			ss = append(ss, fieldName)
 		}

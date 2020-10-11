@@ -32,7 +32,7 @@ type Service interface {
 	UpdateAchiever(a *achiever.Achiever) error
 	UnRegister(a *achiever.Achiever) error
 	CreateGoal(g *goal.Goal) (*goal.Goal, error)
-	UpdateGoalProgress(achieverUUID string, goalID int64, progress int) error
+	UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (*goal.Goal, error)
 	AbandonGoal(achieverUUID string, goalID int64) error
 	DeleteGoal(achieverUUID string, goalID int64) error
 }
@@ -82,6 +82,10 @@ func (cgt *Communitygoaltracker) Login(email string, password string) (res *achi
 // updated update the identity domain user then update the communitygoaltracker
 // achiever.
 func (cgt *Communitygoaltracker) UpdateAchiever(a *achiever.Achiever) (e error) {
+	if a.UUID == nil {
+		return ErrAchieverIncompleteDetails
+	}
+
 	if a.Email != nil || a.Password != nil {
 		e = cgt.Identity.UpdateUser(&user.User{UUID: a.UUID, Email: a.Email, Password: a.Password})
 	}
@@ -128,18 +132,18 @@ func (cgt *Communitygoaltracker) CreateGoal(g *goal.Goal) (res *goal.Goal, e err
 // between 0 and 100 which can be interpreted as 0 percent to 100 percent. If
 // the progress is 100 then update the state for the goal's achiever to
 // complete.
-func (cgt *Communitygoaltracker) UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (e error) {
+func (cgt *Communitygoaltracker) UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
 	if progress < 0 || progress > 100 {
-		return ErrGoalInvalidProgress
+		return nil, ErrGoalInvalidProgress
 	}
 
 	g, e := cgt.Goal.RetrieveGoal(goalID)
 	if g.Achievers == nil {
-		return ErrGoalWithNoAchievers
+		return nil, ErrGoalWithNoAchievers
 	}
 
 	if _, ok := (*g.Achievers)[achieverUUID]; !ok {
-		return ErrGoalNotFound
+		return nil, ErrGoalNotFound
 	}
 
 	(*g.Achievers)[achieverUUID].Progress = &progress
@@ -147,8 +151,12 @@ func (cgt *Communitygoaltracker) UpdateGoalProgress(achieverUUID string, goalID 
 		state := goal.Completed
 		(*g.Achievers)[achieverUUID].State = &state
 	}
+	e = cgt.Goal.UpdateGoal(g)
+	if e != nil {
+		return nil, e
+	}
 
-	return cgt.Goal.UpdateGoal(g)
+	return g, e
 }
 
 // AbandonGoal using the following business logic: Retrieve the goal and

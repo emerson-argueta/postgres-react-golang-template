@@ -12,7 +12,7 @@ type Communitygoaltrackerservice struct {
 	UpdateAchieverFn     func(a *achiever.Achiever) error
 	UnRegisterFn         func(a *achiever.Achiever) error
 	CreateGoalFn         func(g *goal.Goal) (*goal.Goal, error)
-	UpdateGoalProgressFn func(achieverUUID string, goalID int64, progress int) error
+	UpdateGoalProgressFn func(achieverUUID string, goalID int64, progress int) (*goal.Goal, error)
 	AbandonGoalFn        func(achieverUUID string, goalID int64) error
 	DeleteGoalFn         func(achieverUUID string, goalID int64) error
 }
@@ -43,7 +43,7 @@ func (s *Communitygoaltrackerservice) CreateGoal(g *goal.Goal) (res *goal.Goal, 
 }
 
 // UpdateGoalProgress is a mock communitygoaltracker.Service.UpdateGoalProgress
-func (s *Communitygoaltrackerservice) UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (e error) {
+func (s *Communitygoaltrackerservice) UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
 	return s.UpdateGoalProgressFn(achieverUUID, goalID, progress)
 }
 
