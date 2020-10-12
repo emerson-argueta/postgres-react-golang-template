@@ -17,7 +17,7 @@ const (
 // MustGet will return the env or panic if not present.
 func MustGet(key string) string {
 	val := os.Getenv(key)
-	if val == "" && key != "PORT" {
+	if val == "" {
 		panic("Env key missing " + key)
 	}
 	return val

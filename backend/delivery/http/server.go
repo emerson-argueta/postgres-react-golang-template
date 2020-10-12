@@ -22,12 +22,7 @@ type Server struct {
 }
 
 // NewServer returns a new instance of Server.
-func NewServer() *Server {
-	// Get configuration stucts via .env file.
-	config, err := config.NewConfig()
-	if err != nil {
-		panic(err)
-	}
+func NewServer(config *config.Config) *Server {
 
 	return &Server{Addr: config.Host + ":" + config.Port}
 }

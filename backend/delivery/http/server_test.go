@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"emersonargueta/m/v1/config"
 	"emersonargueta/m/v1/delivery/http"
 )
 
@@ -20,10 +21,10 @@ type Server struct {
 }
 
 // NewServer returns a new instance of Server.
-func NewServer() *Server {
+func NewServer(config *config.Config) *Server {
 	s := &Server{
-		Server:  http.NewServer(),
-		Handler: NewHandler(),
+		Server:  http.NewServer(config),
+		Handler: NewHandler(config),
 	}
 	s.Server.Handler = s.Handler.Handler
 

@@ -3,6 +3,7 @@ package postgres_test
 import (
 	"time"
 
+	"emersonargueta/m/v1/config"
 	"emersonargueta/m/v1/data/postgres"
 )
 
@@ -13,16 +14,16 @@ type Client struct {
 	*postgres.Client
 }
 
-func NewClient() *Client {
-	c := &Client{Client: postgres.NewClient()}
+func NewClient(config *config.Config) *Client {
+	c := &Client{Client: postgres.NewClient(config)}
 	c.Now = func() time.Time { return Now }
 
 	return c
 }
 
 // MustOpenClient returns an new, open instance of Client.
-func MustOpenClient() *Client {
-	c := NewClient()
+func MustOpenClient(config *config.Config) *Client {
+	c := NewClient(config)
 	if err := c.Open(); err != nil {
 		panic(err)
 	}

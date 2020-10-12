@@ -3,6 +3,7 @@ package http
 import (
 	"emersonargueta/m/v1/authorization/jwt"
 	"emersonargueta/m/v1/communitygoaltracker"
+	"emersonargueta/m/v1/config"
 	"emersonargueta/m/v1/delivery/middleware"
 	"emersonargueta/m/v1/identity"
 	"log"
@@ -33,14 +34,16 @@ type CommunitygoaltrackerHandler struct {
 
 	// PaymentGateway stripe.Services
 
-	Logger *log.Logger
+	Logger     *log.Logger
+	Middleware *middleware.Middleware
 }
 
 // NewCommunitygoaltrackerHandler returns CommunitygoaltrackerHandler.
-func NewCommunitygoaltrackerHandler() *CommunitygoaltrackerHandler {
+func NewCommunitygoaltrackerHandler(config *config.Config) *CommunitygoaltrackerHandler {
 	h := &CommunitygoaltrackerHandler{
-		Echo:   echo.New(),
-		Logger: log.New(os.Stderr, "", log.LstdFlags),
+		Echo:       echo.New(),
+		Logger:     log.New(os.Stderr, "", log.LstdFlags),
+		Middleware: middleware.New(config),
 	}
 
 	public := h.Group(RoutePrefix)
@@ -49,7 +52,7 @@ func NewCommunitygoaltrackerHandler() *CommunitygoaltrackerHandler {
 	// TODO: post method to handle authorization for achiever
 
 	restricted := h.Group(RoutePrefix)
-	restricted.Use(middleware.JwtMiddleware)
+	restricted.Use(h.Middleware.JwtMiddleware())
 	restricted.PATCH(AchieverURL, h.handleUpdateAchiever)
 	restricted.DELETE(AchieverURL, h.handleUnRegister)
 
@@ -71,7 +74,7 @@ func (h *CommunitygoaltrackerHandler) handleRegister(ctx echo.Context) (e error)
 
 	switch registeredAchiever, e := h.Communitygoaltracker.Register(req.Achiever); e {
 	case nil:
-		tokenPair, e := middleware.GenerateTokenPair(*registeredAchiever.UUID, middleware.AccestokenLimit, middleware.RefreshtokenLimit)
+		tokenPair, e := h.Middleware.GenerateTokenPair(*registeredAchiever.UUID, middleware.AccestokenLimit, middleware.RefreshtokenLimit)
 		if e != nil {
 			return ResponseError(ctx.Response().Writer, e, http.StatusInternalServerError, h.Logger)
 		}
@@ -97,7 +100,7 @@ func (h *CommunitygoaltrackerHandler) handleLogin(ctx echo.Context) error {
 
 	switch registeredAchiever, e := h.Communitygoaltracker.Login(*req.Achiever.Email, *req.Achiever.Password); e {
 	case nil:
-		tokenPair, e := middleware.GenerateTokenPair(*registeredAchiever.UUID, middleware.AccestokenLimit, middleware.RefreshtokenLimit)
+		tokenPair, e := h.Middleware.GenerateTokenPair(*registeredAchiever.UUID, middleware.AccestokenLimit, middleware.RefreshtokenLimit)
 		if e != nil {
 			return ResponseError(ctx.Response().Writer, e, http.StatusInternalServerError, h.Logger)
 		}

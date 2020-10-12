@@ -1,6 +1,7 @@
 package postgres_test
 
 import (
+	"emersonargueta/m/v1/config"
 	"emersonargueta/m/v1/identity"
 	"emersonargueta/m/v1/identity/user"
 	"reflect"
@@ -9,7 +10,8 @@ import (
 
 // Ensure an user can be created and retrieved.
 func TestUserService_CreateUser(t *testing.T) {
-	c := MustOpenClient()
+	config := config.NewConfig()
+	c := MustOpenClient(config)
 	defer c.Close()
 	s := c.UserService()
 
@@ -40,7 +42,8 @@ func TestUserService_CreateUser(t *testing.T) {
 }
 
 func TestUserService_CreateUser_ErrUserExists(t *testing.T) {
-	c := MustOpenClient()
+	config := config.NewConfig()
+	c := MustOpenClient(config)
 	defer c.Close()
 	s := c.UserService()
 
@@ -65,7 +68,8 @@ func TestUserService_CreateUser_ErrUserExists(t *testing.T) {
 }
 
 func TestUserService_UpdateUser(t *testing.T) {
-	c := MustOpenClient()
+	config := config.NewConfig()
+	c := MustOpenClient(config)
 	defer c.Close()
 	s := c.UserService()
 
@@ -134,7 +138,8 @@ func TestUserService_UpdateUser(t *testing.T) {
 }
 
 func TestUserService_DeleteUser_ErrUserNotFound(t *testing.T) {
-	c := MustOpenClient()
+	config := config.NewConfig()
+	c := MustOpenClient(config)
 	defer c.Close()
 	s := c.UserService()
 

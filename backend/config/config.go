@@ -22,7 +22,8 @@ type Database struct {
 	Password string
 }
 
-// PaymentGateway is a struct that contains the PaymentGateway configuration variables.
+// PaymentGateway is a struct that contains the PaymentGateway configuration
+// variables.
 type PaymentGateway struct {
 	APIKey string
 }
@@ -30,13 +31,15 @@ type PaymentGateway struct {
 // Authorization is a struct that contains the Auth configuration variables.
 type Authorization struct {
 	APIKey string
+	Secret string
 }
 
-// NewConfig creates a new Config struct.
-func NewConfig() (*Config, error) {
+// NewConfig creates a new Config struct. Will panic unsuccessful in getting
+// configuration variables.
+func NewConfig() *Config {
 	env.CheckDotEnv()
-	port := env.MustGet("PORT")
-	host := env.MustGet("HOST")
+	port := env.Get("PORT")
+	host := env.Get("HOST")
 	return &Config{
 		Environment: env.MustGet("ENV"),
 		Port:        port,
@@ -54,6 +57,7 @@ func NewConfig() (*Config, error) {
 		},
 		Authorization: &Authorization{
 			APIKey: env.MustGet("AUTH_API_KEY"),
+			Secret: env.MustGet("SECRET"),
 		},
-	}, nil
+	}
 }

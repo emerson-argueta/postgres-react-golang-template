@@ -40,7 +40,7 @@ type Services struct {
 }
 
 // NewClient function
-func NewClient() *Client {
+func NewClient(config *config.Config) *Client {
 	c := &Client{Now: time.Now, transaction: nil}
 
 	c.Services.User.client = c
@@ -48,11 +48,6 @@ func NewClient() *Client {
 	c.Services.Achiever.client = c
 	c.Services.Goal.client = c
 
-	// get configuration stucts via .env file
-	config, err := config.NewConfig()
-	if err != nil {
-		panic(err)
-	}
 	c.config = config
 
 	return c

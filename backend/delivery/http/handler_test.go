@@ -1,6 +1,7 @@
 package http_test
 
 import (
+	"emersonargueta/m/v1/config"
 	"emersonargueta/m/v1/delivery/http"
 )
 
@@ -12,10 +13,10 @@ type Handler struct {
 }
 
 // NewHandler returns a new instance of Handler.
-func NewHandler() *Handler {
+func NewHandler(config *config.Config) *Handler {
 	h := &Handler{
 		Handler:                     &http.Handler{},
-		CommunitygoaltrackerHandler: NewCommunitygoaltrackerHandler(),
+		CommunitygoaltrackerHandler: NewCommunitygoaltrackerHandler(config),
 	}
 	h.Handler.CommunitygoaltrackerHandler = h.CommunitygoaltrackerHandler.CommunitygoaltrackerHandler
 	return h

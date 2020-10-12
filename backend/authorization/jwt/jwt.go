@@ -11,7 +11,8 @@ var _ authorization.Service = &Jwt{}
 
 // Jwt represents an jwt implementation of authorization.Actions.
 type Jwt struct {
-	client *Client
+	client     *Client
+	middleware *middleware.Middleware
 }
 
 // Authorize a user by checking uuid parameter to the uuid extracted from the
@@ -20,13 +21,13 @@ type Jwt struct {
 func (s *Jwt) Authorize(token *middleware.TokenPair, uuid string) (res *middleware.TokenPair, e error) {
 
 	// Validate refresh token
-	if jwtTokenPair, err := middleware.TokenPairStringToJWT(token); err != nil {
+	if jwtTokenPair, err := s.middleware.TokenPairStringToJWT(token); err != nil {
 		return nil, ErrJWTAuth
 	} else if uuidClaim, ok := jwtTokenPair.Refreshtoken.Claims.(jwt.MapClaims)["uuid"].(string); !ok {
 		return nil, ErrJWTAuth
 	} else if uuidClaim != uuid {
 		return nil, ErrJWTAuth
-	} else if tokenPair, err := middleware.GenerateTokenPair(uuid, middleware.AccestokenLimit, middleware.RefreshtokenLimit); err != nil {
+	} else if tokenPair, err := s.middleware.GenerateTokenPair(uuid, middleware.AccestokenLimit, middleware.RefreshtokenLimit); err != nil {
 		return nil, err
 	} else {
 

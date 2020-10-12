@@ -16,15 +16,10 @@ type Services struct {
 }
 
 // NewClient function
-func NewClient() *Client {
+func NewClient(config *config.Config) *Client {
 	c := &Client{}
 	c.Services.Communitygoaltracker.client = c
 
-	// get configuration stucts via .env file
-	config, err := config.NewConfig()
-	if err != nil {
-		panic(err)
-	}
 	c.config = config
 
 	return c

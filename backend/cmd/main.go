@@ -5,23 +5,30 @@ import (
 	"os/signal"
 
 	"emersonargueta/m/v1/authorization/jwt"
+	"emersonargueta/m/v1/config"
 	"emersonargueta/m/v1/data/postgres"
 	"emersonargueta/m/v1/delivery/http"
 	"emersonargueta/m/v1/identity"
 )
 
+// Config variables for services
+var Config *config.Config
+
+func init() {
+	Config = config.NewConfig()
+}
+
 func main() {
-	databaseClient := postgres.NewClient()
+	databaseClient := postgres.NewClient(Config)
 	if err := databaseClient.Open(); err != nil {
 		panic(err)
 	}
 
-	authorizationClient := jwt.NewClient()
-	authorizationClient.Initialize()
+	authorizationClient := jwt.NewClient(Config)
 
-	httpServer := http.NewServer()
+	httpServer := http.NewServer(Config)
 	httpServer.Handler = &http.Handler{
-		CommunitygoaltrackerHandler: http.NewCommunitygoaltrackerHandler(),
+		CommunitygoaltrackerHandler: http.NewCommunitygoaltrackerHandler(Config),
 	}
 	setUpHTTPServer(httpServer, databaseClient, authorizationClient)
 
@@ -44,8 +51,7 @@ func setUpHTTPServer(httpServer *http.Server, databaseClient *postgres.Client, a
 	httpServer.Handler.Communitygoaltracker.Achiever = databaseClient.AchieverService()
 	httpServer.Handler.Communitygoaltracker.Goal = databaseClient.GoalService()
 
-	identityClient := identity.NewClient()
-	identityClient.Initialize()
+	identityClient := identity.NewClient(Config)
 	identityClient.Services.Identity.User = databaseClient.UserService()
 	identityClient.Services.Identity.Domain = databaseClient.DomainService()
 	httpServer.Handler.Communitygoaltracker.Identity = &identityClient.Services.Identity

@@ -3,9 +3,10 @@ package middleware
 import (
 	"time"
 
-	"emersonargueta/m/v1/env"
+	"emersonargueta/m/v1/config"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 )
 
@@ -15,6 +16,16 @@ const (
 	// RefreshtokenLimit represents the expiration time for an refresh token
 	RefreshtokenLimit = time.Hour * 24
 )
+
+// Middleware with config
+type Middleware struct {
+	config *config.Config
+}
+
+// New middleware with config
+func New(config *config.Config) *Middleware {
+	return &Middleware{config: config}
+}
 
 // TokenPair represents the access token for authentication and refresh token to
 // refresh access, both as strings.
@@ -31,15 +42,16 @@ type TokenPairJWT struct {
 }
 
 // JwtMiddleware function
-var JwtMiddleware = middleware.JWTWithConfig(middleware.JWTConfig{
-	SigningKey: []byte(env.MustGet("SECRET")),
-})
+func (m *Middleware) JwtMiddleware() (res echo.MiddlewareFunc) {
+	res = middleware.JWTWithConfig(middleware.JWTConfig{
+		SigningKey: []byte(m.config.Authorization.Secret),
+	})
+	return res
+}
 
 // GenerateTokenPair creates a token pair which contains access token and
 // refresh token with exp limit for both access and refresh token.
-func GenerateTokenPair(uuid string, atLimit time.Duration, rtLimit time.Duration) (*TokenPair, error) {
-	secret := env.MustGet("SECRET")
-
+func (m *Middleware) GenerateTokenPair(uuid string, atLimit time.Duration, rtLimit time.Duration) (*TokenPair, error) {
 	accessToken := jwt.New(jwt.SigningMethodHS256)
 
 	atclaims := accessToken.Claims.(jwt.MapClaims)
@@ -47,7 +59,7 @@ func GenerateTokenPair(uuid string, atLimit time.Duration, rtLimit time.Duration
 	atclaims["exp"] = time.Now().Add(atLimit).Unix()
 
 	// Generate encoded accessToken.
-	atstr, err := accessToken.SignedString([]byte(secret))
+	atstr, err := accessToken.SignedString([]byte(m.config.Authorization.Secret))
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +71,7 @@ func GenerateTokenPair(uuid string, atLimit time.Duration, rtLimit time.Duration
 	rtClaims["exp"] = time.Now().Add(rtLimit).Unix()
 
 	// Generate encoded refreshToken.
-	rtstr, err := refreshToken.SignedString([]byte(secret))
+	rtstr, err := refreshToken.SignedString([]byte(m.config.Authorization.Secret))
 	if err != nil {
 		return nil, err
 	}
@@ -69,14 +81,12 @@ func GenerateTokenPair(uuid string, atLimit time.Duration, rtLimit time.Duration
 
 // TokenPairStringToJWT converts a string access and resfresh token from a TokenPair
 // to a TokenPairJWT.
-func TokenPairStringToJWT(token *TokenPair) (res *TokenPairJWT, e error) {
-	secret := env.MustGet("SECRET")
-
+func (m *Middleware) TokenPairStringToJWT(token *TokenPair) (res *TokenPairJWT, e error) {
 	atk, err := jwt.ParseWithClaims(
 		token.Accesstoken,
 		jwt.MapClaims{},
 		func(token *jwt.Token) (interface{}, error) {
-			return []byte(secret), nil
+			return []byte(m.config.Authorization.Secret), nil
 		},
 	)
 	if err != nil && err.(*jwt.ValidationError).Errors != jwt.ValidationErrorExpired {
@@ -87,7 +97,7 @@ func TokenPairStringToJWT(token *TokenPair) (res *TokenPairJWT, e error) {
 		token.Refreshtoken,
 		jwt.MapClaims{},
 		func(token *jwt.Token) (interface{}, error) {
-			return []byte(secret), nil
+			return []byte(m.config.Authorization.Secret), nil
 		},
 	)
 	if err != nil && err.(*jwt.ValidationError).Errors == jwt.ValidationErrorExpired {
