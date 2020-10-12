@@ -9,3 +9,6 @@ vendor/
 
 # test.env
 test.env
+
+#
+__debug_bin
