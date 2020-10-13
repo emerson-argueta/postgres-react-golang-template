@@ -35,7 +35,7 @@ type CommunitygoaltrackerHandler struct {
 	Logger     *log.Logger
 }
 
-// NewCommunitygoaltrackerHandler returns CommunitygoaltrackerHandler.
+// NewCommunitygoaltrackerHandler uses the labstack echo router.
 func NewCommunitygoaltrackerHandler(middleware middleware.Processes) *CommunitygoaltrackerHandler {
 	h := &CommunitygoaltrackerHandler{
 		Echo:       echo.New(),
@@ -77,7 +77,7 @@ func (h *CommunitygoaltrackerHandler) handleRegister(ctx echo.Context) (e error)
 		}
 		// Do not send password to avoid exploits.
 		registeredAchiever.Password = nil
-		encodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: registeredAchiever, Authorization: newKey}, h.Logger)
+		EncodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: registeredAchiever, Authorization: newKey}, h.Logger)
 	case communitygoaltracker.ErrAchieverIncompleteDetails:
 		return ResponseError(ctx.Response().Writer, e, http.StatusBadRequest, h.Logger)
 	default:
@@ -103,7 +103,7 @@ func (h *CommunitygoaltrackerHandler) handleLogin(ctx echo.Context) error {
 		}
 		// Do not send password to avoid exploits.
 		registeredAchiever.Password = nil
-		encodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: registeredAchiever, Authorization: newKey}, h.Logger)
+		EncodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: registeredAchiever, Authorization: newKey}, h.Logger)
 	case identity.ErrUserIncorrectCredentials:
 		return ResponseError(ctx.Response().Writer, e, http.StatusUnauthorized, h.Logger)
 	default:
@@ -135,7 +135,7 @@ func (h *CommunitygoaltrackerHandler) handleUpdateAchiever(ctx echo.Context) err
 	case nil:
 		// Do not send password to avoid exploits.
 		a.Password = nil
-		encodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: a}, h.Logger)
+		EncodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: a}, h.Logger)
 	case communitygoaltracker.ErrAchieverIncompleteDetails:
 		return ResponseError(ctx.Response().Writer, e, http.StatusBadRequest, h.Logger)
 	case communitygoaltracker.ErrAchieverNotFound, identity.ErrUserNotFound:
@@ -169,7 +169,7 @@ func (h *CommunitygoaltrackerHandler) handleUnRegister(ctx echo.Context) error {
 	case nil:
 		// Do not send password to avoid exploits.
 		a.Password = nil
-		encodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: a}, h.Logger)
+		EncodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: a}, h.Logger)
 	case communitygoaltracker.ErrAchieverNotFound, communitygoaltracker.ErrGoalNotFound:
 		return ResponseError(ctx.Response().Writer, e, http.StatusNotFound, h.Logger)
 	default:
@@ -198,7 +198,7 @@ func (h *CommunitygoaltrackerHandler) handleCreateGoal(ctx echo.Context) error {
 
 	switch newGoal, e := h.Communitygoaltracker.CreateGoal(g); e {
 	case nil:
-		encodeJSON(ctx.Response().Writer, goalToResponse(newGoal), h.Logger)
+		EncodeJSON(ctx.Response().Writer, goalToResponse(newGoal), h.Logger)
 	case communitygoaltracker.ErrGoalIncompleteDetails:
 		return ResponseError(ctx.Response().Writer, e, http.StatusBadRequest, h.Logger)
 	case communitygoaltracker.ErrGoalExists:
@@ -227,7 +227,7 @@ func (h *CommunitygoaltrackerHandler) handleUpdateGoalProgress(ctx echo.Context)
 
 	switch updatedGoal, e := h.Communitygoaltracker.UpdateGoalProgress(*uuid, *req.ID, *req.Progress); e {
 	case nil:
-		encodeJSON(ctx.Response().Writer, goalToResponse(updatedGoal), h.Logger)
+		EncodeJSON(ctx.Response().Writer, goalToResponse(updatedGoal), h.Logger)
 	case communitygoaltracker.ErrGoalInvalidProgress, communitygoaltracker.ErrGoalWithNoAchievers, communitygoaltracker.ErrGoalNotFound:
 		return ResponseError(ctx.Response().Writer, e, http.StatusBadRequest, h.Logger)
 	case communitygoaltracker.ErrGoalExists:
@@ -256,7 +256,7 @@ func (h *CommunitygoaltrackerHandler) handleAbandonGoal(ctx echo.Context) error 
 
 	switch e := h.Communitygoaltracker.AbandonGoal(*uuid, *req.ID); e {
 	case nil:
-		encodeJSON(ctx.Response().Writer, req, h.Logger)
+		EncodeJSON(ctx.Response().Writer, req, h.Logger)
 	case communitygoaltracker.ErrGoalWithNoAchievers, communitygoaltracker.ErrGoalNotFound:
 		return ResponseError(ctx.Response().Writer, e, http.StatusBadRequest, h.Logger)
 	case communitygoaltracker.ErrGoalExists:
@@ -285,7 +285,7 @@ func (h *CommunitygoaltrackerHandler) handleDeleteGoal(ctx echo.Context) error {
 
 	switch e := h.Communitygoaltracker.DeleteGoal(*uuid, *req.ID); e {
 	case nil:
-		encodeJSON(ctx.Response().Writer, req, h.Logger)
+		EncodeJSON(ctx.Response().Writer, req, h.Logger)
 	case communitygoaltracker.ErrGoalWithNoAchievers:
 		return ResponseError(ctx.Response().Writer, e, http.StatusBadRequest, h.Logger)
 	case communitygoaltracker.ErrGoalCannotDelete:

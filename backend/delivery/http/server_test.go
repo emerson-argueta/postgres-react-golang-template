@@ -29,7 +29,7 @@ func NewServer(config *config.Config) *Server {
 	s.Server.Handler = s.Handler.Handler
 
 	// Use random port.
-	s.Addr = ":0"
+	s.Address = ":0"
 
 	return s
 }

@@ -12,7 +12,6 @@ import (
 
 var _ communitygoaltracker.Processes = &communitygoaltrackerjwtservice{}
 
-// communitygoaltrackerjwtservice represents an HTTP implementation of communitygoaltracker.Service.
 type communitygoaltrackerjwtservice struct {
 	client *Client
 }

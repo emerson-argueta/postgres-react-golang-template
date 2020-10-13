@@ -24,7 +24,8 @@ func NewClient() *Client {
 	return c
 }
 
-// CommunitygoaltrackerJwtService returns the service associated with the client.
+// CommunitygoaltrackerJwtService returns an http implementation of
+// communitygoaltracker processes using jwt authentication.
 func (c *Client) CommunitygoaltrackerJwtService() communitygoaltracker.Processes {
 	return &c.services.communitygoaltrackerjwt
 }

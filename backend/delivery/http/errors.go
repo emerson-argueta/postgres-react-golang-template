@@ -9,6 +9,8 @@ import (
 // http errors
 const (
 	ErrHTTP = Error("http error")
+	// ErrInvalidJSON indicated when a request body is incorrect after decoding
+	ErrInvalidJSON = Error("invalid json")
 )
 
 // Error represents a general http error.
