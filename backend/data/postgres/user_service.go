@@ -8,16 +8,16 @@ import (
 	"github.com/lib/pq"
 )
 
-var _ user.Service = &User{}
+var _ user.Processes = &UserService{}
 
-// User represents a service for managing a user.
-type User struct {
+// UserService represents a service for managing a user.
+type UserService struct {
 	client *Client
 }
 
 // CreateUser if successful. If the user
 // exists, returns ErrUserExists.
-func (s *User) CreateUser(u *user.User) (res *user.User, e error) {
+func (s *UserService) CreateUser(u *user.User) (res *user.User, e error) {
 	query, e := NewQuery(u)
 	if e != nil {
 		return nil, e
@@ -47,7 +47,7 @@ func (s *User) CreateUser(u *user.User) (res *user.User, e error) {
 
 // RetrieveUser searching by email. If the user does not exists,
 // returns ErrUserNotFound.
-func (s *User) RetrieveUser(email string) (res *user.User, e error) {
+func (s *UserService) RetrieveUser(email string) (res *user.User, e error) {
 	filter := "EMAIL=?"
 	queryParam := email
 
@@ -71,7 +71,7 @@ func (s *User) RetrieveUser(email string) (res *user.User, e error) {
 
 // UpdateUser searching by uuid. If the user does not exists, returns
 // ErrUserNotFound.
-func (s *User) UpdateUser(u *user.User) (e error) {
+func (s *UserService) UpdateUser(u *user.User) (e error) {
 	filter := "UUID=?"
 	queryParam := u.UUID
 
@@ -96,7 +96,7 @@ func (s *User) UpdateUser(u *user.User) (e error) {
 
 // DeleteUser searching by uuid. If the user does not exists, returns
 // ErrUserNotFound.
-func (s *User) DeleteUser(uuid string) (e error) {
+func (s *UserService) DeleteUser(uuid string) (e error) {
 	filter := "UUID=?"
 	queryParam := uuid
 

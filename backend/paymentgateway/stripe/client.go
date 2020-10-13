@@ -10,22 +10,17 @@ import (
 type Client struct {
 	config *config.Config
 
-	// Services
-	Services Services
+	// Service
+	Service Service
 
 	//stripe client
 	stripe *client.API
 }
 
-// Services represents the services that http service provides
-type Services struct {
-	Stripe Stripe
-}
-
 // NewClient function
 func NewClient(config *config.Config) *Client {
 	c := &Client{}
-	c.Services.Stripe.client = c
+	c.Service.client = c
 
 	c.config = config
 
@@ -41,6 +36,6 @@ func (c *Client) Initialize() {
 }
 
 // StripeService returns the stripe service associated with the client.
-func (c *Client) StripeService() Stripe {
-	return c.Services.Stripe
+func (c *Client) StripeService() Service {
+	return c.Service
 }

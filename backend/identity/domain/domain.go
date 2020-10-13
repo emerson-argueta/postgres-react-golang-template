@@ -6,8 +6,8 @@ type Domain struct {
 	Name *string `db:"name" json:"name"`
 }
 
-// Service provides processes used to modify the domain model.
-type Service interface {
+// Processes used to modify the domain model.
+type Processes interface {
 	// CreateDomain implementation must return ErrDomainExists if domain exists.
 	CreateDomain(*Domain) (*Domain, error)
 	// RetreiveDomain implementation must return ErrDomainNotFound if domain not found.

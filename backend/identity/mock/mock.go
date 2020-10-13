@@ -5,8 +5,8 @@ import (
 	"emersonargueta/m/v1/identity/user"
 )
 
-//IdentityService is a mock of identity.Service
-type IdentityService struct {
+//IdentityProcesses is a mock of identity.Processes
+type IdentityProcesses struct {
 	RegisterUserFn   func(*user.User) error
 	LoginUserFn      func(email string, password string) (res *user.User, e error)
 	UpdateUserFn     func(u *user.User) error
@@ -17,42 +17,42 @@ type IdentityService struct {
 	RemoveDomainFn   func(*domain.Domain) error
 }
 
-// RegisterUser mocks identity.Service.RegisterUser
-func (s *IdentityService) RegisterUser(u *user.User) error {
+// RegisterUser mocks identity.Processes.RegisterUser
+func (s *IdentityProcesses) RegisterUser(u *user.User) error {
 	return s.RegisterUserFn(u)
 }
 
-// LoginUser mocks identity.Service.LoginUser
-func (s *IdentityService) LoginUser(email string, password string) (res *user.User, e error) {
+// LoginUser mocks identity.Processes.LoginUser
+func (s *IdentityProcesses) LoginUser(email string, password string) (res *user.User, e error) {
 	return s.LoginUserFn(email, password)
 }
 
-// UpdateUser mocks identity.Service.UpdateUser
-func (s *IdentityService) UpdateUser(u *user.User) error {
+// UpdateUser mocks identity.Processes.UpdateUser
+func (s *IdentityProcesses) UpdateUser(u *user.User) error {
 	return s.UpdateUserFn(u)
 }
 
-// UnRegister mocks identity.Service.UnRegister
-func (s *IdentityService) UnRegister(u *user.User) error {
+// UnRegister mocks identity.Processes.UnRegister
+func (s *IdentityProcesses) UnRegister(u *user.User) error {
 	return s.UnRegisterUserFn(u)
 }
 
-// AddDomain mockes identity.Service.AddDomain
-func (s *IdentityService) AddDomain(d *domain.Domain) error {
+// AddDomain mockes identity.Processes.AddDomain
+func (s *IdentityProcesses) AddDomain(d *domain.Domain) error {
 	return s.AddDomainFn(d)
 }
 
-// LookUpDomain mockes identity.Service.LookUpDomain
-func (s *IdentityService) LookUpDomain(d *domain.Domain) (*domain.Domain, error) {
+// LookUpDomain mockes identity.Processes.LookUpDomain
+func (s *IdentityProcesses) LookUpDomain(d *domain.Domain) (*domain.Domain, error) {
 	return s.LookUpDomainFn(d)
 }
 
-// UpdateDomain mockes identity.Service.UpdateDomain
-func (s *IdentityService) UpdateDomain(d *domain.Domain) error {
+// UpdateDomain mockes identity.Processes.UpdateDomain
+func (s *IdentityProcesses) UpdateDomain(d *domain.Domain) error {
 	return s.UpdateDomainFn(d)
 }
 
-// RemoveDomain mockes identity.Service.RemoveDomain
-func (s *IdentityService) RemoveDomain(d *domain.Domain) error {
+// RemoveDomain mockes identity.Processes.RemoveDomain
+func (s *IdentityProcesses) RemoveDomain(d *domain.Domain) error {
 	return s.RemoveDomainFn(d)
 }

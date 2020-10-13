@@ -12,21 +12,21 @@ const (
 	DomainName = "community-goal-tracker"
 )
 
-var _ Service = &Communitygoaltracker{}
+var _ Processes = &Service{}
 
-// Communitygoaltracker exposes Communitygoaltracker domain processes.
-type Communitygoaltracker struct {
+// Service exposes Communitygoaltracker domain processes.
+type Service struct {
 	client *Client
-	Service
-	// Communitygoaltacker services used internally in processes.
-	Achiever achiever.Service
-	Goal     goal.Service
+	Processes
+	// Communitygoaltacker processes used internally in processes.
+	Achiever achiever.Processes
+	Goal     goal.Processes
 	// From identity domain used internally in communitygaoltracker processes.
 	Identity identity.Service
 }
 
-// Service an interface for communitygoaltracker domain processes.
-type Service interface {
+// Processes for communitygoaltracker.
+type Processes interface {
 	Register(a *achiever.Achiever) (*achiever.Achiever, error)
 	Login(email string, password string) (*achiever.Achiever, error)
 	UpdateAchiever(a *achiever.Achiever) error
@@ -41,9 +41,9 @@ type Service interface {
 // Using the identity subdomain service register the achiever.
 // If there is an existing user, retrieve the user.
 // Create the achiever.
-func (cgt *Communitygoaltracker) Register(a *achiever.Achiever) (res *achiever.Achiever, e error) {
+func (s *Service) Register(a *achiever.Achiever) (res *achiever.Achiever, e error) {
 
-	d, e := cgt.Identity.LookupDomain(DomainName)
+	d, e := s.Identity.LookupDomain(DomainName)
 	if e != nil {
 		return nil, e
 	}
@@ -54,75 +54,75 @@ func (cgt *Communitygoaltracker) Register(a *achiever.Achiever) (res *achiever.A
 		Role *string "json:\"role,omitempty\""
 	}{Role: &role}
 
-	u, e := cgt.Identity.RegisterUser(&user.User{Email: a.Email, Password: a.Password, Domains: &domains})
+	u, e := s.Identity.RegisterUser(&user.User{Email: a.Email, Password: a.Password, Domains: &domains})
 	if e == identity.ErrUserExists {
-		u, e = cgt.Identity.LoginUser(*a.Email, *a.Password)
+		u, e = s.Identity.LoginUser(*a.Email, *a.Password)
 	} else if e != nil {
 		return nil, e
 	}
 
 	a.UUID = u.UUID
 
-	return cgt.Achiever.CreateAchiever(a)
+	return s.Achiever.CreateAchiever(a)
 }
 
 // Login using the following business logic: Using the identity subdomain
 // service login the achiever using the provided achiever. If the identity
 // service is unable to process the request return the error
-func (cgt *Communitygoaltracker) Login(email string, password string) (res *achiever.Achiever, e error) {
-	u, e := cgt.Identity.LoginUser(email, password)
+func (s *Service) Login(email string, password string) (res *achiever.Achiever, e error) {
+	u, e := s.Identity.LoginUser(email, password)
 	if e != nil {
 		return nil, e
 	}
 
-	return cgt.Achiever.RetrieveAchiever(*u.UUID)
+	return s.Achiever.RetrieveAchiever(*u.UUID)
 }
 
 // UpdateAchiever using the following business logic: If email or password is
 // updated update the identity domain user then update the communitygoaltracker
 // achiever.
-func (cgt *Communitygoaltracker) UpdateAchiever(a *achiever.Achiever) (e error) {
+func (s *Service) UpdateAchiever(a *achiever.Achiever) (e error) {
 	if a.UUID == nil {
 		return ErrAchieverIncompleteDetails
 	}
 
 	if a.Email != nil || a.Password != nil {
-		e = cgt.Identity.UpdateUser(&user.User{UUID: a.UUID, Email: a.Email, Password: a.Password})
+		e = s.Identity.UpdateUser(&user.User{UUID: a.UUID, Email: a.Email, Password: a.Password})
 	}
 	if e != nil {
 		return e
 	}
 
-	return cgt.Achiever.UpdateAchiever(a)
+	return s.Achiever.UpdateAchiever(a)
 }
 
 //UnRegister using the following business logic: delete the achiever and remove
 //achiever from any goals they created.
-func (cgt *Communitygoaltracker) UnRegister(a *achiever.Achiever) (e error) {
-	gg, e := cgt.removeAchieverFromGoals(*a.Goals, *a.UUID)
+func (s *Service) UnRegister(a *achiever.Achiever) (e error) {
+	gg, e := s.removeAchieverFromGoals(*a.Goals, *a.UUID)
 	if e != nil {
 		return e
 	}
 
-	if e = cgt.Achiever.DeleteAchiever(*a.UUID); e != nil {
+	if e = s.Achiever.DeleteAchiever(*a.UUID); e != nil {
 		return e
 	}
 
-	return cgt.Goal.UpdateGoals(gg)
+	return s.Goal.UpdateGoals(gg)
 }
 
 // CreateGoal using the following business logic
 // Create a goal with achiever as part of goal's achievers.
 // Add goal to achiever's goals and update the achiever.
 //
-func (cgt *Communitygoaltracker) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
+func (s *Service) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
 	if g.Achievers == nil {
 		return nil, ErrGoalIncompleteDetails
 	}
 	achieverUUID := g.Achievers.Keys()[0]
 
-	res, e = cgt.Goal.CreateGoal(g)
-	e = cgt.addGoalToAchiever(&achiever.Achiever{UUID: &achieverUUID}, *res.ID)
+	res, e = s.Goal.CreateGoal(g)
+	e = s.addGoalToAchiever(&achiever.Achiever{UUID: &achieverUUID}, *res.ID)
 
 	return res, e
 }
@@ -132,12 +132,12 @@ func (cgt *Communitygoaltracker) CreateGoal(g *goal.Goal) (res *goal.Goal, e err
 // between 0 and 100 which can be interpreted as 0 percent to 100 percent. If
 // the progress is 100 then update the state for the goal's achiever to
 // complete.
-func (cgt *Communitygoaltracker) UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
+func (s *Service) UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
 	if progress < 0 || progress > 100 {
 		return nil, ErrGoalInvalidProgress
 	}
 
-	g, e := cgt.Goal.RetrieveGoal(goalID)
+	g, e := s.Goal.RetrieveGoal(goalID)
 	if g.Achievers == nil {
 		return nil, ErrGoalWithNoAchievers
 	}
@@ -151,7 +151,7 @@ func (cgt *Communitygoaltracker) UpdateGoalProgress(achieverUUID string, goalID 
 		state := goal.Completed
 		(*g.Achievers)[achieverUUID].State = &state
 	}
-	e = cgt.Goal.UpdateGoal(g)
+	e = s.Goal.UpdateGoal(g)
 	if e != nil {
 		return nil, e
 	}
@@ -161,9 +161,9 @@ func (cgt *Communitygoaltracker) UpdateGoalProgress(achieverUUID string, goalID 
 
 // AbandonGoal using the following business logic: Retrieve the goal and
 // update the state for the goal's achiever.
-func (cgt *Communitygoaltracker) AbandonGoal(achieverUUID string, goalID int64) (e error) {
+func (s *Service) AbandonGoal(achieverUUID string, goalID int64) (e error) {
 
-	g, e := cgt.Goal.RetrieveGoal(goalID)
+	g, e := s.Goal.RetrieveGoal(goalID)
 	if g.Achievers == nil {
 		return ErrGoalWithNoAchievers
 	}
@@ -176,14 +176,14 @@ func (cgt *Communitygoaltracker) AbandonGoal(achieverUUID string, goalID int64) 
 	state := goal.Abondoned
 	(*g.Achievers)[achieverUUID].State = &state
 
-	return cgt.Goal.UpdateGoal(g)
+	return s.Goal.UpdateGoal(g)
 }
 
 // DeleteGoal using the following business logic: Retrieve the goal and if the
 // goal has now achievers except for the one deleting then delete the goal.
-func (cgt *Communitygoaltracker) DeleteGoal(achieverUUID string, goalID int64) (e error) {
+func (s *Service) DeleteGoal(achieverUUID string, goalID int64) (e error) {
 
-	g, e := cgt.Goal.RetrieveGoal(goalID)
+	g, e := s.Goal.RetrieveGoal(goalID)
 	if g.Achievers == nil {
 		return ErrGoalWithNoAchievers
 	}
@@ -195,11 +195,11 @@ func (cgt *Communitygoaltracker) DeleteGoal(achieverUUID string, goalID int64) (
 		return ErrGoalCannotDelete
 	}
 
-	return cgt.Goal.DeleteGoal(goalID)
+	return s.Goal.DeleteGoal(goalID)
 }
 
-func (cgt *Communitygoaltracker) removeGoalFromAchiever(a *achiever.Achiever, goalID int64) (e error) {
-	a, e = cgt.Achiever.RetrieveAchiever(*a.UUID)
+func (s *Service) removeGoalFromAchiever(a *achiever.Achiever, goalID int64) (e error) {
+	a, e = s.Achiever.RetrieveAchiever(*a.UUID)
 	if a.Goals == nil {
 		return nil
 	}
@@ -209,21 +209,21 @@ func (cgt *Communitygoaltracker) removeGoalFromAchiever(a *achiever.Achiever, go
 		delete((*a.Goals), goalID)
 	}
 
-	return cgt.Achiever.UpdateAchiever(a)
+	return s.Achiever.UpdateAchiever(a)
 }
-func (cgt *Communitygoaltracker) addGoalToAchiever(a *achiever.Achiever, goalID int64) (e error) {
-	a, e = cgt.Achiever.RetrieveAchiever(*a.UUID)
+func (s *Service) addGoalToAchiever(a *achiever.Achiever, goalID int64) (e error) {
+	a, e = s.Achiever.RetrieveAchiever(*a.UUID)
 	if a.Goals == nil {
 		achieverGoals := make(achiever.Goals)
 		a.Goals = &achieverGoals
 	}
 	(*a.Goals)[goalID] = true
 
-	return cgt.Achiever.UpdateAchiever(a)
+	return s.Achiever.UpdateAchiever(a)
 }
-func (cgt *Communitygoaltracker) removeAchieverFromGoals(achieverGoals achiever.Goals, achieverUUID string) (res []*goal.Goal, e error) {
+func (s *Service) removeAchieverFromGoals(achieverGoals achiever.Goals, achieverUUID string) (res []*goal.Goal, e error) {
 	goalIDs := achieverGoals.Keys()
-	gg, e := cgt.Goal.RetrieveGoals(goalIDs)
+	gg, e := s.Goal.RetrieveGoals(goalIDs)
 	for _, g := range gg {
 		_, ok := (*g.Achievers)[achieverUUID]
 		if ok {

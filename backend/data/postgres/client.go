@@ -25,28 +25,27 @@ type Client struct {
 
 	config *config.Config
 
-	Services Services
+	services services
 
-	db          *sqlx.DB
-	transaction *sqlx.Tx
+	db *sqlx.DB
 }
 
-// Services represents the services that the postgres service provides
-type Services struct {
-	User     User
-	Domain   Domain
-	Achiever Achiever
-	Goal     Goal
+// services represents the services that the postgres service provides
+type services struct {
+	user     UserService
+	domain   DomainService
+	achiever AchieverService
+	goal     GoalService
 }
 
 // NewClient function
 func NewClient(config *config.Config) *Client {
-	c := &Client{Now: time.Now, transaction: nil}
+	c := &Client{Now: time.Now}
 
-	c.Services.User.client = c
-	c.Services.Domain.client = c
-	c.Services.Achiever.client = c
-	c.Services.Goal.client = c
+	c.services.user.client = c
+	c.services.domain.client = c
+	c.services.achiever.client = c
+	c.services.goal.client = c
 
 	c.config = config
 
@@ -85,13 +84,13 @@ func (c *Client) Close() error {
 }
 
 // UserService returns the user service associated with the client.
-func (c *Client) UserService() user.Service { return &c.Services.User }
+func (c *Client) UserService() user.Processes { return &c.services.user }
 
 // DomainService returns the domain service associated with the client.
-func (c *Client) DomainService() domain.Service { return &c.Services.Domain }
+func (c *Client) DomainService() domain.Processes { return &c.services.domain }
 
 // AchieverService returns the achiever service associated with the client.
-func (c *Client) AchieverService() achiever.Service { return &c.Services.Achiever }
+func (c *Client) AchieverService() achiever.Processes { return &c.services.achiever }
 
 // GoalService returns the goal service associated with the client.
-func (c *Client) GoalService() goal.Service { return &c.Services.Goal }
+func (c *Client) GoalService() goal.Processes { return &c.services.goal }

@@ -10,15 +10,15 @@ import (
 	"net/http"
 )
 
-var _ communitygoaltracker.Service = &Communitygoaltracker{}
+var _ communitygoaltracker.Processes = &CommunitygoaltrackerService{}
 
-// Communitygoaltracker represents an HTTP implementation of communitygoaltracker.Service.
-type Communitygoaltracker struct {
+// CommunitygoaltrackerService represents an HTTP implementation of communitygoaltracker.Service.
+type CommunitygoaltrackerService struct {
 	client *Client
 }
 
 // Register is an http implementation of the communitygoaltracker process.
-func (cgt *Communitygoaltracker) Register(a *achiever.Achiever) (res *achiever.Achiever, e error) {
+func (cgt *CommunitygoaltrackerService) Register(a *achiever.Achiever) (res *achiever.Achiever, e error) {
 	u := cgt.client.URL
 	u.Path = RoutePrefix + AchieverURL
 
@@ -49,7 +49,7 @@ func (cgt *Communitygoaltracker) Register(a *achiever.Achiever) (res *achiever.A
 }
 
 // Login is an http implementation of the communitygoaltracker process.
-func (cgt *Communitygoaltracker) Login(email string, password string) (res *achiever.Achiever, e error) {
+func (cgt *CommunitygoaltrackerService) Login(email string, password string) (res *achiever.Achiever, e error) {
 	u := cgt.client.URL
 	u.Path = RoutePrefix + AchieverLoginURL
 
@@ -80,7 +80,7 @@ func (cgt *Communitygoaltracker) Login(email string, password string) (res *achi
 }
 
 // AuthorizedUpdateAchiever is an http implementation of the communitygoaltracker process.
-func (cgt *Communitygoaltracker) AuthorizedUpdateAchiever(a *achiever.Achiever, token *middleware.TokenPair) (e error) {
+func (cgt *CommunitygoaltrackerService) AuthorizedUpdateAchiever(a *achiever.Achiever, token *middleware.TokenPair) (e error) {
 	u := cgt.client.URL
 	u.Path = RoutePrefix + AchieverLoginURL
 
@@ -121,56 +121,56 @@ func (cgt *Communitygoaltracker) AuthorizedUpdateAchiever(a *achiever.Achiever, 
 }
 
 // UpdateAchiever not used
-func (cgt *Communitygoaltracker) UpdateAchiever(a *achiever.Achiever) (e error) {
+func (cgt *CommunitygoaltrackerService) UpdateAchiever(a *achiever.Achiever) (e error) {
 	return e
 }
 
 // AuthorizedUnRegister is an http implementation of the communitygoaltracker process.
-func (cgt *Communitygoaltracker) AuthorizedUnRegister(a *achiever.Achiever, token *middleware.TokenPair) (e error) {
+func (cgt *CommunitygoaltrackerService) AuthorizedUnRegister(a *achiever.Achiever, token *middleware.TokenPair) (e error) {
 	return e
 }
 
 // UnRegister is not used
-func (cgt *Communitygoaltracker) UnRegister(a *achiever.Achiever) (e error) {
+func (cgt *CommunitygoaltrackerService) UnRegister(a *achiever.Achiever) (e error) {
 	return e
 }
 
 // AuthorizedCreateGoal is an http implementation of the communitygoaltracker process.
-func (cgt *Communitygoaltracker) AuthorizedCreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
+func (cgt *CommunitygoaltrackerService) AuthorizedCreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
 	return res, e
 }
 
 // CreateGoal is not used.
-func (cgt *Communitygoaltracker) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
+func (cgt *CommunitygoaltrackerService) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
 	return res, e
 }
 
 // AuthorizedUpdateGoalProgress is an http implementation of the communitygoaltracker process.
-func (cgt *Communitygoaltracker) AuthorizedUpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
+func (cgt *CommunitygoaltrackerService) AuthorizedUpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
 	return res, e
 }
 
 // UpdateGoalProgress is not used
-func (cgt *Communitygoaltracker) UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
+func (cgt *CommunitygoaltrackerService) UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
 	return res, e
 }
 
 // AuthorizedAbandonGoal is an http implementation of the communitygoaltracker process.
-func (cgt *Communitygoaltracker) AuthorizedAbandonGoal(achieverUUID string, goalID int64) (e error) {
+func (cgt *CommunitygoaltrackerService) AuthorizedAbandonGoal(achieverUUID string, goalID int64) (e error) {
 	return e
 }
 
 // AbandonGoal is not used
-func (cgt *Communitygoaltracker) AbandonGoal(achieverUUID string, goalID int64) (e error) {
+func (cgt *CommunitygoaltrackerService) AbandonGoal(achieverUUID string, goalID int64) (e error) {
 	return e
 }
 
 // AuthorizedDeleteGoal is an http implementation of the communitygoaltracker process.
-func (cgt *Communitygoaltracker) AuthorizedDeleteGoal(achieverUUID string, goalID int64) (e error) {
+func (cgt *CommunitygoaltrackerService) AuthorizedDeleteGoal(achieverUUID string, goalID int64) (e error) {
 	return e
 }
 
 // DeleteGoal is not used
-func (cgt *Communitygoaltracker) DeleteGoal(achieverUUID string, goalID int64) (e error) {
+func (cgt *CommunitygoaltrackerService) DeleteGoal(achieverUUID string, goalID int64) (e error) {
 	return e
 }

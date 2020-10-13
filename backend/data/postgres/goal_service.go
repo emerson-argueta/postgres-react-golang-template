@@ -8,15 +8,15 @@ import (
 	"github.com/lib/pq"
 )
 
-var _ goal.Service = &Goal{}
+var _ goal.Processes = &GoalService{}
 
-// Goal represents a service for managing a Goal.
-type Goal struct {
+// GoalService represents a service for managing a Goal.
+type GoalService struct {
 	client *Client
 }
 
 // CreateGoal if successful. If the goal exists, returns ErrGoalExists.
-func (s *Goal) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
+func (s *GoalService) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
 	query, e := NewQuery(g)
 	if e != nil {
 		return nil, e
@@ -45,7 +45,7 @@ func (s *Goal) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
 }
 
 // RetrieveGoal by email. If the goal does not exists, returns ErrGoalNotFound.
-func (s *Goal) RetrieveGoal(id int64) (res *goal.Goal, e error) {
+func (s *GoalService) RetrieveGoal(id int64) (res *goal.Goal, e error) {
 	filter := "ID=?"
 	queryParam := id
 
@@ -69,7 +69,7 @@ func (s *Goal) RetrieveGoal(id int64) (res *goal.Goal, e error) {
 
 // UpdateGoal searching by id. If the goal does not exists, returns
 // ErrGoalNotFound.
-func (s *Goal) UpdateGoal(g *goal.Goal) (e error) {
+func (s *GoalService) UpdateGoal(g *goal.Goal) (e error) {
 	filter := "ID=?"
 	queryParam := g.ID
 
@@ -95,7 +95,7 @@ func (s *Goal) UpdateGoal(g *goal.Goal) (e error) {
 
 // DeleteGoal searching by id. If the goal does not exists, returns
 // ErrGoalNotFound.
-func (s *Goal) DeleteGoal(id int64) (e error) {
+func (s *GoalService) DeleteGoal(id int64) (e error) {
 	filter := "ID=?"
 	queryParam := id
 
@@ -116,7 +116,7 @@ func (s *Goal) DeleteGoal(id int64) (e error) {
 
 // RetrieveGoals searching by ids. Returns ErrGoalNotFound if none of the goals
 // are found.
-func (s *Goal) RetrieveGoals(ids []int64) (res []*goal.Goal, e error) {
+func (s *GoalService) RetrieveGoals(ids []int64) (res []*goal.Goal, e error) {
 
 	query, err := NewQuery(&goal.Goal{})
 	if err != nil {
@@ -144,7 +144,7 @@ func (s *Goal) RetrieveGoals(ids []int64) (res []*goal.Goal, e error) {
 // UpdateGoals searching by ids. Returns ErrGoalNotFound if none of the goals
 // not found. Return ErrGoalExists if any of the update names conflicts with
 // another goal.
-func (s *Goal) UpdateGoals(gg []*goal.Goal) (e error) {
+func (s *GoalService) UpdateGoals(gg []*goal.Goal) (e error) {
 	// TODO
 	searchKey := "ID"
 

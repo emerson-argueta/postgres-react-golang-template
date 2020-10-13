@@ -12,15 +12,15 @@ import (
 // CommunitygoaltrackerHandler represents a test wrapper for http.AdminHandler.
 type CommunitygoaltrackerHandler struct {
 	*http.CommunitygoaltrackerHandler
-	CommunitygoaltrackerService mockcommunitygoaltracker.Communitygoaltrackerservice
-	LogOutput                   bytes.Buffer
+	CommunitygoaltrackerProcesses mockcommunitygoaltracker.CommunitygoaltrackerProcesses
+	LogOutput                     bytes.Buffer
 }
 
 // NewCommunitygoaltrackerHandler returns a CommunitygoaltrackerHandler using mock implementation of services.
 func NewCommunitygoaltrackerHandler(config *config.Config) *CommunitygoaltrackerHandler {
 	h := &CommunitygoaltrackerHandler{CommunitygoaltrackerHandler: http.NewCommunitygoaltrackerHandler(config)}
 
-	h.CommunitygoaltrackerHandler.Communitygoaltracker.Service = &h.CommunitygoaltrackerService
+	h.CommunitygoaltrackerHandler.Communitygoaltracker.Processes = &h.CommunitygoaltrackerProcesses
 
 	h.Logger = log.New(VerboseWriter(&h.LogOutput), "", log.LstdFlags)
 	return h

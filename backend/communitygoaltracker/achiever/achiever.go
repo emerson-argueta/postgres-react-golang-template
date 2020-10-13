@@ -50,8 +50,8 @@ func (g *Goals) Keys() []int64 {
 	return keys
 }
 
-// Service provides processes used to modify the achiever model.
-type Service interface {
+// Processes used to modify the achiever model.
+type Processes interface {
 	// CreateAchiever implementation must return ErrAchieverExists if achiever
 	// exists.
 	CreateAchiever(*Achiever) (*Achiever, error)

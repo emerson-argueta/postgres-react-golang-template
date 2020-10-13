@@ -1,6 +1,7 @@
 package http
 
 import (
+	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/authorization/jwt"
 	"emersonargueta/m/v1/communitygoaltracker"
 	"emersonargueta/m/v1/config"
@@ -14,23 +15,25 @@ import (
 )
 
 const (
+	// CommunitygoalTrackerURLPrefix used for communitygoaltracker routes
+	CommunitygoalTrackerURLPrefix = "/communitygoaltracker"
 	// AchieverURL used for communitygoaltracker processes that modify an achiever
-	AchieverURL = "/communitygoaltracker/achiever"
+	AchieverURL = CommunitygoalTrackerURLPrefix + "/achiever"
 	// AchieverLoginURL used for communitygoaltracker login process
-	AchieverLoginURL = "/communitygoaltracker/achiever/login"
+	AchieverLoginURL = CommunitygoalTrackerURLPrefix + "/achiever/login"
 	// GoalURL used for communitygoaltracker processes that modify a goal
-	GoalURL = "/communitygoaltracker/goal"
+	GoalURL = CommunitygoalTrackerURLPrefix + "/goal"
 	// GoalAbandonURL used for communitygoaltracker goal abandon process
-	GoalAbandonURL = "/communitygoaltracker/goal/abandon"
+	GoalAbandonURL = CommunitygoalTrackerURLPrefix + "/goal/abandon"
 )
 
 // CommunitygoaltrackerHandler represents an HTTP API handler.
 type CommunitygoaltrackerHandler struct {
 	*echo.Echo
 
-	communitygoaltracker.Services
+	Communitygoaltracker communitygoaltracker.Service
 
-	Authorization jwt.Services
+	Authorization authorization.Processes
 
 	// PaymentGateway stripe.Services
 
@@ -41,9 +44,10 @@ type CommunitygoaltrackerHandler struct {
 // NewCommunitygoaltrackerHandler returns CommunitygoaltrackerHandler.
 func NewCommunitygoaltrackerHandler(config *config.Config) *CommunitygoaltrackerHandler {
 	h := &CommunitygoaltrackerHandler{
-		Echo:       echo.New(),
-		Logger:     log.New(os.Stderr, "", log.LstdFlags),
-		Middleware: middleware.New(config),
+		Echo:          echo.New(),
+		Logger:        log.New(os.Stderr, "", log.LstdFlags),
+		Middleware:    middleware.New(config),
+		Authorization: jwt.NewClient(config).Service(),
 	}
 
 	public := h.Group(RoutePrefix)
@@ -126,7 +130,7 @@ func (h *CommunitygoaltrackerHandler) handleUpdateAchiever(ctx echo.Context) err
 
 	// extract administrator uuid from token stored by JwtMiddleware handler func
 	token := ctx.Get("user")
-	uuid, err := h.Authorization.Jwt.ExtractUUIDFromToken(token)
+	uuid, err := h.Authorization.Authorize(token)
 	if err != nil {
 		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
 	}
@@ -160,7 +164,7 @@ func (h *CommunitygoaltrackerHandler) handleUnRegister(ctx echo.Context) error {
 
 	// extract administrator uuid from token stored by JwtMiddleware handler func
 	token := ctx.Get("user")
-	uuid, err := h.Authorization.Jwt.ExtractUUIDFromToken(token)
+	uuid, err := h.Authorization.Authorize(token)
 	if err != nil {
 		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
 	}
@@ -192,7 +196,7 @@ func (h *CommunitygoaltrackerHandler) handleCreateGoal(ctx echo.Context) error {
 
 	// extract administrator uuid from token stored by JwtMiddleware handler func
 	token := ctx.Get("user")
-	uuid, err := h.Authorization.Jwt.ExtractUUIDFromToken(token)
+	uuid, err := h.Authorization.Authorize(token)
 	if err != nil {
 		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
 	}
@@ -223,7 +227,7 @@ func (h *CommunitygoaltrackerHandler) handleUpdateGoalProgress(ctx echo.Context)
 
 	// extract administrator uuid from token stored by JwtMiddleware handler func
 	token := ctx.Get("user")
-	uuid, err := h.Authorization.Jwt.ExtractUUIDFromToken(token)
+	uuid, err := h.Authorization.Authorize(token)
 	if err != nil {
 		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
 	}
@@ -252,7 +256,7 @@ func (h *CommunitygoaltrackerHandler) handleAbandonGoal(ctx echo.Context) error 
 
 	// extract administrator uuid from token stored by JwtMiddleware handler func
 	token := ctx.Get("user")
-	uuid, err := h.Authorization.Jwt.ExtractUUIDFromToken(token)
+	uuid, err := h.Authorization.Authorize(token)
 	if err != nil {
 		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
 	}
@@ -281,7 +285,7 @@ func (h *CommunitygoaltrackerHandler) handleDeleteGoal(ctx echo.Context) error {
 
 	// extract administrator uuid from token stored by JwtMiddleware handler func
 	token := ctx.Get("user")
-	uuid, err := h.Authorization.Jwt.ExtractUUIDFromToken(token)
+	uuid, err := h.Authorization.Authorize(token)
 	if err != nil {
 		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
 	}

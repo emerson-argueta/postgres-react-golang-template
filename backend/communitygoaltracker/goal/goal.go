@@ -70,8 +70,8 @@ func (m *Messages) Keys() []string {
 	return keys
 }
 
-// Service provides processes used to modify the goal model.
-type Service interface {
+// Processes used to modify the goal model.
+type Processes interface {
 	// CreateGoal implementation must return ErrGoalExists if the goal
 	// exists.
 	CreateGoal(*Goal) (*Goal, error)

@@ -27,8 +27,8 @@ func (d *Domains) Keys() []int64 {
 	return keys
 }
 
-// Service provides processes used to modify the user model.
-type Service interface {
+// Processes used to modify the user model.
+type Processes interface {
 	// CreateUser implementation must return ErrUserExists if the user exists.
 	CreateUser(*User) (*User, error)
 	// RetrieveUser implementation must return ErrUserNotFound if the user is not found.
