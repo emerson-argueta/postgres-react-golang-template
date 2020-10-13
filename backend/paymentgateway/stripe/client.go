@@ -2,6 +2,7 @@ package stripe
 
 import (
 	"emersonargueta/m/v1/config"
+	"emersonargueta/m/v1/paymentgateway"
 
 	"github.com/stripe/stripe-go/client"
 )
@@ -11,7 +12,7 @@ type Client struct {
 	config *config.Config
 
 	// Service
-	Service Service
+	service service
 
 	//stripe client
 	stripe *client.API
@@ -20,7 +21,7 @@ type Client struct {
 // NewClient function
 func NewClient(config *config.Config) *Client {
 	c := &Client{}
-	c.Service.client = c
+	c.service.client = c
 
 	c.config = config
 
@@ -35,7 +36,7 @@ func (c *Client) Initialize() {
 	c.stripe = stripe
 }
 
-// StripeService returns the stripe service associated with the client.
-func (c *Client) StripeService() Service {
-	return c.Service
+// Service returns the stripe service associated with the client.
+func (c *Client) Service() paymentgateway.Processes {
+	return &c.service
 }

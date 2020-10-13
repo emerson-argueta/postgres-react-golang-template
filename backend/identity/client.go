@@ -6,19 +6,17 @@ import (
 
 // Client represents a client to the underlying stripe client.
 type Client struct {
-	config  *config.Config
-	Service Service
+	config   *config.Config
+	Identity Service
 }
 
 // NewClient function
-func NewClient(config *config.Config) *Client {
+func NewClient() *Client {
 	c := &Client{}
-	c.Service.client = c
-
-	c.config = config
+	c.Identity.client = c
 
 	return c
 }
 
-// IdentityService returns the jwt service associated with the client.
-func (c *Client) IdentityService() Service { return c.Service }
+// Service returns the jwt service associated with the client.
+func (c *Client) Service() Processes { return &c.Identity }

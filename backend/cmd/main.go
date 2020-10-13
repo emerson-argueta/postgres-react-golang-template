@@ -7,7 +7,6 @@ import (
 	"emersonargueta/m/v1/config"
 	"emersonargueta/m/v1/data/postgres"
 	"emersonargueta/m/v1/delivery/http"
-	"emersonargueta/m/v1/identity"
 )
 
 // Config variables for services
@@ -47,9 +46,7 @@ func setUpHTTPServer(httpServer *http.Server, databaseClient *postgres.Client) {
 	httpServer.Handler.Communitygoaltracker.Achiever = databaseClient.AchieverService()
 	httpServer.Handler.Communitygoaltracker.Goal = databaseClient.GoalService()
 
-	identityClient := identity.NewClient(Config)
-	identityClient.Service.User = databaseClient.UserService()
-	identityClient.Service.Domain = databaseClient.DomainService()
-	httpServer.Handler.Communitygoaltracker.Identity = identityClient.IdentityService()
+	httpServer.Handler.Communitygoaltracker.Identity.User = databaseClient.UserService()
+	httpServer.Handler.Communitygoaltracker.Identity.Domain = databaseClient.DomainService()
 
 }
