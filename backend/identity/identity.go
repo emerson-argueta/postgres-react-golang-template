@@ -13,16 +13,11 @@ const (
 	DomainName = "identity"
 )
 
-var _ Processes = &service{}
+var _ Processes = &Service{}
 
-type service struct {
+// Service exposes domain and model processes
+type Service struct {
 	client *Client
-	AllProcesses
-}
-
-// AllProcesses from models used in core domain. Includes processes used in
-// core domain.
-type AllProcesses struct {
 	Processes
 	User   user.Processes
 	Domain domain.Processes
@@ -44,7 +39,7 @@ type Processes interface {
 // Verify email and password.
 // Check if user exists.
 // Create user with hash password.
-func (s *service) RegisterUser(u *user.User) (res *user.User, e error) {
+func (s *Service) RegisterUser(u *user.User) (res *user.User, e error) {
 	if u.Email == nil || u.Password == nil {
 		return nil, ErrUserIncompleteDetails
 	}
@@ -66,7 +61,7 @@ func (s *service) RegisterUser(u *user.User) (res *user.User, e error) {
 // LoginUser using the following business logic:
 // Check if user exists.
 // Check if password matches.
-func (s *service) LoginUser(email string, password string) (res *user.User, e error) {
+func (s *Service) LoginUser(email string, password string) (res *user.User, e error) {
 	res, e = s.User.RetrieveUser(email)
 	if e != nil {
 		return nil, e
@@ -85,7 +80,7 @@ func (s *service) LoginUser(email string, password string) (res *user.User, e er
 // UpdateUser using the following business logic
 // Validate email and password
 // Update the user searching by uuid.
-func (s *service) UpdateUser(u *user.User) (e error) {
+func (s *Service) UpdateUser(u *user.User) (e error) {
 	if u.UUID == nil {
 		return ErrUserIncompleteDetails
 	}
@@ -107,7 +102,7 @@ func (s *service) UpdateUser(u *user.User) (e error) {
 // UnRegisterUser using the following business logic
 // Validate email and password.
 // Delete the user.
-func (s *service) UnRegisterUser(u *user.User) (e error) {
+func (s *Service) UnRegisterUser(u *user.User) (e error) {
 	if u.UUID == nil || u.Email == nil || u.Password == nil {
 		return ErrUserIncompleteDetails
 	}
@@ -124,7 +119,7 @@ func (s *service) UnRegisterUser(u *user.User) (e error) {
 // AddDomain using the following business logic:
 // Verify domain name.
 // Create the domain.
-func (s *service) AddDomain(d *domain.Domain) (res *domain.Domain, e error) {
+func (s *Service) AddDomain(d *domain.Domain) (res *domain.Domain, e error) {
 	if d.Name == nil {
 		return nil, ErrDomainIncompleteDetails
 	}
@@ -134,13 +129,13 @@ func (s *service) AddDomain(d *domain.Domain) (res *domain.Domain, e error) {
 
 // LookupDomain using the following business logic:
 // Retrieve the domain.
-func (s *service) LookupDomain(name string) (res *domain.Domain, e error) {
+func (s *Service) LookupDomain(name string) (res *domain.Domain, e error) {
 	return s.Domain.RetrieveDomain(name)
 }
 
 // UpdateDomain using the following business logic
 // Verify the domain name and id
-func (s *service) UpdateDomain(d *domain.Domain) (e error) {
+func (s *Service) UpdateDomain(d *domain.Domain) (e error) {
 	if d.Name == nil || d.ID == nil {
 		return ErrDomainIncompleteDetails
 	}
@@ -149,6 +144,6 @@ func (s *service) UpdateDomain(d *domain.Domain) (e error) {
 
 //RemoveDomain using the following business logic:
 // Delete the domain.
-func (s *service) RemoveDomain(id int64) (e error) {
+func (s *Service) RemoveDomain(id int64) (e error) {
 	return s.Domain.DeleteDomain(id)
 }

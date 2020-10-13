@@ -24,7 +24,7 @@ type Server struct {
 func NewServer(config *config.Config) *Server {
 	s := &Server{
 		Server:  http.NewServer(config),
-		Handler: NewHandler(config),
+		Handler: NewHandler(),
 	}
 	s.Server.Handler = s.Handler.Handler
 

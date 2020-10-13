@@ -3,7 +3,6 @@ package http
 import (
 	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/communitygoaltracker"
-	"emersonargueta/m/v1/config"
 	"emersonargueta/m/v1/delivery/middleware"
 	"emersonargueta/m/v1/identity"
 	"log"
@@ -29,7 +28,7 @@ const (
 // CommunitygoaltrackerHandler represents an HTTP API handler.
 type CommunitygoaltrackerHandler struct {
 	*echo.Echo
-	Communitygoaltracker communitygoaltracker.AllProcesses
+	Communitygoaltracker communitygoaltracker.Service
 	Authorization        authorization.Processes
 	// PaymentGateway stripe.Processes
 	Middleware middleware.Processes
@@ -37,12 +36,17 @@ type CommunitygoaltrackerHandler struct {
 }
 
 // NewCommunitygoaltrackerHandler returns CommunitygoaltrackerHandler.
-func NewCommunitygoaltrackerHandler(config *config.Config) *CommunitygoaltrackerHandler {
+func NewCommunitygoaltrackerHandler() *CommunitygoaltrackerHandler {
 	h := &CommunitygoaltrackerHandler{
 		Echo:   echo.New(),
 		Logger: log.New(os.Stderr, "", log.LstdFlags),
 	}
 
+	return h
+}
+
+//Initialize after injecting services
+func (h *CommunitygoaltrackerHandler) Initialize() *CommunitygoaltrackerHandler {
 	public := h.Group(RoutePrefix)
 	public.POST(AchieverURL, h.handleRegister)
 	public.POST(AchieverLoginURL, h.handleLogin)
@@ -60,7 +64,6 @@ func NewCommunitygoaltrackerHandler(config *config.Config) *Communitygoaltracker
 
 	return h
 }
-
 func (h *CommunitygoaltrackerHandler) handleRegister(ctx echo.Context) (e error) {
 	var req achieverRequest
 

@@ -5,10 +5,12 @@ import (
 	"os/signal"
 
 	"emersonargueta/m/v1/authorization"
+	"emersonargueta/m/v1/communitygoaltracker"
 	"emersonargueta/m/v1/config"
 	"emersonargueta/m/v1/data/postgres"
 	"emersonargueta/m/v1/delivery/http"
 	"emersonargueta/m/v1/delivery/middleware"
+	"emersonargueta/m/v1/identity"
 )
 
 // Config variables for services
@@ -24,11 +26,7 @@ func main() {
 		panic(err)
 	}
 
-	httpServer := http.NewServer(Config)
-	httpServer.Handler = &http.Handler{
-		CommunitygoaltrackerHandler: http.NewCommunitygoaltrackerHandler(Config),
-	}
-	setUpHTTPServer(httpServer, databaseClient, Config)
+	httpServer := setUpHTTPServer(databaseClient, Config)
 
 	if err := httpServer.Open(); err != nil {
 		panic(err)
@@ -43,14 +41,27 @@ func main() {
 
 }
 
-func setUpHTTPServer(httpServer *http.Server, databaseClient *postgres.Client, config *config.Config) {
-	httpServer.Handler.Authorization = authorization.NewClient(config).JwtService()
-	httpServer.Handler.Middleware = middleware.NewClient(config).JwtService()
+func setUpHTTPServer(databaseClient *postgres.Client, config *config.Config) (res *http.Server) {
+	res = http.NewServer(Config)
 
-	httpServer.Handler.Communitygoaltracker.Achiever = databaseClient.AchieverService()
-	httpServer.Handler.Communitygoaltracker.Goal = databaseClient.GoalService()
+	cgtHandler := http.NewCommunitygoaltrackerHandler()
+	cgtHandler.Middleware = middleware.NewClient(config).JwtService()
+	cgtHandler.Authorization = authorization.NewClient(config).JwtService()
 
-	httpServer.Handler.Communitygoaltracker.Identity.User = databaseClient.UserService()
-	httpServer.Handler.Communitygoaltracker.Identity.Domain = databaseClient.DomainService()
+	cgtHandler.Communitygoaltracker.Processes = communitygoaltracker.NewClient().Service()
+	cgtHandler.Communitygoaltracker.Achiever = databaseClient.AchieverService()
+	cgtHandler.Communitygoaltracker.Goal = databaseClient.GoalService()
+	cgtHandler.Communitygoaltracker.Identity.Processes = identity.NewClient().Service()
+	cgtHandler.Communitygoaltracker.Identity.User = databaseClient.UserService()
+	cgtHandler.Communitygoaltracker.Identity.Domain = databaseClient.DomainService()
+
+	cgtHandler.Initialize()
+
+	res.Handler = &http.Handler{
+
+		CommunitygoaltrackerHandler: cgtHandler,
+	}
+
+	return res
 
 }

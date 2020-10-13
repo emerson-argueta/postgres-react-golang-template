@@ -9,7 +9,7 @@ import (
 // Client to the communitygoaltracker service.
 type Client struct {
 	config  *config.Config
-	service service
+	service Service
 }
 
 // NewClient creates a connection to a communitygoaltracker service.
