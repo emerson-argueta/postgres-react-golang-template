@@ -4,6 +4,8 @@ import (
 	"emersonargueta/m/v1/config"
 )
 
+// Single service structure for client
+
 // Client to the communitygoaltracker service.
 type Client struct {
 	config  *config.Config

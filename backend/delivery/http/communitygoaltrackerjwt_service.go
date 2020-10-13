@@ -2,7 +2,7 @@ package http
 
 import (
 	"bytes"
-	"emersonargueta/m/v1/authorization/jwt"
+	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/communitygoaltracker"
 	"emersonargueta/m/v1/communitygoaltracker/achiever"
 	"emersonargueta/m/v1/communitygoaltracker/goal"
@@ -80,7 +80,7 @@ func (cgt *communitygoaltrackerjwtservice) Login(email string, password string) 
 }
 
 // AuthorizedUpdateAchiever is an http implementation of the communitygoaltracker process.
-func (cgt *communitygoaltrackerjwtservice) AuthorizedUpdateAchiever(a *achiever.Achiever, token *jwt.TokenPair) (e error) {
+func (cgt *communitygoaltrackerjwtservice) AuthorizedUpdateAchiever(a *achiever.Achiever, token *authorization.TokenPair) (e error) {
 	u := cgt.client.URL
 	u.Path = RoutePrefix + AchieverLoginURL
 
@@ -126,7 +126,7 @@ func (cgt *communitygoaltrackerjwtservice) UpdateAchiever(a *achiever.Achiever) 
 }
 
 // AuthorizedUnRegister is an http implementation of the communitygoaltracker process.
-func (cgt *communitygoaltrackerjwtservice) AuthorizedUnRegister(a *achiever.Achiever, token *jwt.TokenPair) (e error) {
+func (cgt *communitygoaltrackerjwtservice) AuthorizedUnRegister(a *achiever.Achiever, token *authorization.TokenPair) (e error) {
 	return e
 }
 

@@ -5,6 +5,8 @@ import (
 	"net/url"
 )
 
+// Multiple service structure for client
+
 // Client to http services.
 type Client struct {
 	URL      *url.URL

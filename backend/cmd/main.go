@@ -4,7 +4,7 @@ import (
 	"os"
 	"os/signal"
 
-	"emersonargueta/m/v1/authorization/jwt"
+	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/config"
 	"emersonargueta/m/v1/data/postgres"
 	"emersonargueta/m/v1/delivery/http"
@@ -44,7 +44,7 @@ func main() {
 }
 
 func setUpHTTPServer(httpServer *http.Server, databaseClient *postgres.Client, config *config.Config) {
-	httpServer.Handler.Authorization = jwt.NewClient(config).Service()
+	httpServer.Handler.Authorization = authorization.NewClient(config).JwtService()
 	httpServer.Handler.Middleware = middleware.NewClient(config).JwtService()
 
 	httpServer.Handler.Communitygoaltracker.Achiever = databaseClient.AchieverService()

@@ -17,6 +17,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// Multiple service structure for client
+
 // Client to the postgres services.
 type Client struct {
 	Now      func() time.Time

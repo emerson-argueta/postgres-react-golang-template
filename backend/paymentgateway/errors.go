@@ -1,4 +1,4 @@
-package stripe
+package paymentgateway
 
 // Domain errors.
 const (

@@ -4,6 +4,8 @@ import (
 	"emersonargueta/m/v1/config"
 )
 
+// Single service structure for package
+
 // Client to the identity service.
 type Client struct {
 	config  *config.Config

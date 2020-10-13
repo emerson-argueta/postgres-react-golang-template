@@ -1,23 +1,30 @@
-package stripe
+package paymentgateway
 
 import (
-	"emersonargueta/m/v1/paymentgateway"
-
 	"github.com/stripe/stripe-go"
+	"github.com/stripe/stripe-go/client"
 	"github.com/stripe/stripe-go/sub"
 )
 
-var _ paymentgateway.Processes = &service{}
+var _ Processes = &stripeservice{}
 
-// service for managing stripe subscriptions.
-type service struct {
+type stripeservice struct {
 	client *Client
+	*client.API
+}
+
+// Initialize the underlying stripe client.
+func (s *stripeservice) Initialize() {
+	apiKey := s.client.config.PaymentGateway.APIKey
+	stripe := client.New(apiKey, nil)
+
+	s.API = stripe
 }
 
 // NewSubscription for a user with stripe. A new subscription for a
 // user can be created so that the user can gain access to
 // a domain.
-func (s *service) NewSubscription(details map[string]string) (e error) {
+func (s *stripeservice) NewSubscription(details map[string]string) (e error) {
 	if e = s.validateDetails(details); e != nil {
 		return e
 	}
@@ -37,11 +44,11 @@ func (s *service) NewSubscription(details map[string]string) (e error) {
 }
 
 // NewPayment made by customer.
-func (s *service) NewPayment(details map[string]string) (e error) {
+func (s *stripeservice) NewPayment(details map[string]string) (e error) {
 	return e
 }
 
-func (s *service) validateDetails(details map[string]string) (e error) {
+func (s *stripeservice) validateDetails(details map[string]string) (e error) {
 	if _, ok := details["email"]; !ok {
 		return ErrStripeNewSubscription
 	}
@@ -53,16 +60,16 @@ func (s *service) validateDetails(details map[string]string) (e error) {
 	}
 	return e
 }
-func (s *service) createCustomer(email string) (*stripe.Customer, error) {
+func (s *stripeservice) createCustomer(email string) (*stripe.Customer, error) {
 	customerParams := stripe.CustomerParams{Email: &email}
-	newCustomer, err := s.client.stripe.Customers.New(&customerParams)
+	newCustomer, err := s.Customers.New(&customerParams)
 	if err != nil {
 		return nil, err
 	}
 
 	return newCustomer, nil
 }
-func (s *service) createSubscription(planType string, paymentMethodID string, newCustomer *stripe.Customer) (*stripe.Subscription, error) {
+func (s *stripeservice) createSubscription(planType string, paymentMethodID string, newCustomer *stripe.Customer) (*stripe.Subscription, error) {
 	paymentMethod, err := s.attachPaymentMethod(paymentMethodID, newCustomer)
 	if err != nil {
 		return nil, ErrStripeNewSubscription
@@ -84,23 +91,23 @@ func (s *service) createSubscription(planType string, paymentMethodID string, ne
 
 	return sub.New(subscriptionParams)
 }
-func (s *service) attachPaymentMethod(paymentMethodID string, newCustomer *stripe.Customer) (*stripe.PaymentMethod, error) {
+func (s *stripeservice) attachPaymentMethod(paymentMethodID string, newCustomer *stripe.Customer) (*stripe.PaymentMethod, error) {
 
 	params := &stripe.PaymentMethodAttachParams{
 		Customer: &newCustomer.ID,
 	}
 
-	return s.client.stripe.PaymentMethods.Attach(paymentMethodID, params)
+	return s.PaymentMethods.Attach(paymentMethodID, params)
 
 }
-func (s *service) updateInvoiceSettingsToDefault(pm *stripe.PaymentMethod, nc *stripe.Customer) error {
+func (s *stripeservice) updateInvoiceSettingsToDefault(pm *stripe.PaymentMethod, nc *stripe.Customer) error {
 	customerParams := &stripe.CustomerParams{
 		InvoiceSettings: &stripe.CustomerInvoiceSettingsParams{
 			DefaultPaymentMethod: stripe.String(pm.ID),
 		},
 	}
 
-	if _, err := s.client.stripe.Customers.Update(nc.ID, customerParams); err != nil {
+	if _, err := s.Customers.Update(nc.ID, customerParams); err != nil {
 		return err
 	}
 
