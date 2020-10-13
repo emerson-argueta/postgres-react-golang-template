@@ -2,7 +2,8 @@ package authorization
 
 // jwt authorization errors.
 const (
-	ErrAuthorizationFailed = Error("could not authorize")
+	ErrAuthorizationFailed        = Error("could not authorize")
+	ErrAuthorizationKeyNotCreated = Error("could not create a the authorization key")
 )
 
 // Error represents a general middleware error.

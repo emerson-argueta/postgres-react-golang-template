@@ -2,7 +2,9 @@ package jwt
 
 // jwt authorization errors.
 const (
-	ErrJWTAuth = Error("invalid token, could not authorize")
+	ErrJWTAuth             = Error("invalid token, could not authorize")
+	ErrRefreshTokenExpired = Error("refresh token is expired")
+	ErrAcccessTokenExpired = Error("access token is expired")
 )
 
 // Error represents a general middleware error.

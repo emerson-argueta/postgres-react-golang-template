@@ -4,9 +4,11 @@ import (
 	"os"
 	"os/signal"
 
+	"emersonargueta/m/v1/authorization/jwt"
 	"emersonargueta/m/v1/config"
 	"emersonargueta/m/v1/data/postgres"
 	"emersonargueta/m/v1/delivery/http"
+	jwt_middleware "emersonargueta/m/v1/delivery/middleware/jwt"
 )
 
 // Config variables for services
@@ -26,7 +28,7 @@ func main() {
 	httpServer.Handler = &http.Handler{
 		CommunitygoaltrackerHandler: http.NewCommunitygoaltrackerHandler(Config),
 	}
-	setUpHTTPServer(httpServer, databaseClient)
+	setUpHTTPServer(httpServer, databaseClient, Config)
 
 	if err := httpServer.Open(); err != nil {
 		panic(err)
@@ -41,7 +43,9 @@ func main() {
 
 }
 
-func setUpHTTPServer(httpServer *http.Server, databaseClient *postgres.Client) {
+func setUpHTTPServer(httpServer *http.Server, databaseClient *postgres.Client, config *config.Config) {
+	httpServer.Handler.Authorization = jwt.NewClient(config).Service()
+	httpServer.Handler.Middleware = jwt_middleware.NewClient(config).Service()
 
 	httpServer.Handler.Communitygoaltracker.Achiever = databaseClient.AchieverService()
 	httpServer.Handler.Communitygoaltracker.Goal = databaseClient.GoalService()

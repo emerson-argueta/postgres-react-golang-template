@@ -12,17 +12,17 @@ type Client struct {
 }
 
 type services struct {
-	communitygoaltracker communitygoaltrackerservice
+	communitygoaltrackerjwt communitygoaltrackerjwtservice
 }
 
 // NewClient creates a connection to http services.
 func NewClient() *Client {
 	c := &Client{}
-	c.services.communitygoaltracker.client = c
+	c.services.communitygoaltrackerjwt.client = c
 	return c
 }
 
-// CommunitygoaltrackerService returns the service associated with the client.
-func (c *Client) CommunitygoaltrackerService() communitygoaltracker.Processes {
-	return &c.services.communitygoaltracker
+// CommunitygoaltrackerJwtService returns the service associated with the client.
+func (c *Client) CommunitygoaltrackerJwtService() communitygoaltracker.Processes {
+	return &c.services.communitygoaltrackerjwt
 }

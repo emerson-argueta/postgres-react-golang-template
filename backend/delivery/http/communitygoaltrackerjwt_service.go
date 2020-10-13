@@ -2,23 +2,23 @@ package http
 
 import (
 	"bytes"
+	"emersonargueta/m/v1/authorization/jwt"
 	"emersonargueta/m/v1/communitygoaltracker"
 	"emersonargueta/m/v1/communitygoaltracker/achiever"
 	"emersonargueta/m/v1/communitygoaltracker/goal"
-	"emersonargueta/m/v1/delivery/middleware"
 	"encoding/json"
 	"net/http"
 )
 
-var _ communitygoaltracker.Processes = &communitygoaltrackerservice{}
+var _ communitygoaltracker.Processes = &communitygoaltrackerjwtservice{}
 
-// communitygoaltrackerservice represents an HTTP implementation of communitygoaltracker.Service.
-type communitygoaltrackerservice struct {
+// communitygoaltrackerjwtservice represents an HTTP implementation of communitygoaltracker.Service.
+type communitygoaltrackerjwtservice struct {
 	client *Client
 }
 
 // Register is an http implementation of the communitygoaltracker process.
-func (cgt *communitygoaltrackerservice) Register(a *achiever.Achiever) (res *achiever.Achiever, e error) {
+func (cgt *communitygoaltrackerjwtservice) Register(a *achiever.Achiever) (res *achiever.Achiever, e error) {
 	u := cgt.client.URL
 	u.Path = RoutePrefix + AchieverURL
 
@@ -49,7 +49,7 @@ func (cgt *communitygoaltrackerservice) Register(a *achiever.Achiever) (res *ach
 }
 
 // Login is an http implementation of the communitygoaltracker process.
-func (cgt *communitygoaltrackerservice) Login(email string, password string) (res *achiever.Achiever, e error) {
+func (cgt *communitygoaltrackerjwtservice) Login(email string, password string) (res *achiever.Achiever, e error) {
 	u := cgt.client.URL
 	u.Path = RoutePrefix + AchieverLoginURL
 
@@ -80,7 +80,7 @@ func (cgt *communitygoaltrackerservice) Login(email string, password string) (re
 }
 
 // AuthorizedUpdateAchiever is an http implementation of the communitygoaltracker process.
-func (cgt *communitygoaltrackerservice) AuthorizedUpdateAchiever(a *achiever.Achiever, token *middleware.TokenPair) (e error) {
+func (cgt *communitygoaltrackerjwtservice) AuthorizedUpdateAchiever(a *achiever.Achiever, token *jwt.TokenPair) (e error) {
 	u := cgt.client.URL
 	u.Path = RoutePrefix + AchieverLoginURL
 
@@ -121,56 +121,56 @@ func (cgt *communitygoaltrackerservice) AuthorizedUpdateAchiever(a *achiever.Ach
 }
 
 // UpdateAchiever not used
-func (cgt *communitygoaltrackerservice) UpdateAchiever(a *achiever.Achiever) (e error) {
+func (cgt *communitygoaltrackerjwtservice) UpdateAchiever(a *achiever.Achiever) (e error) {
 	return e
 }
 
 // AuthorizedUnRegister is an http implementation of the communitygoaltracker process.
-func (cgt *communitygoaltrackerservice) AuthorizedUnRegister(a *achiever.Achiever, token *middleware.TokenPair) (e error) {
+func (cgt *communitygoaltrackerjwtservice) AuthorizedUnRegister(a *achiever.Achiever, token *jwt.TokenPair) (e error) {
 	return e
 }
 
 // UnRegister is not used
-func (cgt *communitygoaltrackerservice) UnRegister(a *achiever.Achiever) (e error) {
+func (cgt *communitygoaltrackerjwtservice) UnRegister(a *achiever.Achiever) (e error) {
 	return e
 }
 
 // AuthorizedCreateGoal is an http implementation of the communitygoaltracker process.
-func (cgt *communitygoaltrackerservice) AuthorizedCreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
+func (cgt *communitygoaltrackerjwtservice) AuthorizedCreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
 	return res, e
 }
 
 // CreateGoal is not used.
-func (cgt *communitygoaltrackerservice) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
+func (cgt *communitygoaltrackerjwtservice) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
 	return res, e
 }
 
 // AuthorizedUpdateGoalProgress is an http implementation of the communitygoaltracker process.
-func (cgt *communitygoaltrackerservice) AuthorizedUpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
+func (cgt *communitygoaltrackerjwtservice) AuthorizedUpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
 	return res, e
 }
 
 // UpdateGoalProgress is not used
-func (cgt *communitygoaltrackerservice) UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
+func (cgt *communitygoaltrackerjwtservice) UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
 	return res, e
 }
 
 // AuthorizedAbandonGoal is an http implementation of the communitygoaltracker process.
-func (cgt *communitygoaltrackerservice) AuthorizedAbandonGoal(achieverUUID string, goalID int64) (e error) {
+func (cgt *communitygoaltrackerjwtservice) AuthorizedAbandonGoal(achieverUUID string, goalID int64) (e error) {
 	return e
 }
 
 // AbandonGoal is not used
-func (cgt *communitygoaltrackerservice) AbandonGoal(achieverUUID string, goalID int64) (e error) {
+func (cgt *communitygoaltrackerjwtservice) AbandonGoal(achieverUUID string, goalID int64) (e error) {
 	return e
 }
 
 // AuthorizedDeleteGoal is an http implementation of the communitygoaltracker process.
-func (cgt *communitygoaltrackerservice) AuthorizedDeleteGoal(achieverUUID string, goalID int64) (e error) {
+func (cgt *communitygoaltrackerjwtservice) AuthorizedDeleteGoal(achieverUUID string, goalID int64) (e error) {
 	return e
 }
 
 // DeleteGoal is not used
-func (cgt *communitygoaltrackerservice) DeleteGoal(achieverUUID string, goalID int64) (e error) {
+func (cgt *communitygoaltrackerjwtservice) DeleteGoal(achieverUUID string, goalID int64) (e error) {
 	return e
 }

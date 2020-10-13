@@ -3,28 +3,27 @@ package http
 import (
 	"emersonargueta/m/v1/communitygoaltracker/achiever"
 	"emersonargueta/m/v1/communitygoaltracker/goal"
-	"emersonargueta/m/v1/delivery/middleware"
 )
 
 type achieverRequest struct {
-	Achiever *achiever.Achiever    `json:"achiever,omitempty"`
-	Token    *middleware.TokenPair `json:"token,omitempty"`
+	Achiever      *achiever.Achiever `json:"achiever,omitempty"`
+	Authorization map[string]string  `json:"authorization,omitempty"`
 }
 
 type achieverResponse struct {
-	Achiever *achiever.Achiever    `json:"achiever,omitempty"`
-	Token    *middleware.TokenPair `json:"token,omitempty"`
-	Error    string                `json:"error,omitempty"`
+	Achiever      *achiever.Achiever `json:"achiever,omitempty"`
+	Authorization map[string]string  `json:"authorization,omitempty"`
+	Error         string             `json:"error,omitempty"`
 }
 
 type goalRequest struct {
-	ID        *int64                `json:"id,omitempty"`
-	Name      *string               `json:"name,omitempty"`
-	State     *string               `json:"state,omitempty"`
-	Progress  *int                  `json:"progress,omitempty"`
-	Message   *string               `json:"message,omitempty"`
-	Timestamp *string               `json:"timestamp,omitempty"`
-	Token     *middleware.TokenPair `json:"token,omitempty"`
+	ID            *int64            `json:"id,omitempty"`
+	Name          *string           `json:"name,omitempty"`
+	State         *string           `json:"state,omitempty"`
+	Progress      *int              `json:"progress,omitempty"`
+	Message       *string           `json:"message,omitempty"`
+	Timestamp     *string           `json:"timestamp,omitempty"`
+	Authorization map[string]string `json:"authorization,omitempty"`
 }
 
 type goalResponse struct {

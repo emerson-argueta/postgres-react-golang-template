@@ -2,7 +2,6 @@ package http
 
 import (
 	"emersonargueta/m/v1/authorization"
-	"emersonargueta/m/v1/authorization/jwt"
 	"emersonargueta/m/v1/communitygoaltracker"
 	"emersonargueta/m/v1/config"
 	"emersonargueta/m/v1/delivery/middleware"
@@ -30,24 +29,18 @@ const (
 // CommunitygoaltrackerHandler represents an HTTP API handler.
 type CommunitygoaltrackerHandler struct {
 	*echo.Echo
-
 	Communitygoaltracker communitygoaltracker.AllProcesses
-
-	Authorization authorization.Processes
-
-	// PaymentGateway stripe.Services
-
+	Authorization        authorization.Processes
+	// PaymentGateway stripe.Processes
+	Middleware middleware.Processes
 	Logger     *log.Logger
-	Middleware *middleware.Middleware
 }
 
 // NewCommunitygoaltrackerHandler returns CommunitygoaltrackerHandler.
 func NewCommunitygoaltrackerHandler(config *config.Config) *CommunitygoaltrackerHandler {
 	h := &CommunitygoaltrackerHandler{
-		Echo:          echo.New(),
-		Logger:        log.New(os.Stderr, "", log.LstdFlags),
-		Middleware:    middleware.New(config),
-		Authorization: jwt.NewClient(config).Service(),
+		Echo:   echo.New(),
+		Logger: log.New(os.Stderr, "", log.LstdFlags),
 	}
 
 	public := h.Group(RoutePrefix)
@@ -56,7 +49,7 @@ func NewCommunitygoaltrackerHandler(config *config.Config) *Communitygoaltracker
 	// TODO: post method to handle authorization for achiever
 
 	restricted := h.Group(RoutePrefix)
-	restricted.Use(h.Middleware.JwtMiddleware())
+	restricted.Use(h.Middleware.MiddlewareFunc())
 	restricted.PATCH(AchieverURL, h.handleUpdateAchiever)
 	restricted.DELETE(AchieverURL, h.handleUnRegister)
 
@@ -78,13 +71,13 @@ func (h *CommunitygoaltrackerHandler) handleRegister(ctx echo.Context) (e error)
 
 	switch registeredAchiever, e := h.Communitygoaltracker.Register(req.Achiever); e {
 	case nil:
-		tokenPair, e := h.Middleware.GenerateTokenPair(*registeredAchiever.UUID, middleware.AccestokenLimit, middleware.RefreshtokenLimit)
+		newKey, e := h.Authorization.NewKey(*registeredAchiever.UUID)
 		if e != nil {
 			return ResponseError(ctx.Response().Writer, e, http.StatusInternalServerError, h.Logger)
 		}
 		// Do not send password to avoid exploits.
 		registeredAchiever.Password = nil
-		encodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: registeredAchiever, Token: tokenPair}, h.Logger)
+		encodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: registeredAchiever, Authorization: newKey}, h.Logger)
 	case communitygoaltracker.ErrAchieverIncompleteDetails:
 		return ResponseError(ctx.Response().Writer, e, http.StatusBadRequest, h.Logger)
 	default:
@@ -104,13 +97,13 @@ func (h *CommunitygoaltrackerHandler) handleLogin(ctx echo.Context) error {
 
 	switch registeredAchiever, e := h.Communitygoaltracker.Login(*req.Achiever.Email, *req.Achiever.Password); e {
 	case nil:
-		tokenPair, e := h.Middleware.GenerateTokenPair(*registeredAchiever.UUID, middleware.AccestokenLimit, middleware.RefreshtokenLimit)
+		newKey, e := h.Authorization.NewKey(*registeredAchiever.UUID)
 		if e != nil {
 			return ResponseError(ctx.Response().Writer, e, http.StatusInternalServerError, h.Logger)
 		}
 		// Do not send password to avoid exploits.
 		registeredAchiever.Password = nil
-		encodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: registeredAchiever, Token: tokenPair}, h.Logger)
+		encodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: registeredAchiever, Authorization: newKey}, h.Logger)
 	case identity.ErrUserIncorrectCredentials:
 		return ResponseError(ctx.Response().Writer, e, http.StatusUnauthorized, h.Logger)
 	default:
