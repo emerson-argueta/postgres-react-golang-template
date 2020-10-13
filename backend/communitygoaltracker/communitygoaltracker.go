@@ -47,7 +47,11 @@ func (s *Service) Register(a *achiever.Achiever) (res *achiever.Achiever, e erro
 	}
 
 	domains := make(user.Domains, 0)
-	role := a.Role.String()
+	role, e := a.Role.String()
+	if e != nil {
+		return nil, e
+	}
+
 	domains[*d.ID] = struct {
 		Role *string "json:\"role,omitempty\""
 	}{Role: &role}

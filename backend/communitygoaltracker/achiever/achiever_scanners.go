@@ -28,3 +28,24 @@ func (g *Goals) Scan(value interface{}) error {
 
 	return json.Unmarshal(b, &g)
 }
+
+// Value to store Role in database.
+func (r Role) Value() (driver.Value, error) {
+	return r.String()
+}
+
+// Scan string stored in database to Role type.
+func (r *Role) Scan(value interface{}) (e error) {
+	if value == nil {
+		return nil
+	}
+
+	i, ok := value.(string)
+	if !ok {
+		return errors.New("type assertion to string failed")
+	}
+
+	*r, e = ToRole(i)
+
+	return e
+}

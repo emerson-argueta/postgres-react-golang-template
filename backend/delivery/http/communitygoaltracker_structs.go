@@ -46,7 +46,7 @@ func requestToGoal(request *goalRequest, achieverUUID string) (res *goal.Goal) {
 	var state goal.State
 	var message goal.Messages
 	if request.State != nil {
-		state = goal.ToState(*request.State)
+		state, _ = goal.ToState(*request.State)
 	}
 	if request.Message != nil && request.Timestamp != nil {
 		message = make(goal.Messages)
@@ -71,7 +71,7 @@ func goalToResponse(g *goal.Goal) (res *goalResponse) {
 	if g.Achievers != nil {
 		achievers = make(Achievers)
 		for uuid, achiever := range *g.Achievers {
-			state := achiever.State.String()
+			state, _ := achiever.State.String()
 			achievers[uuid] = struct {
 				State    *string        "json:\"state,omitempty\""
 				Progress *int           "json:\"progress,omitempty\""

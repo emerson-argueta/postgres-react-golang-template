@@ -1,5 +1,7 @@
 package goal
 
+import "errors"
+
 // Goal represents a goal that an achiever is trying to complete.
 type Goal struct {
 	ID        *int64     `db:"id" dbignoreinsert:"" json:"id"`
@@ -43,14 +45,22 @@ const (
 )
 
 // Converts State to string representation.
-func (s State) String() string {
-	return [...]string{"inprogress", "abandoned", "completed"}[s]
+func (s State) String() (res string, e error) {
+	if s < InProgress || s > Completed {
+		return res, errors.New("could not convert State to string")
+	}
+
+	return [...]string{"inprogress", "abandoned", "completed"}[s], e
 
 }
 
 // ToState Converts string to Role enum
-func ToState(s string) State {
-	return map[string]State{"inprogress": InProgress, "abandoned": Abondoned, "completed": Completed}[s]
+func ToState(s string) (res State, e error) {
+	res, ok := map[string]State{"inprogress": InProgress, "abandoned": Abondoned, "completed": Completed}[s]
+	if !ok {
+		e = errors.New("could convert to State")
+	}
+	return res, e
 
 }
 

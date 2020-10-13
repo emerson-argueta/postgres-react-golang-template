@@ -1,5 +1,7 @@
 package achiever
 
+import "errors"
+
 // Role represents access role for an achiever within the communitygoaltracker
 // domain
 type Role int
@@ -11,14 +13,22 @@ const (
 	AdministratorRole
 )
 
-func (s Role) String() string {
-	return [...]string{"user", "administrator"}[s]
+func (s Role) String() (res string, e error) {
+	if s < UserRole || s > AdministratorRole {
+		return res, errors.New("could not convert to Role to string")
+	}
+	return [...]string{"user", "administrator"}[s], e
 
 }
 
 // ToRole Converts string to Role enum
-func ToRole(s string) Role {
-	return map[string]Role{"user": UserRole, "administrator": AdministratorRole}[s]
+func ToRole(s string) (res Role, e error) {
+	res, ok := map[string]Role{"user": UserRole, "administrator": AdministratorRole}[s]
+	if !ok {
+		e = errors.New("Could not covert to Role")
+	}
+
+	return res, e
 
 }
 
