@@ -3,7 +3,9 @@ package http_test
 import (
 	"bytes"
 	mockcommunitygoaltracker "emersonargueta/m/v1/communitygoaltracker/mock"
+	"emersonargueta/m/v1/config"
 	"emersonargueta/m/v1/delivery/http"
+	"emersonargueta/m/v1/delivery/middleware"
 	"log"
 	"testing"
 )
@@ -17,7 +19,11 @@ type CommunitygoaltrackerHandler struct {
 
 // NewCommunitygoaltrackerHandler returns a CommunitygoaltrackerHandler using mock implementation of services.
 func NewCommunitygoaltrackerHandler() *CommunitygoaltrackerHandler {
-	h := &CommunitygoaltrackerHandler{CommunitygoaltrackerHandler: http.NewCommunitygoaltrackerHandler()}
+	h := &CommunitygoaltrackerHandler{
+		CommunitygoaltrackerHandler: http.NewCommunitygoaltrackerHandler(
+			middleware.NewClient(config.NewConfig()).JwtService(),
+		),
+	}
 
 	h.CommunitygoaltrackerHandler.Communitygoaltracker.Processes = &h.CommunitygoaltrackerProcesses
 

@@ -14,7 +14,7 @@ type stripeservice struct {
 }
 
 // Initialize the underlying stripe client.
-func (s *stripeservice) Initialize() {
+func (s *stripeservice) initialize() {
 	apiKey := s.client.config.PaymentGateway.APIKey
 	stripe := client.New(apiKey, nil)
 

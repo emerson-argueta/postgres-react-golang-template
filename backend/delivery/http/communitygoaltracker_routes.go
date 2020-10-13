@@ -36,21 +36,17 @@ type CommunitygoaltrackerHandler struct {
 }
 
 // NewCommunitygoaltrackerHandler returns CommunitygoaltrackerHandler.
-func NewCommunitygoaltrackerHandler() *CommunitygoaltrackerHandler {
+func NewCommunitygoaltrackerHandler(middleware middleware.Processes) *CommunitygoaltrackerHandler {
 	h := &CommunitygoaltrackerHandler{
-		Echo:   echo.New(),
-		Logger: log.New(os.Stderr, "", log.LstdFlags),
+		Echo:       echo.New(),
+		Logger:     log.New(os.Stderr, "", log.LstdFlags),
+		Middleware: middleware,
 	}
 
-	return h
-}
-
-//Initialize after injecting services
-func (h *CommunitygoaltrackerHandler) Initialize() *CommunitygoaltrackerHandler {
 	public := h.Group(RoutePrefix)
 	public.POST(AchieverURL, h.handleRegister)
 	public.POST(AchieverLoginURL, h.handleLogin)
-	// TODO: post method to handle authorization for achiever
+	// TODO: post method to handle re-authorization for an achiever with expired key
 
 	restricted := h.Group(RoutePrefix)
 	restricted.Use(h.Middleware.MiddlewareFunc())
@@ -64,6 +60,7 @@ func (h *CommunitygoaltrackerHandler) Initialize() *CommunitygoaltrackerHandler 
 
 	return h
 }
+
 func (h *CommunitygoaltrackerHandler) handleRegister(ctx echo.Context) (e error) {
 	var req achieverRequest
 

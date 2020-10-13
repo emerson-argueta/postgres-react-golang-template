@@ -15,7 +15,7 @@ const (
 
 var _ Processes = &Service{}
 
-// Service exposes domain and model processes
+// Service exposes domain and model processes.
 type Service struct {
 	client *Client
 	Processes

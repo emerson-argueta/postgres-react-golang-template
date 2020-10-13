@@ -27,4 +27,7 @@ func NewClient(config *config.Config) *Client {
 }
 
 // StripeService returns the stripe service associated with the client.
-func (c *Client) StripeService() Processes { return &c.services.stripe }
+func (c *Client) StripeService() Processes {
+	c.services.stripe.initialize()
+	return &c.services.stripe
+}

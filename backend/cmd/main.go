@@ -5,12 +5,10 @@ import (
 	"os/signal"
 
 	"emersonargueta/m/v1/authorization"
-	"emersonargueta/m/v1/communitygoaltracker"
 	"emersonargueta/m/v1/config"
 	"emersonargueta/m/v1/data/postgres"
 	"emersonargueta/m/v1/delivery/http"
 	"emersonargueta/m/v1/delivery/middleware"
-	"emersonargueta/m/v1/identity"
 )
 
 // Config variables for services
@@ -44,18 +42,18 @@ func main() {
 func setUpHTTPServer(databaseClient *postgres.Client, config *config.Config) (res *http.Server) {
 	res = http.NewServer(Config)
 
-	cgtHandler := http.NewCommunitygoaltrackerHandler()
-	cgtHandler.Middleware = middleware.NewClient(config).JwtService()
+	// jwt middleware and authentication for communitygoaltracker http handler
+	jwtMiddleware := middleware.NewClient(config).JwtService()
+	cgtHandler := http.NewCommunitygoaltrackerHandler(jwtMiddleware)
 	cgtHandler.Authorization = authorization.NewClient(config).JwtService()
 
-	cgtHandler.Communitygoaltracker.Processes = communitygoaltracker.NewClient().Service()
+	// postgres database for communitygoaltracker model processes
 	cgtHandler.Communitygoaltracker.Achiever = databaseClient.AchieverService()
 	cgtHandler.Communitygoaltracker.Goal = databaseClient.GoalService()
-	cgtHandler.Communitygoaltracker.Identity.Processes = identity.NewClient().Service()
+
+	// postgres database for identity model processes
 	cgtHandler.Communitygoaltracker.Identity.User = databaseClient.UserService()
 	cgtHandler.Communitygoaltracker.Identity.Domain = databaseClient.DomainService()
-
-	cgtHandler.Initialize()
 
 	res.Handler = &http.Handler{
 
