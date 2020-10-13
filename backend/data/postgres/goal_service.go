@@ -8,15 +8,15 @@ import (
 	"github.com/lib/pq"
 )
 
-var _ goal.Processes = &GoalService{}
+var _ goal.Processes = &goalservice{}
 
-// GoalService represents a service for managing a Goal.
-type GoalService struct {
+// goalservice represents a service for managing a Goal.
+type goalservice struct {
 	client *Client
 }
 
 // CreateGoal if successful. If the goal exists, returns ErrGoalExists.
-func (s *GoalService) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
+func (s *goalservice) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
 	query, e := NewQuery(g)
 	if e != nil {
 		return nil, e
@@ -45,7 +45,7 @@ func (s *GoalService) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
 }
 
 // RetrieveGoal by email. If the goal does not exists, returns ErrGoalNotFound.
-func (s *GoalService) RetrieveGoal(id int64) (res *goal.Goal, e error) {
+func (s *goalservice) RetrieveGoal(id int64) (res *goal.Goal, e error) {
 	filter := "ID=?"
 	queryParam := id
 
@@ -69,7 +69,7 @@ func (s *GoalService) RetrieveGoal(id int64) (res *goal.Goal, e error) {
 
 // UpdateGoal searching by id. If the goal does not exists, returns
 // ErrGoalNotFound.
-func (s *GoalService) UpdateGoal(g *goal.Goal) (e error) {
+func (s *goalservice) UpdateGoal(g *goal.Goal) (e error) {
 	filter := "ID=?"
 	queryParam := g.ID
 
@@ -95,7 +95,7 @@ func (s *GoalService) UpdateGoal(g *goal.Goal) (e error) {
 
 // DeleteGoal searching by id. If the goal does not exists, returns
 // ErrGoalNotFound.
-func (s *GoalService) DeleteGoal(id int64) (e error) {
+func (s *goalservice) DeleteGoal(id int64) (e error) {
 	filter := "ID=?"
 	queryParam := id
 
@@ -116,7 +116,7 @@ func (s *GoalService) DeleteGoal(id int64) (e error) {
 
 // RetrieveGoals searching by ids. Returns ErrGoalNotFound if none of the goals
 // are found.
-func (s *GoalService) RetrieveGoals(ids []int64) (res []*goal.Goal, e error) {
+func (s *goalservice) RetrieveGoals(ids []int64) (res []*goal.Goal, e error) {
 
 	query, err := NewQuery(&goal.Goal{})
 	if err != nil {
@@ -144,7 +144,7 @@ func (s *GoalService) RetrieveGoals(ids []int64) (res []*goal.Goal, e error) {
 // UpdateGoals searching by ids. Returns ErrGoalNotFound if none of the goals
 // not found. Return ErrGoalExists if any of the update names conflicts with
 // another goal.
-func (s *GoalService) UpdateGoals(gg []*goal.Goal) (e error) {
+func (s *goalservice) UpdateGoals(gg []*goal.Goal) (e error) {
 	// TODO
 	searchKey := "ID"
 

@@ -5,25 +5,24 @@ import (
 	"net/url"
 )
 
-// Client represents a client to connect to the HTTP server.
+// Client to http services.
 type Client struct {
 	URL      *url.URL
 	services services
 }
 
-// Services represents the services that jwt service provides
 type services struct {
-	Communitygoaltracker CommunitygoaltrackerService
+	communitygoaltracker communitygoaltrackerservice
 }
 
-// NewClient returns a new instance of Client.
+// NewClient creates a connection to http services.
 func NewClient() *Client {
 	c := &Client{}
-	c.services.Communitygoaltracker.client = c
+	c.services.communitygoaltracker.client = c
 	return c
 }
 
 // CommunitygoaltrackerService returns the service associated with the client.
 func (c *Client) CommunitygoaltrackerService() communitygoaltracker.Processes {
-	return &c.services.Communitygoaltracker
+	return &c.services.communitygoaltracker
 }

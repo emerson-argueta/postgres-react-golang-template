@@ -17,28 +17,22 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// Client represents a client to the underlying PostgreSQL database.
+// Client to the postgres services.
 type Client struct {
-
-	// Returns the current time.
-	Now func() time.Time
-
-	config *config.Config
-
+	Now      func() time.Time
+	config   *config.Config
 	services services
-
-	db *sqlx.DB
+	db       *sqlx.DB
 }
 
-// services represents the services that the postgres service provides
 type services struct {
-	user     UserService
-	domain   DomainService
-	achiever AchieverService
-	goal     GoalService
+	user     userservice
+	domain   domainservice
+	achiever achieverservice
+	goal     goalservice
 }
 
-// NewClient function
+// NewClient creates a connection to the postgres services.
 func NewClient(config *config.Config) *Client {
 	c := &Client{Now: time.Now}
 

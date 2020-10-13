@@ -6,23 +6,24 @@ import (
 	"emersonargueta/m/v1/delivery/middleware"
 )
 
-// Client represents a client to the jwt authorization serrvice.
+// Client to the jwt authorization service.
 type Client struct {
-	config  *config.Config
-	service service
+	config     *config.Config
+	service    service
+	middleware *middleware.Middleware
 }
 
-// NewClient function
+// NewClient to the jwt authorization service.
 func NewClient(config *config.Config) *Client {
 	c := &Client{}
 
 	c.service.client = c
-	c.service.middleware = middleware.New(config)
+	c.middleware = middleware.New(config)
 
 	c.config = config
 
 	return c
 }
 
-// JwtService returns the jwt service associated with the client.
+// Service returns the jwt authorization service associated with the client.
 func (c *Client) Service() authorization.Processes { return &c.service }

@@ -8,16 +8,16 @@ import (
 	"github.com/lib/pq"
 )
 
-var _ achiever.Processes = &AchieverService{}
+var _ achiever.Processes = &achieverservice{}
 
-// AchieverService represents a service for managing a Achiever.
-type AchieverService struct {
+// achieverservice represents a service for managing a Achiever.
+type achieverservice struct {
 	client *Client
 }
 
 // CreateAchiever if successful. If the achiever
 // exists, returns ErrAchieverExists.
-func (s *AchieverService) CreateAchiever(a *achiever.Achiever) (res *achiever.Achiever, e error) {
+func (s *achieverservice) CreateAchiever(a *achiever.Achiever) (res *achiever.Achiever, e error) {
 	query, e := NewQuery(a)
 	if e != nil {
 		return nil, e
@@ -47,7 +47,7 @@ func (s *AchieverService) CreateAchiever(a *achiever.Achiever) (res *achiever.Ac
 
 // RetrieveAchiever by uuid. If the achiever does not exists,
 // returns ErrAchieverNotFound.
-func (s *AchieverService) RetrieveAchiever(uuid string) (res *achiever.Achiever, e error) {
+func (s *achieverservice) RetrieveAchiever(uuid string) (res *achiever.Achiever, e error) {
 	filter := "UUID=?"
 	queryParam := uuid
 
@@ -71,7 +71,7 @@ func (s *AchieverService) RetrieveAchiever(uuid string) (res *achiever.Achiever,
 
 // UpdateAchiever searching by uuid. If the achiever does not exists, returns
 // ErrAchieverNotFound.
-func (s *AchieverService) UpdateAchiever(a *achiever.Achiever) (e error) {
+func (s *achieverservice) UpdateAchiever(a *achiever.Achiever) (e error) {
 	filter := "UUID=?"
 	queryParam := a.UUID
 
@@ -97,7 +97,7 @@ func (s *AchieverService) UpdateAchiever(a *achiever.Achiever) (e error) {
 
 // DeleteAchiever searching by uuid. If the achiever does not exists, returns
 // ErrAchieverNotFound.
-func (s *AchieverService) DeleteAchiever(uuid string) (e error) {
+func (s *achieverservice) DeleteAchiever(uuid string) (e error) {
 	filter := "UUID=?"
 	queryParam := uuid
 

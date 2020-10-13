@@ -31,7 +31,7 @@ const (
 type CommunitygoaltrackerHandler struct {
 	*echo.Echo
 
-	Communitygoaltracker communitygoaltracker.Service
+	Communitygoaltracker communitygoaltracker.AllProcesses
 
 	Authorization authorization.Processes
 

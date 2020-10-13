@@ -12,17 +12,20 @@ const (
 	DomainName = "community-goal-tracker"
 )
 
-var _ Processes = &Service{}
+var _ Processes = &service{}
 
-// Service exposes Communitygoaltracker domain processes.
-type Service struct {
+type service struct {
 	client *Client
+	AllProcesses
+}
+
+// AllProcesses from models and subdomains used in core domain. Includes processes used in
+// core domain.
+type AllProcesses struct {
 	Processes
-	// Communitygoaltacker processes used internally in processes.
 	Achiever achiever.Processes
 	Goal     goal.Processes
-	// From identity domain used internally in communitygaoltracker processes.
-	Identity identity.Service
+	Identity identity.AllProcesses
 }
 
 // Processes for communitygoaltracker.
@@ -41,7 +44,7 @@ type Processes interface {
 // Using the identity subdomain service register the achiever.
 // If there is an existing user, retrieve the user.
 // Create the achiever.
-func (s *Service) Register(a *achiever.Achiever) (res *achiever.Achiever, e error) {
+func (s *service) Register(a *achiever.Achiever) (res *achiever.Achiever, e error) {
 
 	d, e := s.Identity.LookupDomain(DomainName)
 	if e != nil {
@@ -69,7 +72,7 @@ func (s *Service) Register(a *achiever.Achiever) (res *achiever.Achiever, e erro
 // Login using the following business logic: Using the identity subdomain
 // service login the achiever using the provided achiever. If the identity
 // service is unable to process the request return the error
-func (s *Service) Login(email string, password string) (res *achiever.Achiever, e error) {
+func (s *service) Login(email string, password string) (res *achiever.Achiever, e error) {
 	u, e := s.Identity.LoginUser(email, password)
 	if e != nil {
 		return nil, e
@@ -81,7 +84,7 @@ func (s *Service) Login(email string, password string) (res *achiever.Achiever, 
 // UpdateAchiever using the following business logic: If email or password is
 // updated update the identity domain user then update the communitygoaltracker
 // achiever.
-func (s *Service) UpdateAchiever(a *achiever.Achiever) (e error) {
+func (s *service) UpdateAchiever(a *achiever.Achiever) (e error) {
 	if a.UUID == nil {
 		return ErrAchieverIncompleteDetails
 	}
@@ -98,7 +101,7 @@ func (s *Service) UpdateAchiever(a *achiever.Achiever) (e error) {
 
 //UnRegister using the following business logic: delete the achiever and remove
 //achiever from any goals they created.
-func (s *Service) UnRegister(a *achiever.Achiever) (e error) {
+func (s *service) UnRegister(a *achiever.Achiever) (e error) {
 	gg, e := s.removeAchieverFromGoals(*a.Goals, *a.UUID)
 	if e != nil {
 		return e
@@ -115,7 +118,7 @@ func (s *Service) UnRegister(a *achiever.Achiever) (e error) {
 // Create a goal with achiever as part of goal's achievers.
 // Add goal to achiever's goals and update the achiever.
 //
-func (s *Service) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
+func (s *service) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
 	if g.Achievers == nil {
 		return nil, ErrGoalIncompleteDetails
 	}
@@ -132,7 +135,7 @@ func (s *Service) CreateGoal(g *goal.Goal) (res *goal.Goal, e error) {
 // between 0 and 100 which can be interpreted as 0 percent to 100 percent. If
 // the progress is 100 then update the state for the goal's achiever to
 // complete.
-func (s *Service) UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
+func (s *service) UpdateGoalProgress(achieverUUID string, goalID int64, progress int) (res *goal.Goal, e error) {
 	if progress < 0 || progress > 100 {
 		return nil, ErrGoalInvalidProgress
 	}
@@ -161,7 +164,7 @@ func (s *Service) UpdateGoalProgress(achieverUUID string, goalID int64, progress
 
 // AbandonGoal using the following business logic: Retrieve the goal and
 // update the state for the goal's achiever.
-func (s *Service) AbandonGoal(achieverUUID string, goalID int64) (e error) {
+func (s *service) AbandonGoal(achieverUUID string, goalID int64) (e error) {
 
 	g, e := s.Goal.RetrieveGoal(goalID)
 	if g.Achievers == nil {
@@ -181,7 +184,7 @@ func (s *Service) AbandonGoal(achieverUUID string, goalID int64) (e error) {
 
 // DeleteGoal using the following business logic: Retrieve the goal and if the
 // goal has now achievers except for the one deleting then delete the goal.
-func (s *Service) DeleteGoal(achieverUUID string, goalID int64) (e error) {
+func (s *service) DeleteGoal(achieverUUID string, goalID int64) (e error) {
 
 	g, e := s.Goal.RetrieveGoal(goalID)
 	if g.Achievers == nil {
@@ -198,7 +201,7 @@ func (s *Service) DeleteGoal(achieverUUID string, goalID int64) (e error) {
 	return s.Goal.DeleteGoal(goalID)
 }
 
-func (s *Service) removeGoalFromAchiever(a *achiever.Achiever, goalID int64) (e error) {
+func (s *service) removeGoalFromAchiever(a *achiever.Achiever, goalID int64) (e error) {
 	a, e = s.Achiever.RetrieveAchiever(*a.UUID)
 	if a.Goals == nil {
 		return nil
@@ -211,7 +214,7 @@ func (s *Service) removeGoalFromAchiever(a *achiever.Achiever, goalID int64) (e 
 
 	return s.Achiever.UpdateAchiever(a)
 }
-func (s *Service) addGoalToAchiever(a *achiever.Achiever, goalID int64) (e error) {
+func (s *service) addGoalToAchiever(a *achiever.Achiever, goalID int64) (e error) {
 	a, e = s.Achiever.RetrieveAchiever(*a.UUID)
 	if a.Goals == nil {
 		achieverGoals := make(achiever.Goals)
@@ -221,7 +224,7 @@ func (s *Service) addGoalToAchiever(a *achiever.Achiever, goalID int64) (e error
 
 	return s.Achiever.UpdateAchiever(a)
 }
-func (s *Service) removeAchieverFromGoals(achieverGoals achiever.Goals, achieverUUID string) (res []*goal.Goal, e error) {
+func (s *service) removeAchieverFromGoals(achieverGoals achiever.Goals, achieverUUID string) (res []*goal.Goal, e error) {
 	goalIDs := achieverGoals.Keys()
 	gg, e := s.Goal.RetrieveGoals(goalIDs)
 	for _, g := range gg {

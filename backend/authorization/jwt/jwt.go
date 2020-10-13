@@ -10,8 +10,7 @@ import (
 var _ authorization.Processes = &service{}
 
 type service struct {
-	client     *Client
-	middleware *middleware.Middleware
+	client *Client
 }
 
 // Authorize a user where the key is a jwt token. Returns the user's uuid if succesful,or ErrAuthorizationFailed
@@ -36,13 +35,13 @@ func (s *service) Authorize(key interface{}) (res *string, e error) {
 func (s *service) newToken(token *middleware.TokenPair, uuid string) (res *middleware.TokenPair, e error) {
 
 	// Validate refresh token
-	if jwtTokenPair, err := s.middleware.TokenPairStringToJWT(token); err != nil {
+	if jwtTokenPair, err := s.client.middleware.TokenPairStringToJWT(token); err != nil {
 		return nil, ErrJWTAuth
 	} else if uuidClaim, ok := jwtTokenPair.Refreshtoken.Claims.(jwt.MapClaims)["uuid"].(string); !ok {
 		return nil, ErrJWTAuth
 	} else if uuidClaim != uuid {
 		return nil, ErrJWTAuth
-	} else if tokenPair, err := s.middleware.GenerateTokenPair(uuid, middleware.AccestokenLimit, middleware.RefreshtokenLimit); err != nil {
+	} else if tokenPair, err := s.client.middleware.GenerateTokenPair(uuid, middleware.AccestokenLimit, middleware.RefreshtokenLimit); err != nil {
 		return nil, err
 	} else {
 

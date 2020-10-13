@@ -8,16 +8,16 @@ import (
 	"github.com/lib/pq"
 )
 
-var _ domain.Processes = &DomainService{}
+var _ domain.Processes = &domainservice{}
 
-// DomainService represents a service for managing a domain.
-type DomainService struct {
+// domainservice represents a service for managing a domain.
+type domainservice struct {
 	client *Client
 }
 
 // CreateDomain if successful. If the domain
 // exists, returns ErrDomainExists.
-func (s *DomainService) CreateDomain(d *domain.Domain) (res *domain.Domain, e error) {
+func (s *domainservice) CreateDomain(d *domain.Domain) (res *domain.Domain, e error) {
 	query, e := NewQuery(d)
 	if e != nil {
 		return nil, e
@@ -47,7 +47,7 @@ func (s *DomainService) CreateDomain(d *domain.Domain) (res *domain.Domain, e er
 
 // RetrieveDomain searching by name. If the domain does not exists,
 // returns ErrDomainNotFound.
-func (s *DomainService) RetrieveDomain(name string) (res *domain.Domain, e error) {
+func (s *domainservice) RetrieveDomain(name string) (res *domain.Domain, e error) {
 	filter := "NAME=?"
 	queryParam := name
 
@@ -71,7 +71,7 @@ func (s *DomainService) RetrieveDomain(name string) (res *domain.Domain, e error
 
 // UpdateDomain searching by id. If the domain does not exists, returns
 // ErrDomainNotFound.
-func (s *DomainService) UpdateDomain(d *domain.Domain) (e error) {
+func (s *domainservice) UpdateDomain(d *domain.Domain) (e error) {
 	filter := "ID=?"
 	queryParam := d.ID
 
@@ -96,7 +96,7 @@ func (s *DomainService) UpdateDomain(d *domain.Domain) (e error) {
 
 // DeleteDomain searching by id. If the domain does not exists, returns
 // ErrDomainNotFound.
-func (s *DomainService) DeleteDomain(id int64) (e error) {
+func (s *domainservice) DeleteDomain(id int64) (e error) {
 	filter := "ID=?"
 	queryParam := id
 

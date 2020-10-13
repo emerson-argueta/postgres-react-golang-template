@@ -7,28 +7,24 @@ import (
 	"github.com/stripe/stripe-go/client"
 )
 
-// Client represents a client to the underlying stripe client.
+// Client to the stripe service.
 type Client struct {
-	config *config.Config
-
-	// Service
+	config  *config.Config
 	service service
-
-	//stripe client
-	stripe *client.API
+	stripe  *client.API
 }
 
-// NewClient function
+// NewClient creates connection to strinpe service.
 func NewClient(config *config.Config) *Client {
 	c := &Client{}
-	c.service.client = c
 
+	c.service.client = c
 	c.config = config
 
 	return c
 }
 
-// Initialize the stripe client.
+// Initialize the underlying stripe client.
 func (c *Client) Initialize() {
 	apiKey := c.config.PaymentGateway.APIKey
 	stripe := client.New(apiKey, nil)
@@ -37,6 +33,4 @@ func (c *Client) Initialize() {
 }
 
 // Service returns the stripe service associated with the client.
-func (c *Client) Service() paymentgateway.Processes {
-	return &c.service
-}
+func (c *Client) Service() paymentgateway.Processes { return &c.service }

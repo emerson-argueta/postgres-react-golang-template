@@ -4,19 +4,19 @@ import (
 	"emersonargueta/m/v1/config"
 )
 
-// Client represents a client to the underlying stripe client.
+// Client to the identity service.
 type Client struct {
-	config   *config.Config
-	Identity Service
+	config  *config.Config
+	service service
 }
 
-// NewClient function
+// NewClient creates a connection to an identity service.
 func NewClient() *Client {
 	c := &Client{}
-	c.Identity.client = c
+	c.service.client = c
 
 	return c
 }
 
-// Service returns the jwt service associated with the client.
-func (c *Client) Service() Processes { return &c.Identity }
+// Service returns the identity service associated with the client.
+func (c *Client) Service() Processes { return &c.service }
