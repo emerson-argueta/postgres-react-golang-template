@@ -1,1 +1,1 @@
-web: bin/go-trustdonations-v2
+web: bin/cmd
