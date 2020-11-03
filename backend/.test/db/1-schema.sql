@@ -100,17 +100,20 @@ CREATE FUNCTION COMMUNITY_GOAL_TRACKER.ACHIEVERS()
 ;
 
 -- Creating goals json schema used by community_goal_tracker models
--- object structure {[goals_id_number]}
--- ex: {[1432]}}
+-- object structure {goals_id_number:boolean}
+-- ex: {1432:true}
 --     in this example goals_id_numer 1432 could refer to goal with name bulid-house
 CREATE FUNCTION COMMUNITY_GOAL_TRACKER.GOALS()
   RETURNS JSONB LANGUAGE SQL IMMUTABLE PARALLEL SAFE AS
   $$SELECT JSONB
   '{
-    "type":"array",
-    "items":{
-      "type":"number"
-    }
+    "type":"object",
+    "patternProperties":{
+      "^[0-9]+$":{
+        "type":"boolean"       
+      }
+    },
+    "additionalProperties":false
   }'
   $$
 ;

@@ -4,12 +4,12 @@ values
 ('identity'),
 ('community-goal-tracker') RETURNING ID;
 
--- password mocanela12
+-- password is password
 DELETE FROM IDENTITY.USER;
 INSERT INTO IDENTITY.USER(email,password,domains) 
 values
 (
-    'jargueta1964@gmail.com','$2a$10$fPnqG7PMDRfQMZTqKkr6Iem5Z7/QKSY67Vi53trqX.D5t35AJBWSy',
+    'test0@test.com','$2a$10$o4OS7VZwSxf8qsjg5/JmCeAgLHD/KtnY5/YX4U4tRZ77tq3TNN7FG',
     (
         '{
             "'||(SELECT ID FROM IDENTITY.DOMAIN WHERE NAME='community-goal-tracker')||'":{
@@ -22,7 +22,7 @@ values
     )::jsonb
 ),
 (
-    'test1@test.com','$2a$10$fPnqG7PMDRfQMZTqKkr6Iem5Z7/QKSY67Vi53trqX.D5t35AJBWSy',
+    'test1@test.com','$2a$10$o4OS7VZwSxf8qsjg5/JmCeAgLHD/KtnY5/YX4U4tRZ77tq3TNN7FG',
     (
         '{
             "'||(SELECT ID FROM IDENTITY.DOMAIN WHERE NAME='community-goal-tracker')||'":{
@@ -32,7 +32,7 @@ values
     )::jsonb
 ),
 (
-    'test2@test.com','$2a$10$fPnqG7PMDRfQMZTqKkr6Iem5Z7/QKSY67Vi53trqX.D5t35AJBWSy',
+    'test2@test.com','$2a$10$o4OS7VZwSxf8qsjg5/JmCeAgLHD/KtnY5/YX4U4tRZ77tq3TNN7FG',
     (
         '{
             "'||(SELECT ID FROM IDENTITY.DOMAIN WHERE NAME='community-goal-tracker')||'":{
@@ -50,7 +50,7 @@ values
     'get-degree',
     (
     '{
-        "'||(SELECT UUID FROM IDENTITY.USER WHERE EMAIL='jargueta1964@gmail.com')||'":{
+        "'||(SELECT UUID FROM IDENTITY.USER WHERE EMAIL='test0@test.com')||'":{
             "state":"inprogress","progress":50,"messages":{"2008-09-01 12:35:45":"enrolled at caltech","2008-09-05 12:35:45":"registered for classes"}
         }
     }'
@@ -60,7 +60,7 @@ values
     'build-house',
     (
     '{
-        "'||(SELECT UUID FROM IDENTITY.USER WHERE EMAIL='jargueta1964@gmail.com')||'":{
+        "'||(SELECT UUID FROM IDENTITY.USER WHERE EMAIL='test0@test.com')||'":{
             "state":"inprogress","progress":50,"messages":{"2008-09-01 12:35:45":"got approval from city council","2008-10-01 12:35:45":"put up walls"}
         },
         "'||(SELECT UUID FROM IDENTITY.USER WHERE EMAIL='test2@test.com')||'":{
@@ -73,7 +73,7 @@ values
     'create-business',
     (
     '{
-        "'||(SELECT UUID FROM IDENTITY.USER WHERE EMAIL='jargueta1964@gmail.com')||'":{
+        "'||(SELECT UUID FROM IDENTITY.USER WHERE EMAIL='test0@test.com')||'":{
             "state":"inprogress","progress":50,"messages":{"2008-09-01 12:35:45":"created website","2008-10-01 12:35:45":"saved money for startup costs"}
         },
         "'||(SELECT UUID FROM IDENTITY.USER WHERE EMAIL='test1@test.com')||'":{
@@ -87,18 +87,18 @@ DELETE FROM COMMUNITY_GOAL_TRACKER.ACHIEVER;
 INSERT INTO COMMUNITY_GOAL_TRACKER.ACHIEVER(UUID,ROLE,FIRSTNAME, LASTNAME, ADDRESS, PHONE, GOALS)
 values
 (   
-    (SELECT UUID FROM IDENTITY.USER WHERE EMAIL='jargueta1964@gmail.com'),
+    (SELECT UUID FROM IDENTITY.USER WHERE EMAIL='test0@test.com'),
     'user',
     'Jorge',
     'Argueta',
     '18851 Benicia St, Hesperia CA,92345',
     '909-644-5114',
     (
-        '[
-            '||(SELECT ID FROM COMMUNITY_GOAL_TRACKER.GOAL WHERE NAME='get-degree')||',
-            '||(SELECT ID FROM COMMUNITY_GOAL_TRACKER.GOAL WHERE NAME='build-house')||',
-            '||(SELECT ID FROM COMMUNITY_GOAL_TRACKER.GOAL WHERE NAME='create-business')||'
-        ]'
+        '{
+            "'||(SELECT ID FROM COMMUNITY_GOAL_TRACKER.GOAL WHERE NAME='get-degree')||'": true,
+            "'||(SELECT ID FROM COMMUNITY_GOAL_TRACKER.GOAL WHERE NAME='build-house')||'": true,
+            "'||(SELECT ID FROM COMMUNITY_GOAL_TRACKER.GOAL WHERE NAME='create-business')||'": true
+        }'
     )::jsonb
 ),
 (   
@@ -109,9 +109,9 @@ values
     'test admin1 address',
     'test admin1 phone',
     (
-        '[
-            '||(SELECT ID FROM COMMUNITY_GOAL_TRACKER.GOAL WHERE NAME='create-business')||'
-        ]'
+        '{
+            "'||(SELECT ID FROM COMMUNITY_GOAL_TRACKER.GOAL WHERE NAME='create-business')||'":true
+        }'
     )::jsonb
 ),
 (
@@ -122,8 +122,8 @@ values
     'test admin2 address',
     'test admin2 phone',
     (
-        '[
-            '||(SELECT ID FROM COMMUNITY_GOAL_TRACKER.GOAL WHERE NAME='build-house')||'     
-        ]'
+        '{
+            "'||(SELECT ID FROM COMMUNITY_GOAL_TRACKER.GOAL WHERE NAME='build-house')||'":true     
+        }'
     )::jsonb
 );
