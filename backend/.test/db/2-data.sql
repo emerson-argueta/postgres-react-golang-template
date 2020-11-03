@@ -89,10 +89,10 @@ values
 (   
     (SELECT UUID FROM IDENTITY.USER WHERE EMAIL='test0@test.com'),
     'user',
-    'Jorge',
-    'Argueta',
-    '18851 Benicia St, Hesperia CA,92345',
-    '909-644-5114',
+    'test admin0 firstname',
+    'test admin0 lastname',
+    'test admin0 address',
+    'test admin0 phone',
     (
         '{
             "'||(SELECT ID FROM COMMUNITY_GOAL_TRACKER.GOAL WHERE NAME='get-degree')||'": true,
