@@ -1,34 +1,34 @@
 import React, { useState, useRef, Fragment, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { IAdministrator } from '../../../types/Interface/AdministratorInterfaces'
-import { userLoginACT } from '../../../redux/actions/AuthActions'
-import { LoginForm } from './LoginForm'
+import { userLoginACT } from '../../redux/actions/AuthActions'
+import { LoginForm } from './login/LoginForm'
 import { Button, Dialog, DialogContent, DialogActions } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
-import * as AUTH_TYPES from '../../../types/AuthTypes'
+import * as AUTH_TYPES from '../../types/AuthTypes'
+import * as TYPES from '../../types/Types'
+import { IAchiever } from '../../types/AchieverTypes'
 
-export const LoginDialog = () => {
+
+export const Login = () => {
     const [open, setOpen] = useState(false)
     const [msg, setMsg] = useState(null)
     const [formDetails, setFormDetails] = useState(null)
 
-    const auth: AUTH_TYPES.IAuthState = useSelector((state: { app: AUTH_TYPES.IAppState, auth: AUTH_TYPES.IAuthState }) => {
+    const auth: AUTH_TYPES.IAuthState = useSelector((state: { app: TYPES.IAppState, auth: AUTH_TYPES.IAuthState }) => {
         return state.auth
     })
 
     const dispatch = useDispatch()
-    const login = (administrator: IAdministrator | null) => dispatch(userLoginACT(administrator))
+    const login = (user: IAchiever) => dispatch(userLoginACT(user))
 
     useEffect(() => {
-        // Check for register error
         if (auth.error?.id === AUTH_TYPES.LOGIN_FAIL) {
             setMsg(auth.error.msg as any);
         } else {
             setMsg(null);
         }
 
-        // If authenticated, close modal
         if (open) {
             if (auth.isAuthenticated) {
                 setOpen(false);
@@ -36,21 +36,15 @@ export const LoginDialog = () => {
         }
     }, [auth.error, auth.isAuthenticated, open]);
 
-
     const loginButtonRef = useRef<HTMLButtonElement>(null)
     const handleOnEnter = () => {
         if (loginButtonRef.current !== null) {
             loginButtonRef.current.focus();
         }
     };
-    return (
-        <Fragment>
-            <Button
-                color="inherit"
-                onClick={() => setOpen(true)}
-            >
-                Login
-            </Button>
+    const loginDialog = () => {
+
+        return (
             <Dialog
                 onEnter={handleOnEnter}
                 id="standard-dialog"
@@ -72,10 +66,10 @@ export const LoginDialog = () => {
                         variant="contained"
                         color="default"
                         disableElevation
-                        onClick={() => login(formDetails)}
+                        onClick={() => login(formDetails || {})}
                     >
                         Login
-                    </Button>
+                        </Button>
 
                     <Button
                         variant="contained"
@@ -84,9 +78,23 @@ export const LoginDialog = () => {
                         onClick={() => setOpen(false)}
                     >
                         Cancel
-                </Button>
+                    </Button>
                 </DialogActions>
             </Dialog>
+        )
+
+    }
+    return (
+        <Fragment>
+            <Button
+                color="inherit"
+                onClick={() => setOpen(true)}
+            >
+                Login
+            </Button>
+            {loginDialog()}
         </Fragment>
     )
+
 }
+

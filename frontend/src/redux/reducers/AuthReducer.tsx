@@ -1,3 +1,4 @@
+import { TAchieverAPIResponse } from "../../types/AchieverTypes"
 import * as AUTH_TYPES from "../../types/AuthTypes"
 import * as TYPES from "../../types/Types"
 
@@ -16,9 +17,11 @@ export default (state = initialState, action: TYPES.IAction) => {
 
     switch (action.type) {
         case AUTH_TYPES.REGISTER_SUCCESS:
-        case AUTH_TYPES.LOGIN_SUCCESS:
-            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN, action.payload.token.accesstoken)
-            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN, action.payload.token.refreshtoken)
+        case AUTH_TYPES.LOGIN_SUCCESS: {
+            const achieverResponse: TAchieverAPIResponse = action.payload
+
+            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN, achieverResponse.authorization.accesstoken || "")
+            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN, achieverResponse.authorization.refreshtoken || "")
 
             return {
                 ...state,
@@ -26,10 +29,12 @@ export default (state = initialState, action: TYPES.IAction) => {
                 isAuthenticated: true,
                 loading: false
             }
+        }
+        case AUTH_TYPES.USER_REFRESH: {
+            const achieverResponse: TAchieverAPIResponse = action.payload
 
-        case AUTH_TYPES.USER_REFRESH:
-            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN, action.payload.token.accesstoken)
-            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN, action.payload.token.refreshtoken)
+            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN, achieverResponse.authorization.accesstoken || "")
+            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN, achieverResponse.authorization.refreshtoken || "")
 
             return {
                 ...state,
@@ -37,17 +42,17 @@ export default (state = initialState, action: TYPES.IAction) => {
                 isAuthenticated: true,
                 loading: false
             }
-
-        case AUTH_TYPES.USER_LOADED:
-
+        }
+        case AUTH_TYPES.USER_LOADED: {
             return {
                 ...state,
                 isAuthenticated: true,
                 loading: false
             }
+        }
         case AUTH_TYPES.REGISTER_FAIL:
         case AUTH_TYPES.LOGIN_FAIL:
-        case AUTH_TYPES.AUTH_ERROR:
+        case AUTH_TYPES.AUTH_ERROR: {
             localStorage.removeItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN)
             localStorage.removeItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN)
 
@@ -59,7 +64,8 @@ export default (state = initialState, action: TYPES.IAction) => {
                 token: null,
                 error: error
             }
-        case AUTH_TYPES.LOGOUT_SUCCESS:
+        }
+        case AUTH_TYPES.LOGOUT_SUCCESS: {
             localStorage.removeItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN)
             localStorage.removeItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN)
             return {
@@ -68,16 +74,19 @@ export default (state = initialState, action: TYPES.IAction) => {
                 token: null,
                 isAuthenticated: false
             }
-        case AUTH_TYPES.CLEAR_ERROR:
+        }
+        case AUTH_TYPES.CLEAR_ERROR: {
             return {
                 ...state,
                 error: null
             }
-        case AUTH_TYPES.USER_LOADING:
+        }
+        case AUTH_TYPES.USER_LOADING: {
             return {
                 ...state,
                 loading: true
             }
+        }
         default:
             return state
     }

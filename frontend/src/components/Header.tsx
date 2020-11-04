@@ -1,10 +1,10 @@
 import React from 'react'
-import './Header.css'
+import './header/Header.css'
 
 export const Header = () => {
     return (
         <span>
-            Trust Donations
+            Community Goal Tracker
         </span>
     )
 }

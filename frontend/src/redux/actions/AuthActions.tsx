@@ -1,7 +1,7 @@
 import axios from 'axios'
 import * as AUTH_TYPES from '../../types/AuthTypes'
 import * as TYPES from '../../types/Types'
-import { IAchiever } from '../../types/AchieverTypes'
+import { IAchiever, TAchieverAPIResponse } from '../../types/AchieverTypes'
 
 
 export const userLoginACT = (achiever: IAchiever) => (dispatch: Function, getState: () => { app: TYPES.IAppState, auth: AUTH_TYPES.IAuthState }) => {
@@ -10,9 +10,10 @@ export const userLoginACT = (achiever: IAchiever) => (dispatch: Function, getSta
 
     axios.post(url, req)
         .then(res => {
-            dispatch({ type: AUTH_TYPES.CLEAR_ERROR })
-            dispatch({ type: AUTH_TYPES.LOGIN_SUCCESS, payload: res.data })
-            // TODO: dispatch(appActions.userLoadACT())
+            const achieverResponse: TAchieverAPIResponse = res.data
+            dispatch({ type: AUTH_TYPES.CLEAR_ERROR });
+            dispatch({ type: AUTH_TYPES.LOGIN_SUCCESS, payload: achieverResponse });
+            // TODO: dispatch(appActions.userLoadACT(achieverResponse))
         })
         .catch(err => {
             dispatch({ type: AUTH_TYPES.LOGIN_FAIL, payload: { ...err?.response, id: AUTH_TYPES.LOGIN_FAIL } })

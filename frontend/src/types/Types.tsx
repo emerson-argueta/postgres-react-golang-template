@@ -1,3 +1,5 @@
+import { IAchiever } from "./AchieverTypes";
+
 export const API_URL_PREFIX = '/api/v1/communitygoaltracker'
 
 export interface IConfigHeaders {
@@ -18,7 +20,7 @@ export interface IError {
 }
 
 export interface IAppState {
-    achiever: any
+    achiever: IAchiever
     error: IError | null
     loading: boolean
 }

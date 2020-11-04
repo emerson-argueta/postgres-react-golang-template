@@ -1,21 +1,27 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { AppBar, Typography, Toolbar } from '@material-ui/core'
-import { LoginDialog } from './auth/login/LoginDialog';
+import { Login } from './auth/Login';
 import { Header } from './Header';
 
 import { useStyles } from './navbar/MaterialUIStyles';
 import { Logout } from './auth/Logout';
 
-import './Navbar.css'
-import { RegisterDialog } from './auth/register/RegisterDialog';
+import './navbar/Navbar.css'
+import { Register } from './auth/Register';
 import * as AUTH_TYPES from '../types/AuthTypes';
 import * as APP_TYPES from '../types/Types';
 
 export const Navbar = () => {
+    console.log("rendering");
+
     const auth: AUTH_TYPES.IAuthState | null = useSelector((state: { app: APP_TYPES.IAppState, auth: AUTH_TYPES.IAuthState }) => { return state.auth })
     const app: APP_TYPES.IAppState | null = useSelector((state: { app: APP_TYPES.IAppState, auth: AUTH_TYPES.IAuthState }) => { return state.app })
-    const user = app.user
+    const user = app?.achiever || {}
+
+    useEffect(() => {
+
+    }, [auth.isAuthenticated]);
 
     const classes = useStyles()
     const authLinks = (
@@ -31,8 +37,8 @@ export const Navbar = () => {
 
     const guestLinks = (
         <Fragment>
-            <RegisterDialog />
-            <LoginDialog />
+            <Register />
+            <Login />
         </Fragment>
     );
 
