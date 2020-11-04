@@ -19,6 +19,8 @@ const (
 	AchieverURL = CommunitygoalTrackerURLPrefix + "/achiever"
 	// AchieverLoginURL used for communitygoaltracker login process
 	AchieverLoginURL = CommunitygoalTrackerURLPrefix + "/achiever/login"
+	// AchieverReAuthorizeURL used for communitygoaltracker re-authorization process
+	AchieverReAuthorizeURL = CommunitygoalTrackerURLPrefix + "/achiever/reauthorize"
 	// GoalURL used for communitygoaltracker processes that modify a goal
 	GoalURL = CommunitygoalTrackerURLPrefix + "/goal"
 	// GoalAbandonURL used for communitygoaltracker goal abandon process
@@ -46,6 +48,7 @@ func NewCommunitygoaltrackerHandler(middleware middleware.Processes) *Communityg
 	public := h.Group(RoutePrefix)
 	public.POST(AchieverURL, h.handleRegister)
 	public.POST(AchieverLoginURL, h.handleLogin)
+	public.POST(AchieverReAuthorizeURL, h.handleReAuthorize)
 	// TODO: post method to handle re-authorization for an achiever with expired key
 
 	restricted := h.Group(RoutePrefix)
@@ -112,7 +115,26 @@ func (h *CommunitygoaltrackerHandler) handleLogin(ctx echo.Context) error {
 
 	return nil
 }
+func (h *CommunitygoaltrackerHandler) handleReAuthorize(ctx echo.Context) error {
+	var req achieverRequest
 
+	// Decode the request.
+	if err := ctx.Bind(&req); err != nil || req.Authorization == nil {
+		return ResponseError(ctx.Response().Writer, ErrInvalidJSON, http.StatusBadRequest, h.Logger)
+	}
+
+	authKey := req.Authorization
+	switch newAuthKey, err := h.Authorization.ReAuthorize(authKey); err {
+	case nil:
+		EncodeJSON(ctx.Response().Writer, &achieverResponse{Authorization: newAuthKey}, h.Logger)
+	case authorization.ErrAuthorizationInvalidKey:
+		return ResponseError(ctx.Response().Writer, err, http.StatusUnauthorized, h.Logger)
+	default:
+		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
+	}
+
+	return nil
+}
 func (h *CommunitygoaltrackerHandler) handleUpdateAchiever(ctx echo.Context) error {
 	var req achieverRequest
 
@@ -121,9 +143,9 @@ func (h *CommunitygoaltrackerHandler) handleUpdateAchiever(ctx echo.Context) err
 		return ResponseError(ctx.Response().Writer, ErrInvalidJSON, http.StatusBadRequest, h.Logger)
 	}
 
-	// extract administrator uuid from token stored by JwtMiddleware handler func
-	token := ctx.Get("user")
-	uuid, err := h.Authorization.Authorize(token)
+	// extract administrator uuid from authKey stored by JwtMiddleware handler func
+	authKey := ctx.Get("user")
+	uuid, err := h.Authorization.Authorize(authKey)
 	if err != nil {
 		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
 	}
@@ -155,9 +177,9 @@ func (h *CommunitygoaltrackerHandler) handleUnRegister(ctx echo.Context) error {
 		return ResponseError(ctx.Response().Writer, ErrInvalidJSON, http.StatusBadRequest, h.Logger)
 	}
 
-	// extract administrator uuid from token stored by JwtMiddleware handler func
-	token := ctx.Get("user")
-	uuid, err := h.Authorization.Authorize(token)
+	// extract administrator uuid from authKey stored by JwtMiddleware handler func
+	authKey := ctx.Get("user")
+	uuid, err := h.Authorization.Authorize(authKey)
 	if err != nil {
 		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
 	}
@@ -187,9 +209,9 @@ func (h *CommunitygoaltrackerHandler) handleCreateGoal(ctx echo.Context) error {
 		return ResponseError(ctx.Response().Writer, ErrInvalidJSON, http.StatusBadRequest, h.Logger)
 	}
 
-	// extract administrator uuid from token stored by JwtMiddleware handler func
-	token := ctx.Get("user")
-	uuid, err := h.Authorization.Authorize(token)
+	// extract administrator uuid from authKey stored by JwtMiddleware handler func
+	authKey := ctx.Get("user")
+	uuid, err := h.Authorization.Authorize(authKey)
 	if err != nil {
 		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
 	}
@@ -218,9 +240,9 @@ func (h *CommunitygoaltrackerHandler) handleUpdateGoalProgress(ctx echo.Context)
 		return ResponseError(ctx.Response().Writer, ErrInvalidJSON, http.StatusBadRequest, h.Logger)
 	}
 
-	// extract administrator uuid from token stored by JwtMiddleware handler func
-	token := ctx.Get("user")
-	uuid, err := h.Authorization.Authorize(token)
+	// extract administrator uuid from authKey stored by JwtMiddleware handler func
+	authKey := ctx.Get("user")
+	uuid, err := h.Authorization.Authorize(authKey)
 	if err != nil {
 		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
 	}
@@ -247,9 +269,9 @@ func (h *CommunitygoaltrackerHandler) handleAbandonGoal(ctx echo.Context) error 
 		return ResponseError(ctx.Response().Writer, ErrInvalidJSON, http.StatusBadRequest, h.Logger)
 	}
 
-	// extract administrator uuid from token stored by JwtMiddleware handler func
-	token := ctx.Get("user")
-	uuid, err := h.Authorization.Authorize(token)
+	// extract administrator uuid from authKey stored by JwtMiddleware handler func
+	authKey := ctx.Get("user")
+	uuid, err := h.Authorization.Authorize(authKey)
 	if err != nil {
 		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
 	}
@@ -276,9 +298,9 @@ func (h *CommunitygoaltrackerHandler) handleDeleteGoal(ctx echo.Context) error {
 		return ResponseError(ctx.Response().Writer, ErrInvalidJSON, http.StatusBadRequest, h.Logger)
 	}
 
-	// extract administrator uuid from token stored by JwtMiddleware handler func
-	token := ctx.Get("user")
-	uuid, err := h.Authorization.Authorize(token)
+	// extract administrator uuid from authKey stored by JwtMiddleware handler func
+	authKey := ctx.Get("user")
+	uuid, err := h.Authorization.Authorize(authKey)
 	if err != nil {
 		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
 	}
