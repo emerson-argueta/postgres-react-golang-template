@@ -101,16 +101,19 @@ func (s *Service) UpdateAchiever(a *achiever.Achiever) (e error) {
 //UnRegister using the following business logic: delete the achiever and remove
 //achiever from any goals they created.
 func (s *Service) UnRegister(a *achiever.Achiever) (e error) {
-	gg, e := s.removeAchieverFromGoals(*a.Goals, *a.UUID)
-	if e != nil {
+
+	if a.UUID == nil {
+		return ErrAchieverIncompleteDetails
+	} else if a.Goals == nil {
+		return s.Achiever.DeleteAchiever(*a.UUID)
+	} else if gg, e := s.removeAchieverFromGoals(*a.Goals, *a.UUID); e != nil {
 		return e
+
+	} else {
+		s.Goal.UpdateGoals(gg)
 	}
 
-	if e = s.Achiever.DeleteAchiever(*a.UUID); e != nil {
-		return e
-	}
-
-	return s.Goal.UpdateGoals(gg)
+	return s.Achiever.DeleteAchiever(*a.UUID)
 }
 
 // CreateGoal using the following business logic

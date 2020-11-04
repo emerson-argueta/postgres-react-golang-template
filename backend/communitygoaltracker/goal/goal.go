@@ -25,7 +25,7 @@ func (c *Achievers) Keys() []string {
 	return keys
 }
 
-// Achiever represents an Achievers within a goal.
+// Achiever represents the achiever's status for a goal.
 type Achiever struct {
 	State    *State    `json:"state,omitempty"`
 	Progress *int      `json:"progress,omitempty"`

@@ -1,6 +1,7 @@
 package http
 
 import (
+	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/communitygoaltracker"
 	"net/url"
 )
@@ -10,6 +11,7 @@ import (
 // Client to http services.
 type Client struct {
 	URL      *url.URL
+	Token    *authorization.TokenPair
 	services services
 }
 
