@@ -1,7 +1,7 @@
-import { IAuthState, IAction, IError } from "../../types/Interface/Interfaces"
 import * as AUTH_TYPES from "../../types/AuthTypes"
+import * as TYPES from "../../types/Types"
 
-const initialState: IAuthState = {
+const initialState: AUTH_TYPES.IAuthState = {
 
     token: {
         Accesstoken: localStorage.getItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN),
@@ -12,7 +12,7 @@ const initialState: IAuthState = {
     loading: true
 }
 
-export default (state = initialState, action: IAction) => {
+export default (state = initialState, action: TYPES.IAction) => {
 
     switch (action.type) {
         case AUTH_TYPES.REGISTER_SUCCESS:
@@ -51,7 +51,7 @@ export default (state = initialState, action: IAction) => {
             localStorage.removeItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN)
             localStorage.removeItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN)
 
-            const error: IError = { msg: action.payload?.data.error, id: action.payload?.id, status: action.payload?.status }
+            const error: TYPES.IError = { msg: action.payload?.data.error, id: action.payload?.id, status: action.payload?.status }
 
             return {
                 ...state,

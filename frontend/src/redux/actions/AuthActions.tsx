@@ -1,18 +1,18 @@
 import axios from 'axios'
-import * as INTERFACES from "../../types/Interface/Interfaces"
-import * as ADMINISTRATOR_INTERFACES from "../../types/Interface/AdministratorInterfaces"
 import * as AUTH_TYPES from '../../types/AuthTypes'
-import * as appActions from './AppActions'
+import * as TYPES from '../../types/Types'
+import { IAchiever } from '../../types/AchieverTypes'
 
 
-export const userLoginACT = (administrator: ADMINISTRATOR_INTERFACES.IAdministrator | null) => (dispatch: Function, getState: () => { app: INTERFACES.IAppState, auth: INTERFACES.IAuthState }) => {
+export const userLoginACT = (achiever: IAchiever) => (dispatch: Function, getState: () => { app: TYPES.IAppState, auth: AUTH_TYPES.IAuthState }) => {
+    const url = TYPES.API_URL_PREFIX + AUTH_TYPES.LOGIN_URL_POSTFIX
+    const req = { achiever: { ...achiever } }
 
-    const req = { administrator: { ...administrator } }
-    axios.post("/api/administrator/login", req)
+    axios.post(url, req)
         .then(res => {
             dispatch({ type: AUTH_TYPES.CLEAR_ERROR })
             dispatch({ type: AUTH_TYPES.LOGIN_SUCCESS, payload: res.data })
-            dispatch(appActions.userLoadACT())
+            // TODO: dispatch(appActions.userLoadACT())
         })
         .catch(err => {
             dispatch({ type: AUTH_TYPES.LOGIN_FAIL, payload: { ...err?.response, id: AUTH_TYPES.LOGIN_FAIL } })
@@ -20,20 +20,21 @@ export const userLoginACT = (administrator: ADMINISTRATOR_INTERFACES.IAdministra
 
 }
 
-export const userLogoutACT = () => (dispatch: Function, getState: () => { app: INTERFACES.IAppState, auth: INTERFACES.IAuthState }) => {
+export const userLogoutACT = () => (dispatch: Function, getState: () => { app: TYPES.IAppState, auth: AUTH_TYPES.IAuthState }) => {
     dispatch({ type: AUTH_TYPES.LOGOUT })
     dispatch({ type: AUTH_TYPES.LOGOUT_SUCCESS })
 }
 
-export const userRegisterACT = (administrator: ADMINISTRATOR_INTERFACES.IAdministrator | null) => (dispatch: Function, getState: () => { app: INTERFACES.IAppState, auth: INTERFACES.IAuthState }) => {
+export const userRegisterACT = (achiever: IAchiever) => (dispatch: Function, getState: () => { app: TYPES.IAppState, auth: AUTH_TYPES.IAuthState }) => {
+    const url = TYPES.API_URL_PREFIX + AUTH_TYPES.REGISTER_URL_POSTFIX
+    const req = { achiever: { ...achiever } }
 
-    const req = { administrator: { ...administrator } }
-    axios.post("/api/administrator", req)
+    axios.post(url, req)
         .then(res => {
 
             dispatch({ type: AUTH_TYPES.CLEAR_ERROR })
             dispatch({ type: AUTH_TYPES.REGISTER_SUCCESS, payload: res.data })
-            dispatch(appActions.userLoadACT())
+            // TODO: dispatch(appActions.userLoadACT())
         })
         .catch(err => {
             dispatch({ type: AUTH_TYPES.REGISTER_FAIL, payload: { ...err?.response, id: AUTH_TYPES.REGISTER_FAIL } })
@@ -47,16 +48,17 @@ export const userLoadedACT = () => (dispatch: Function, getState: Function) => {
     dispatch({ type: AUTH_TYPES.USER_LOADED });
 };
 
-export const userTokenRefreshACT = (retryAction?: Function) => (dispatch: Function, getState: Function) => {
+export const userReAuthorizeACT = (retryAction?: Function) => (dispatch: Function, getState: Function) => {
+    const url = TYPES.API_URL_PREFIX + AUTH_TYPES.REAUTHORIZE_URL_POSTFIX
 
-    const token: ADMINISTRATOR_INTERFACES.IToken = {
-        accesstoken: localStorage.getItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN) || undefined,
-        refreshtoken: localStorage.getItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN) || undefined
+    const token: AUTH_TYPES.IAuthorization = {
+        accesstoken: localStorage.getItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN),
+        refreshtoken: localStorage.getItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN)
     }
 
     const req = { token: token }
     axios
-        .post('/api/administrator/authorization', req)
+        .post(url, req)
         .then(res => {
             dispatch({ type: AUTH_TYPES.USER_REFRESH, payload: res.data })
             if (retryAction) {
@@ -70,17 +72,14 @@ export const userTokenRefreshACT = (retryAction?: Function) => (dispatch: Functi
 
 // Setup config/headers and token
 export const tokenConfig = () => {
-    // Get token from localstorage
     const accessToken = localStorage.getItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN)
 
-    // Headers
-    const config: INTERFACES.IConfigHeaders = {
+    const config: TYPES.IConfigHeaders = {
         headers: {
             'Content-type': 'application/json'
         }
     };
 
-    // If token, add to headers
     if (accessToken) {
         config.headers['Authorization'] = "Bearer " + accessToken;
     }
