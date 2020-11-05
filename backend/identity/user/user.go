@@ -1,10 +1,43 @@
 package user
 
+import "errors"
+
 // user is part of the identity subdomain to support core domains which need it
+
+// Role represents access role for a user within the indentity
+// domain
+type Role int
+
+const (
+	// UserRole has access to manage their own information
+	UserRole Role = iota
+	// AdministratorRole has access to manage users within other domains
+	AdministratorRole
+)
+
+func (s Role) String() (res string, e error) {
+	if s < UserRole || s > AdministratorRole {
+		return res, errors.New("could not convert to Role to string")
+	}
+	return [...]string{"user", "administrator"}[s], e
+
+}
+
+// ToRole Converts string to Role enum
+func ToRole(s string) (res Role, e error) {
+	res, ok := map[string]Role{"user": UserRole, "administrator": AdministratorRole}[s]
+	if !ok {
+		e = errors.New("Could not covert to Role")
+	}
+
+	return res, e
+
+}
 
 //User model
 type User struct {
 	UUID     *string  `db:"uuid" dbignoreinsert:"" json:"uuid"`
+	Role     *Role    `db:"role" json:"role"`
 	Email    *string  `db:"email" json:"email"`
 	Password *string  `db:"password" json:"password"`
 	Domains  *Domains `db:"domains" json:"domains"`

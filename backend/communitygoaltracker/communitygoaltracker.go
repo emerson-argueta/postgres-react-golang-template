@@ -36,30 +36,39 @@ type Processes interface {
 }
 
 // Register using the following business logic:
-// Using the identity subdomain Service register the achiever.
-// If there is an existing user, retrieve the user.
-// Create the achiever.
+// Using the identity subdomain Service find the user. If the user exists and is
+// an administrator, set the achiever's role to administrator. If the user does
+// not exits, register the user. Finally create the achiever. Create the
+// achiever.
 func (s *Service) Register(a *achiever.Achiever) (res *achiever.Achiever, e error) {
+	aRole := achiever.UserRole
+	a.Role = &aRole
+
+	u, _ := s.Identity.LoginUser(*a.Email, *a.Password)
+	if u != nil && u.Role != nil && *u.Role == user.AdministratorRole {
+		aRole = achiever.AdministratorRole
+		a.Role = &aRole
+	}
 
 	d, e := s.Identity.LookupDomain(DomainName)
 	if e != nil {
 		return nil, e
 	}
 
-	domains := make(user.Domains, 0)
-	role, e := a.Role.String()
+	role, e := aRole.String()
 	if e != nil {
 		return nil, e
 	}
 
+	domains := make(user.Domains, 0)
 	domains[*d.ID] = struct {
 		Role *string "json:\"role,omitempty\""
 	}{Role: &role}
 
-	u, e := s.Identity.RegisterUser(&user.User{Email: a.Email, Password: a.Password, Domains: &domains})
-	if e == identity.ErrUserExists {
-		u, e = s.Identity.LoginUser(*a.Email, *a.Password)
-	} else if e != nil {
+	if u == nil {
+		u, e = s.Identity.RegisterUser(&user.User{Email: a.Email, Password: a.Password, Domains: &domains})
+	}
+	if e != nil {
 		return nil, e
 	}
 

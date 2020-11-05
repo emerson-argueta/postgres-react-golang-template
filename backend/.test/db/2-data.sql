@@ -6,9 +6,10 @@ values
 
 -- password is password
 DELETE FROM IDENTITY.USER;
-INSERT INTO IDENTITY.USER(email,password,domains) 
+INSERT INTO IDENTITY.USER(role,email,password,domains) 
 values
 (
+    'administrator',
     'test0@test.com','$2a$10$o4OS7VZwSxf8qsjg5/JmCeAgLHD/KtnY5/YX4U4tRZ77tq3TNN7FG',
     (
         '{
@@ -22,20 +23,28 @@ values
     )::jsonb
 ),
 (
+    'user',
     'test1@test.com','$2a$10$o4OS7VZwSxf8qsjg5/JmCeAgLHD/KtnY5/YX4U4tRZ77tq3TNN7FG',
     (
         '{
             "'||(SELECT ID FROM IDENTITY.DOMAIN WHERE NAME='community-goal-tracker')||'":{
+                "role":"user"
+            },
+            "'||(SELECT ID FROM IDENTITY.DOMAIN WHERE NAME='identity')||'":{
                 "role":"user"
             }
         }'
     )::jsonb
 ),
 (
+    'user',
     'test2@test.com','$2a$10$o4OS7VZwSxf8qsjg5/JmCeAgLHD/KtnY5/YX4U4tRZ77tq3TNN7FG',
     (
         '{
             "'||(SELECT ID FROM IDENTITY.DOMAIN WHERE NAME='community-goal-tracker')||'":{
+                "role":"user"
+            },
+            "'||(SELECT ID FROM IDENTITY.DOMAIN WHERE NAME='identity')||'":{
                 "role":"user"
             }
         }'
