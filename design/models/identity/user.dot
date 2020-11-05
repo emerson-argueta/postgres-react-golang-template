@@ -4,17 +4,18 @@ digraph user{
     subgraph cluster_properties{
         label="properties"
         id[shape=rectangle]
+        user_role[shape=rectangle,label="role"]
         email[shape=rectangle]
         password[shape=rectangle]
         subgraph cluster_domains{
             label="domains"
             domain[shape=rectangle]
-            role[shape=rectangle]
+            domain_role[shape=rectangle,label="role"]
 
-            role->domain
+            domain_role->domain
         }
 
-        id->email->password->role[style=invis]
+        id->user_role->email->password->domain_role[style=invis]
     }
     subgraph cluster_processes{
         label="processes"
