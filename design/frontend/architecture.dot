@@ -25,7 +25,8 @@ digraph architecture{
         subgraph cluster_achiever_profile{
             label="achiever profile template"
             goals[shape="rectangle"]
-            achiever_component->goals
+            achiever_component
+            goals
         }
 
         subgraph cluster_goal_page{
@@ -34,7 +35,7 @@ digraph architecture{
             achievers[shape="rectangle"]
 
             metadata[label="metadata",shape="rectangle"]
-            achievers->goal_component
+            achievers
         }    
     }
 
@@ -54,4 +55,6 @@ digraph architecture{
         achievers
         achiever_component
     }
+    achievers->goal_component
+    goals->goal_component
 }
