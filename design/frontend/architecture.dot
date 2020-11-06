@@ -33,14 +33,7 @@ digraph architecture{
             
             achievers[shape="rectangle"]
 
-            cluster_metadata[
-                label="metadata\n component"
-                shape="polygon"
-                sides=8
-                fixedsize=true,
-                width="1"
-                height="1"
-            ]
+            metadata[label="metadata",shape="rectangle"]
             achievers->goal_component
         }    
     }
