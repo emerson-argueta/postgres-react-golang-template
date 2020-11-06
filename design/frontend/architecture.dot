@@ -1,0 +1,64 @@
+digraph architecture{
+    label="Frontend Architecture"
+    
+    subgraph cluster_react_views{
+        label="React"
+        compound=true
+        achiever_component[
+            label="achiever\n component",
+            shape="polygon",
+            sides=8,
+            fixedsize=true,
+            width="1"
+            height="1"
+        ]
+
+        goal_component[
+            label="goal\n component",
+            shape="polygon",
+            sides=8,
+            fixedsize=true,
+            width="1"
+            height="1"
+        ]
+
+        subgraph cluster_achiever_profile{
+            label="achiever profile template"
+            goals[shape="rectangle"]
+            achiever_component->goals
+        }
+
+        subgraph cluster_goal_page{
+            label="goal page template"
+            
+            achievers[shape="rectangle"]
+
+            cluster_metadata[
+                label="metadata\n component"
+                shape="polygon"
+                sides=8
+                fixedsize=true,
+                width="1"
+                height="1"
+            ]
+            achievers->goal_component
+        }    
+    }
+
+    subgraph cluster_redux{
+        label="Redux"
+        store[shape="rectangle"]
+        actions[shape="rectangle"]
+        reducer[shape="rectangle"]
+        actions->reducer->store
+    }
+    subgraph cluster_rest_api_interface{
+        label="HTTP REST service"
+        httpendpoints[shape="rectangle",label="http endpoints"]
+    }
+    httpendpoints->actions
+    store->{
+        achievers
+        achiever_component
+    }
+}
