@@ -20,8 +20,8 @@ export default (state = initialState, action: TYPES.IAction) => {
         case AUTH_TYPES.LOGIN_SUCCESS: {
             const achieverResponse: TAchieverAPIResponse = action.payload
 
-            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN, achieverResponse.authorization.accesstoken || "")
-            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN, achieverResponse.authorization.refreshtoken || "")
+            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN, achieverResponse.authorization?.accesstoken || "")
+            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN, achieverResponse.authorization?.refreshtoken || "")
 
             return {
                 ...state,
@@ -33,8 +33,8 @@ export default (state = initialState, action: TYPES.IAction) => {
         case AUTH_TYPES.USER_REFRESH: {
             const achieverResponse: TAchieverAPIResponse = action.payload
 
-            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN, achieverResponse.authorization.accesstoken || "")
-            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN, achieverResponse.authorization.refreshtoken || "")
+            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN, achieverResponse.authorization?.accesstoken || "")
+            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN, achieverResponse.authorization?.refreshtoken || "")
 
             return {
                 ...state,

@@ -1,12 +1,12 @@
 import axios from 'axios'
 import * as AUTH_TYPES from '../../types/AuthTypes'
 import * as TYPES from '../../types/Types'
-import { IAchiever, TAchieverAPIResponse } from '../../types/AchieverTypes'
+import { IAchiever, TAchieverAPIRequest, TAchieverAPIResponse } from '../../types/AchieverTypes'
 
 
 export const userLoginACT = (achiever: IAchiever) => (dispatch: Function, getState: () => { app: TYPES.IAppState, auth: AUTH_TYPES.IAuthState }) => {
     const url = TYPES.API_URL_PREFIX + AUTH_TYPES.LOGIN_URL_POSTFIX
-    const req = { achiever: { ...achiever } }
+    const req: TAchieverAPIRequest = { achiever: achiever }
 
     axios.post(url, req)
         .then(res => {
@@ -28,14 +28,14 @@ export const userLogoutACT = () => (dispatch: Function, getState: () => { app: T
 
 export const userRegisterACT = (achiever: IAchiever) => (dispatch: Function, getState: () => { app: TYPES.IAppState, auth: AUTH_TYPES.IAuthState }) => {
     const url = TYPES.API_URL_PREFIX + AUTH_TYPES.REGISTER_URL_POSTFIX
-    const req = { achiever: { ...achiever } }
+    const req: TAchieverAPIRequest = { achiever: achiever }
 
     axios.post(url, req)
         .then(res => {
-
+            const achieverResponse: TAchieverAPIResponse = res.data
             dispatch({ type: AUTH_TYPES.CLEAR_ERROR })
-            dispatch({ type: AUTH_TYPES.REGISTER_SUCCESS, payload: res.data })
-            // TODO: dispatch(appActions.userLoadACT())
+            dispatch({ type: AUTH_TYPES.REGISTER_SUCCESS, payload: achieverResponse })
+            // TODO: dispatch(appActions.userLoadACT(achieverResponse))
         })
         .catch(err => {
             dispatch({ type: AUTH_TYPES.REGISTER_FAIL, payload: { ...err?.response, id: AUTH_TYPES.REGISTER_FAIL } })
@@ -57,11 +57,12 @@ export const userReAuthorizeACT = (retryAction?: Function) => (dispatch: Functio
         refreshtoken: localStorage.getItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN)
     }
 
-    const req = { token: token }
+    const req: TAchieverAPIRequest = { authorization: token }
     axios
         .post(url, req)
         .then(res => {
-            dispatch({ type: AUTH_TYPES.USER_REFRESH, payload: res.data })
+            const achieverResponse: TAchieverAPIResponse = res.data
+            dispatch({ type: AUTH_TYPES.USER_REFRESH, payload: achieverResponse })
             if (retryAction) {
                 dispatch(retryAction)
             }
