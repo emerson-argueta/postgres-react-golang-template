@@ -1,44 +1,42 @@
-import { TAchieverAPIResponse } from "../../types/AchieverTypes"
+import { IAchieverAPIResponse } from "../../types/AchieverTypes"
 import * as AUTH_TYPES from "../../types/AuthTypes"
 import * as TYPES from "../../types/Types"
 
 const initialState: AUTH_TYPES.IAuthState = {
 
-    token: {
-        Accesstoken: localStorage.getItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_ACCESS_TOKEN),
-        Refreshtoken: localStorage.getItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN)
+    authorization: {
+        accesstoken: localStorage.getItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_ACCESS_TOKEN) || undefined,
+        refreshtoken: localStorage.getItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN) || undefined
     },
     isAuthenticated: false,
     error: null,
     loading: true
 }
 
-export default (state = initialState, action: TYPES.IAction) => {
+export default (state = initialState, action: AUTH_TYPES.TAuthActions) => {
 
     switch (action.type) {
         case AUTH_TYPES.REGISTER_SUCCESS:
         case AUTH_TYPES.LOGIN_SUCCESS: {
-            const achieverResponse: TAchieverAPIResponse = action.payload
 
-            localStorage.setItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_ACCESS_TOKEN, achieverResponse.authorization?.accesstoken || "")
-            localStorage.setItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN, achieverResponse.authorization?.refreshtoken || "")
+            localStorage.setItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_ACCESS_TOKEN, action.payload?.authorization?.accesstoken || "")
+            localStorage.setItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN, action.payload?.authorization?.refreshtoken || "")
 
             return {
                 ...state,
-                token: action.payload.token,
+                authorization: action.payload?.authorization,
                 isAuthenticated: true,
                 loading: false
             }
         }
-        case AUTH_TYPES.USER_REFRESH: {
-            const achieverResponse: TAchieverAPIResponse = action.payload
+        case AUTH_TYPES.REAUTHORIZE_SUCCESS: {
 
-            localStorage.setItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_ACCESS_TOKEN, achieverResponse.authorization?.accesstoken || "")
-            localStorage.setItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN, achieverResponse.authorization?.refreshtoken || "")
+            localStorage.setItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_ACCESS_TOKEN, action.payload?.authorization?.accesstoken || "")
+            localStorage.setItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN, action.payload?.authorization?.refreshtoken || "")
 
             return {
                 ...state,
-                token: action.payload.token,
+                authorization: action.payload?.authorization,
                 isAuthenticated: true,
                 loading: false
             }
@@ -52,17 +50,15 @@ export default (state = initialState, action: TYPES.IAction) => {
         }
         case AUTH_TYPES.REGISTER_FAIL:
         case AUTH_TYPES.LOGIN_FAIL:
-        case AUTH_TYPES.AUTH_ERROR: {
+        case AUTH_TYPES.REAUTHORIZE_FAIL: {
             localStorage.removeItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_ACCESS_TOKEN)
             localStorage.removeItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN)
-
-            const error: TYPES.IError = { msg: action.payload?.data.error, id: action.payload?.id, status: action.payload?.status }
 
             return {
                 ...state,
                 isAuthenticated: false,
                 token: null,
-                error: error
+                error: action.payload
             }
         }
         case AUTH_TYPES.LOGOUT: {

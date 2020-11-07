@@ -16,7 +16,7 @@ export interface IAchiever {
 // otherwise.
 export type TGoals = { [goalID: number]: boolean }
 
-export type TAchieverAPIResponse = {
+export interface IAchieverAPIResponse {
     achiever?: IAchiever
     authorization?: IAuthorization
 }
