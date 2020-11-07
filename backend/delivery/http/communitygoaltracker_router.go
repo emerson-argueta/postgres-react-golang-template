@@ -49,7 +49,6 @@ func NewCommunitygoaltrackerHandler(middleware middleware.Processes) *Communityg
 	public.POST(AchieverURL, h.handleRegister)
 	public.POST(AchieverLoginURL, h.handleLogin)
 	public.POST(AchieverReAuthorizeURL, h.handleReAuthorize)
-	// TODO: post method to handle re-authorization for an achiever with expired key
 
 	restricted := h.Group(RoutePrefix)
 	restricted.Use(h.Middleware.MiddlewareFunc())
