@@ -1,10 +1,7 @@
 import React, { Fragment, useState } from 'react'
-import { IAchiever, TGoals } from '../types/AchieverTypes';
-import { Goal } from './Goal';
-import { GoalPage } from './templates/GoalPage';
+import { IAchiever } from '../types/AchieverTypes';
 
 export const Achiever = ({ achiever }: { achiever: IAchiever }) => {
-    const [openGoal, setOpenGoal] = useState<{ [goalID: number]: boolean }>()
 
     const renderAchiever = () => {
 
@@ -17,21 +14,10 @@ export const Achiever = ({ achiever }: { achiever: IAchiever }) => {
             </Fragment>
         )
     }
-    const renderGoals = (goals: TGoals) => {
-        return (
-            Object.getOwnPropertyNames(goals).map(key => {
-                const goalID: number = parseInt(key)
-                return (
-                    openGoal < GoalPage id = { goalID } />
-                )
-            })
-        )
-    }
 
-return (
-    <Fragment>
-        {renderAchiever()}
-        {achiever.goals && renderGoals(achiever.goals)}
-    </Fragment>
-)
+    return (
+        <Fragment>
+            {renderAchiever()}
+        </Fragment>
+    )
 }

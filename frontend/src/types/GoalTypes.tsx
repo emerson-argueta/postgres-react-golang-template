@@ -13,4 +13,8 @@ export type TAchieverGoal = {
     messages: TMessages
 }
 
+export type TAchieverStats = {
+    countAchievers?: number,
+    achieversCompleted?: number
+}
 export type TMessages = { [timestamp: string]: string }
