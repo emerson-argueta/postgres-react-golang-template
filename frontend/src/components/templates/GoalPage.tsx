@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { IAchiever } from '../../types/AchieverTypes'
 import { IGoal, TAchieverGoal, TAchievers, TAchieverStats } from '../../types/GoalTypes'
+import { IReduxState } from '../../types/Types'
 import { Goal } from '../Goal'
 
 interface TMetadata {
@@ -10,35 +11,37 @@ interface TMetadata {
     id?: number
 }
 export const GoalPage = ({ id }: { id: number }) => {
-    // TODO: create type or interface for metaData
     const [metadata, setMetadata] = useState<TMetadata>({})
 
     // TODO: create interface for application state
-    const goal: IGoal | null = useSelector((state: any) => {
-        return state.goals[id]
+    const goal = useSelector((state: IReduxState) => {
+        return state.app.goals && state.app.goals[id]
     })
-    const achieversGoal = goal?.achievers
+    const achievers = goal?.achievers
 
     useEffect(() => {
-        // TODO: extract transform and load achievers data into metadata
         if (goal) {
             const achieverStats: TAchieverStats = caculateAchieverStats(goal.achievers)
             setMetadata({ name: goal.name, id: goal.id, achieversStats: achieverStats })
         }
     }, [goal])
 
-    const renderAchievers = () => {
-        return achieversGoal.map((achieverGoal) => {
+    const renderAchievers = (achievers: TAchievers) => {
+        return Object.entries(achievers).map(([achieverUUID, achieverGoal]) => {
             return (
                 // TODO: pass the necessary achiever data to create goal component
                 <Goal achieverGoal={achieverGoal} />
             )
         })
     }
-
+    const renderMetadata = () => {
+        return (
+            <div>{metadata}</div>
+        )
+    }
     return (
         <Fragment>
-            {renderAchievers()}
+            {achievers && renderAchievers(achievers)}
         </Fragment>
     )
 }

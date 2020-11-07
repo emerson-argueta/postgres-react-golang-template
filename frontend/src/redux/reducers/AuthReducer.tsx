@@ -5,8 +5,8 @@ import * as TYPES from "../../types/Types"
 const initialState: AUTH_TYPES.IAuthState = {
 
     token: {
-        Accesstoken: localStorage.getItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN),
-        Refreshtoken: localStorage.getItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN)
+        Accesstoken: localStorage.getItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_ACCESS_TOKEN),
+        Refreshtoken: localStorage.getItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN)
     },
     isAuthenticated: false,
     error: null,
@@ -20,8 +20,8 @@ export default (state = initialState, action: TYPES.IAction) => {
         case AUTH_TYPES.LOGIN_SUCCESS: {
             const achieverResponse: TAchieverAPIResponse = action.payload
 
-            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN, achieverResponse.authorization?.accesstoken || "")
-            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN, achieverResponse.authorization?.refreshtoken || "")
+            localStorage.setItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_ACCESS_TOKEN, achieverResponse.authorization?.accesstoken || "")
+            localStorage.setItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN, achieverResponse.authorization?.refreshtoken || "")
 
             return {
                 ...state,
@@ -33,8 +33,8 @@ export default (state = initialState, action: TYPES.IAction) => {
         case AUTH_TYPES.USER_REFRESH: {
             const achieverResponse: TAchieverAPIResponse = action.payload
 
-            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN, achieverResponse.authorization?.accesstoken || "")
-            localStorage.setItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN, achieverResponse.authorization?.refreshtoken || "")
+            localStorage.setItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_ACCESS_TOKEN, achieverResponse.authorization?.accesstoken || "")
+            localStorage.setItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN, achieverResponse.authorization?.refreshtoken || "")
 
             return {
                 ...state,
@@ -53,8 +53,8 @@ export default (state = initialState, action: TYPES.IAction) => {
         case AUTH_TYPES.REGISTER_FAIL:
         case AUTH_TYPES.LOGIN_FAIL:
         case AUTH_TYPES.AUTH_ERROR: {
-            localStorage.removeItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN)
-            localStorage.removeItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN)
+            localStorage.removeItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_ACCESS_TOKEN)
+            localStorage.removeItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN)
 
             const error: TYPES.IError = { msg: action.payload?.data.error, id: action.payload?.id, status: action.payload?.status }
 
@@ -65,9 +65,9 @@ export default (state = initialState, action: TYPES.IAction) => {
                 error: error
             }
         }
-        case AUTH_TYPES.LOGOUT_SUCCESS: {
-            localStorage.removeItem(AUTH_TYPES.TRUSTDONATIONS_ACCESS_TOKEN)
-            localStorage.removeItem(AUTH_TYPES.TRUSTDONATIONS_REFRESH_TOKEN)
+        case AUTH_TYPES.LOGOUT: {
+            localStorage.removeItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_ACCESS_TOKEN)
+            localStorage.removeItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN)
             return {
                 ...state,
                 administrator: null,
