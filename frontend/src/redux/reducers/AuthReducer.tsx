@@ -1,19 +1,17 @@
-import { IAchieverAPIResponse } from "../../types/AchieverTypes"
+import { Reducer } from "redux"
 import * as AUTH_TYPES from "../../types/AuthTypes"
-import * as TYPES from "../../types/Types"
 
 const initialState: AUTH_TYPES.IAuthState = {
-
     authorization: {
         accesstoken: localStorage.getItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_ACCESS_TOKEN) || undefined,
         refreshtoken: localStorage.getItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN) || undefined
     },
     isAuthenticated: false,
-    error: null,
+    error: undefined,
     loading: true
 }
 
-export default (state = initialState, action: AUTH_TYPES.TAuthActions) => {
+export const AuthReducer: Reducer<AUTH_TYPES.IAuthState, AUTH_TYPES.TAuthActions> = (state = initialState, action): AUTH_TYPES.IAuthState => {
 
     switch (action.type) {
         case AUTH_TYPES.REGISTER_SUCCESS:
@@ -57,8 +55,8 @@ export default (state = initialState, action: AUTH_TYPES.TAuthActions) => {
             return {
                 ...state,
                 isAuthenticated: false,
-                token: null,
-                error: action.payload
+                authorization: undefined,
+                error: action.error
             }
         }
         case AUTH_TYPES.LOGOUT: {
@@ -66,15 +64,14 @@ export default (state = initialState, action: AUTH_TYPES.TAuthActions) => {
             localStorage.removeItem(AUTH_TYPES.COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN)
             return {
                 ...state,
-                administrator: null,
-                token: null,
+                authorization: undefined,
                 isAuthenticated: false
             }
         }
         case AUTH_TYPES.CLEAR_ERROR: {
             return {
                 ...state,
-                error: null
+                error: undefined
             }
         }
         case AUTH_TYPES.USER_LOADING: {

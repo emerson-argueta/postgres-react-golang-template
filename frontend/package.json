@@ -10,6 +10,7 @@
     "@types/react": "^16.9.49",
     "@types/react-dom": "^16.9.8",
     "@types/react-redux": "^7.1.9",
+    "@types/redux": "^3.6.0",
     "axios": "^0.20.0",
     "jspdf-autotable": "^3.5.12",
     "material-table": "^1.69.0",
@@ -17,6 +18,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "^3.4.3",
+    "redux": "^4.0.5",
     "redux-thunk": "^2.3.0"
   },
   "scripts": {

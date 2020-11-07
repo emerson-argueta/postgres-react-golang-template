@@ -1,14 +1,13 @@
 import React, { Fragment } from 'react'
 import { render } from 'react-dom'
 import { useSelector } from 'react-redux'
+import { RootState } from '../../redux/reducers'
 import { IAchiever, TGoals } from '../../types/AchieverTypes'
 import { Achiever } from '../Achiever'
 import { GoalPage } from './GoalPage'
 
 export const AchieverProfile = () => {
-    const achiever: IAchiever | null = useSelector((state: any) => {
-        return state.achiever
-    })
+    const achiever = useSelector((state: RootState) => { return state.app.achiever })
     const goals = achiever?.goals
 
     const renderAchiever = () => {

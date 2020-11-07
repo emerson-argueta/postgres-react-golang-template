@@ -1,8 +1,8 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { RootState } from '../../redux/reducers'
 import { IAchiever } from '../../types/AchieverTypes'
 import { IGoal, TAchieverGoal, TAchievers, TAchieverStats } from '../../types/GoalTypes'
-import { IReduxState } from '../../types/Types'
 import { Goal } from '../Goal'
 
 interface TMetadata {
@@ -14,7 +14,7 @@ export const GoalPage = ({ id }: { id: number }) => {
     const [metadata, setMetadata] = useState<TMetadata>({})
 
     // TODO: create interface for application state
-    const goal = useSelector((state: IReduxState) => {
+    const goal = useSelector((state: RootState) => {
         return state.app.goals && state.app.goals[id]
     })
     const achievers = goal?.achievers
@@ -34,7 +34,7 @@ export const GoalPage = ({ id }: { id: number }) => {
             )
         })
     }
-    const renderMetadata = () => {
+    const renderMetadata = (metatdata: TMetadata) => {
         return (
             <div>{metadata}</div>
         )
@@ -42,6 +42,7 @@ export const GoalPage = ({ id }: { id: number }) => {
     return (
         <Fragment>
             {achievers && renderAchievers(achievers)}
+            {metadata && renderMetadata(metadata)}
         </Fragment>
     )
 }

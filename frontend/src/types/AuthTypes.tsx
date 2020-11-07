@@ -45,14 +45,15 @@ interface IErrorAction {
     error?: IError
 }
 
+export type TAuthActions = IUserAction | ILoginAction | ILogoutAction | IRegisterAction | IClearErrorAction | IErrorAction
+
 export const COMMUNITY_GOAL_TRACKER_ACCESS_TOKEN = "AUTH_COMMUNITY_GOAL_TRACKER_ACCESS_TOKEN"
 export const COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN = "AUTH_COMMUNITY_GOAL_TRACKER_REFRESH_TOKEN"
-
 
 export interface IAuthState {
     isAuthenticated?: boolean
     authorization?: IAuthorization
-    error: IError | null
+    error?: IError
     loading: boolean
 }
 export interface IAuthorization {
@@ -60,4 +61,4 @@ export interface IAuthorization {
     refreshtoken?: string
 }
 
-export type TAuthActions = IUserAction | ILoginAction | ILogoutAction | IRegisterAction | IClearErrorAction | IErrorAction
+

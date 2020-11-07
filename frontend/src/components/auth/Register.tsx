@@ -6,8 +6,8 @@ import { RegisterForm } from './register/RegisterForm'
 import { Alert } from '@material-ui/lab'
 import { REGISTER_FAIL } from '../../types/AuthTypes'
 import * as AUTH_TYPES from '../../types/AuthTypes'
-import * as TYPES from '../../types/Types'
 import { IAchiever } from '../../types/AchieverTypes'
+import { RootState } from '../../redux/reducers'
 
 
 export const Register = () => {
@@ -15,9 +15,7 @@ export const Register = () => {
     const [msg, setMsg] = useState(null)
     const [formDetails, setFormDetails] = useState(null)
 
-    const auth: AUTH_TYPES.IAuthState = useSelector((state: { app: TYPES.IAppState, auth: AUTH_TYPES.IAuthState }) => {
-        return state.auth
-    })
+    const auth: AUTH_TYPES.IAuthState = useSelector((state: RootState) => { return state.auth })
 
     const dispatch = useDispatch()
     const register = (user: IAchiever) => dispatch(userRegisterACT(user))

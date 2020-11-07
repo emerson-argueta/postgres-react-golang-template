@@ -1,13 +1,13 @@
 import React, { useState, useRef, Fragment, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 
 import { userLoginACT } from '../../redux/actions/AuthActions'
 import { LoginForm } from './login/LoginForm'
 import { Button, Dialog, DialogContent, DialogActions } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import * as AUTH_TYPES from '../../types/AuthTypes'
-import * as TYPES from '../../types/Types'
 import { IAchiever } from '../../types/AchieverTypes'
+import { RootState } from '../../redux/reducers'
+import { useDispatch, useSelector } from 'react-redux'
 
 
 export const Login = () => {
@@ -15,9 +15,7 @@ export const Login = () => {
     const [msg, setMsg] = useState(null)
     const [formDetails, setFormDetails] = useState(null)
 
-    const auth: AUTH_TYPES.IAuthState = useSelector((state: { app: TYPES.IAppState, auth: AUTH_TYPES.IAuthState }) => {
-        return state.auth
-    })
+    const auth: AUTH_TYPES.IAuthState = useSelector((state: RootState) => { return state.auth })
 
     const dispatch = useDispatch()
     const login = (user: IAchiever) => dispatch(userLoginACT(user))
