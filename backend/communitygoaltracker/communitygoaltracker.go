@@ -206,7 +206,7 @@ func (s *Service) AbandonGoal(achieverUUID string, goalID int64) (e error) {
 }
 
 // DeleteGoal using the following business logic: Retrieve the goal and if the
-// goal has now achievers except for the one deleting then delete the goal.
+// goal has no achievers except for the one deleting then delete the goal.
 func (s *Service) DeleteGoal(achieverUUID string, goalID int64) (e error) {
 
 	g, e := s.Goal.RetrieveGoal(goalID)
@@ -219,6 +219,12 @@ func (s *Service) DeleteGoal(achieverUUID string, goalID int64) (e error) {
 	}
 	if len((*g.Achievers).Keys()) > 1 {
 		return ErrGoalCannotDelete
+	}
+
+	if a, e := s.Achiever.RetrieveAchiever(achieverUUID); e != nil {
+		return e
+	} else if e = s.removeGoalFromAchiever(a, goalID); e != nil {
+		return e
 	}
 
 	return s.Goal.DeleteGoal(goalID)
