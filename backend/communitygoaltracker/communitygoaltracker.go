@@ -125,6 +125,18 @@ func (s *Service) UnRegister(a *achiever.Achiever) (e error) {
 	return s.Achiever.DeleteAchiever(*a.UUID)
 }
 
+// GetGoals using the following business logic
+// For an achiever retrieve all of their goals.
+func (s *Service) GetGoals(uuid string) (res []*goal.Goal, e error) {
+	a, e := s.Achiever.RetrieveAchiever(uuid)
+	if e != nil {
+		return nil, e
+	}
+	goalIDs := a.Goals.Keys()
+
+	return s.Goal.RetrieveGoals(goalIDs)
+}
+
 // CreateGoal using the following business logic
 // Create a goal with achiever as part of goal's achievers.
 // Add goal to achiever's goals and update the achiever.

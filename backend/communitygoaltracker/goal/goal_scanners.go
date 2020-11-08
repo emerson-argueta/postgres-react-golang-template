@@ -16,7 +16,7 @@ func (a Achievers) Value() (driver.Value, error) {
 }
 
 // Scan converts raw JSON ([]byte) to Achievers.
-func (a *Achievers) Scan(value interface{}) error {
+func (a *Achievers) Scan(value interface{}) (e error) {
 	if value == nil {
 		return nil
 	}
@@ -24,6 +24,24 @@ func (a *Achievers) Scan(value interface{}) error {
 	b, ok := value.([]byte)
 	if !ok {
 		return errors.New("type assertion to []byte failed")
+	}
+
+	m := make(map[string]interface{})
+	json.Unmarshal(b, &m)
+	for key, value := range m {
+		uuid := key
+		achieverGoal := value.(map[string]interface{})
+
+		if state, e := ToState(achieverGoal["state"].(string)); e != nil {
+			return e
+		} else {
+			m[uuid].(map[string]interface{})["state"] = state
+		}
+
+	}
+
+	if b, e = json.Marshal(m); e != nil {
+		return e
 	}
 
 	return json.Unmarshal(b, &a)

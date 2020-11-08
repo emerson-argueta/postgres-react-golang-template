@@ -55,6 +55,7 @@ func NewCommunitygoaltrackerHandler(middleware middleware.Processes) *Communityg
 	restricted.PATCH(AchieverURL, h.handleUpdateAchiever)
 	restricted.DELETE(AchieverURL, h.handleUnRegister)
 
+	restricted.GET(GoalURL, h.handleGetGoals)
 	restricted.POST(GoalURL, h.handleCreateGoal)
 	restricted.PATCH(GoalURL, h.handleUpdateGoalProgress)
 	restricted.DELETE(GoalURL, h.handleAbandonGoal)
@@ -199,7 +200,28 @@ func (h *CommunitygoaltrackerHandler) handleUnRegister(ctx echo.Context) error {
 
 	return nil
 }
+func (h *CommunitygoaltrackerHandler) handleGetGoals(ctx echo.Context) error {
 
+	// extract administrator uuid from authKey stored by JwtMiddleware handler func
+	authKey := ctx.Get("user")
+	uuid, err := h.Authorization.Authorize(authKey)
+	if err != nil {
+		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
+	}
+
+	switch gg, e := h.Communitygoaltracker.GetGoals(*uuid); e {
+	case nil:
+		ggResponse := make([]*goalResponse, len(gg))
+		for i, g := range gg {
+			ggResponse[i] = goalToResponse(g)
+		}
+		EncodeJSON(ctx.Response().Writer, ggResponse, h.Logger)
+	default:
+		return ResponseError(ctx.Response().Writer, e, http.StatusInternalServerError, h.Logger)
+	}
+
+	return nil
+}
 func (h *CommunitygoaltrackerHandler) handleCreateGoal(ctx echo.Context) error {
 	var req goalRequest
 
