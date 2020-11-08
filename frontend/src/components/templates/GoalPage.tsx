@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../redux/reducers'
-import { IAchiever } from '../../types/AchieverTypes'
 import { IGoal, TAchieverGoal, TAchievers, TAchieverStats } from '../../types/GoalTypes'
 import { Goal } from '../Goal'
 
@@ -11,13 +10,13 @@ interface TMetadata {
     id?: number
 }
 export const GoalPage = ({ id }: { id: number }) => {
-    const [metadata, setMetadata] = useState<TMetadata>({})
 
-    // TODO: create interface for application state
     const goal = useSelector((state: RootState) => {
         return state.app.goals && state.app.goals[id]
     })
     const achievers = goal?.achievers
+
+    const [metadata, setMetadata] = useState<TMetadata>({})
 
     useEffect(() => {
         if (goal) {
@@ -30,7 +29,7 @@ export const GoalPage = ({ id }: { id: number }) => {
         return Object.entries(achievers).map(([achieverUUID, achieverGoal]) => {
             return (
                 // TODO: pass the necessary achiever data to create goal component
-                <Goal achieverGoal={achieverGoal} />
+                <Goal achieverUUID={achieverUUID} achieverGoal={achieverGoal} />
             )
         })
     }

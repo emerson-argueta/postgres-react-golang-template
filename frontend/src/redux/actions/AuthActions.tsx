@@ -1,8 +1,9 @@
 import axios, { AxiosResponse } from 'axios'
 import * as AUTH_TYPES from '../../types/AuthTypes'
 import * as TYPES from '../../types/Types'
+import * as APP_TYPES from '../../types/AppTypes'
 import { IAchiever, TAchieverAPIRequest, IAchieverAPIResponse } from '../../types/AchieverTypes'
-import { Dispatch } from 'react'
+import { Dispatch } from 'redux'
 
 
 export const userLoginACT = (achiever: IAchiever) => async (dispatch: Dispatch<AUTH_TYPES.TAuthActions>) => {
@@ -39,7 +40,7 @@ export const userRegisterACT = (achiever: IAchiever) => async (dispatch: Dispatc
     }
 }
 
-export const userReAuthorizeACT = (retryAction?: Function) => async (dispatch: Dispatch<AUTH_TYPES.TAuthActions | Function>) => {
+export const userReAuthorizeACT = (retryAction?: APP_TYPES.TAppActions | AUTH_TYPES.TAuthActions) => async (dispatch: Dispatch<APP_TYPES.TAppActions | AUTH_TYPES.TAuthActions>) => {
     const url = TYPES.API_URL_PREFIX + AUTH_TYPES.REAUTHORIZE_URL_POSTFIX
 
     const token: AUTH_TYPES.IAuthorization = {

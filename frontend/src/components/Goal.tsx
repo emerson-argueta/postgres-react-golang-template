@@ -1,11 +1,15 @@
-import React, { Fragment, useEffect } from 'react'
+import React, { Fragment } from 'react'
 import { TAchieverGoal } from '../types/GoalTypes'
 
-export const Goal = ({ achieverGoal }: { achieverGoal: TAchieverGoal }) => {
+type TProps = {
+    achieverGoal: TAchieverGoal,
+    achieverUUID: string
+}
+export const Goal = ({ achieverGoal, achieverUUID }: TProps) => {
 
     const renderAchieverGoal = () => {
         return (
-            <div>{achieverGoal}</div>
+            <div key={achieverUUID}>{achieverGoal}</div>
         )
     }
     return (

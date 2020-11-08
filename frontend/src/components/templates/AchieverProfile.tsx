@@ -1,41 +1,51 @@
-import React, { Fragment } from 'react'
-import { render } from 'react-dom'
+import React, { Fragment, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../redux/reducers'
-import { IAchiever, TGoals } from '../../types/AchieverTypes'
+import { TGoals } from '../../types/GoalTypes'
 import { Achiever } from '../Achiever'
 import { GoalPage } from './GoalPage'
 
 export const AchieverProfile = () => {
     const achiever = useSelector((state: RootState) => { return state.app.achiever })
-    const goals = achiever?.goals
+    const goals = useSelector((state: RootState) => { return state.app.goals })
+
+    const [selectedGoal, setSelectedGoal] = useState<number>()
+    const [openGoal, setOpenGoal] = useState<boolean>(false)
 
     const renderAchiever = () => {
         return (
             <Achiever achiever={achiever || {}} />
         )
     }
-    const renderGoals = (goals: TGoals) => {
+    const renderGoalList = (goals: TGoals) => {
         return Object.entries(goals).map(([key, value]) => {
             const goalID = parseInt(key)
-            const isInProgress = value
+            const goal = value
 
-            if (isInProgress) {
-                return (
-                    <GoalPage id={goalID} />
-                )
-            }
             return (
-                null
+                <div
+                    key={goalID}
+                    onClick={() => {
+                        setSelectedGoal(goalID);
+                        setOpenGoal(!openGoal);
+                    }}
+                >
+                    {goal.name}
+                </div>
             )
         })
     }
-
+    const renderGoal = (goalID: number) => {
+        return (
+            openGoal && <GoalPage id={goalID} />
+        )
+    }
 
     return (
         <Fragment>
             {renderAchiever()}
-            {goals && Object.getOwnPropertyNames(goals).length > 0 && renderGoals(goals)}
+            {goals && Object.getOwnPropertyNames(goals).length > 0 && renderGoalList(goals)}
+            {selectedGoal && renderGoal(selectedGoal)}
         </Fragment>
     )
 }

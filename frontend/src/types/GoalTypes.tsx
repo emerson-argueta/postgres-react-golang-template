@@ -5,6 +5,7 @@ export interface IGoal {
     name: string
     achievers: TAchievers
 }
+export type TGoals = { [id: number]: IGoal }
 
 export type TAchievers = {
     [achieverUUID: string]: TAchieverGoal

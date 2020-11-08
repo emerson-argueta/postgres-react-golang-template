@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment } from 'react'
 import { IAchiever } from '../types/AchieverTypes';
 
 export const Achiever = ({ achiever }: { achiever: IAchiever }) => {

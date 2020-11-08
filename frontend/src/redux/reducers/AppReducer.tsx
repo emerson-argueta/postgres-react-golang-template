@@ -8,7 +8,6 @@ const initialState: APP_TYPES.IAppState = {
     loading: true
 }
 
-// TODO add type for action
 export const AppReducer: Reducer<APP_TYPES.IAppState, APP_TYPES.TAppActions> = (state = initialState, action) => {
 
     switch (action.type) {
