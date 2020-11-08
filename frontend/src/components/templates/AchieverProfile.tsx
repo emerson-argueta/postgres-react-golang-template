@@ -14,7 +14,7 @@ export const AchieverProfile = () => {
 
     const renderAchiever = () => {
         return (
-            <Achiever achiever={achiever || {}} />
+            achiever && <Achiever achiever={achiever} />
         )
     }
     const renderGoalList = (goals: TGoals) => {
@@ -23,6 +23,7 @@ export const AchieverProfile = () => {
             const goal = value
 
             return (
+                // Todo change to modal
                 <div
                     key={goalID}
                     onClick={() => {

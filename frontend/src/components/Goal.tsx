@@ -1,20 +1,25 @@
 import React, { Fragment } from 'react'
+import { useSelector } from 'react-redux'
+import { RootState } from '../redux/reducers'
 import { TAchieverGoal } from '../types/GoalTypes'
 
 type TProps = {
-    achieverGoal: TAchieverGoal,
+    id: number,
     achieverUUID: string
 }
-export const Goal = ({ achieverGoal, achieverUUID }: TProps) => {
+export const Goal = ({ id, achieverUUID }: TProps) => {
+    const achieverGoal = useSelector((state: RootState) => {
+        return state.app.goals && state.app.goals[id].achievers[achieverUUID]
+    })
 
-    const renderAchieverGoal = () => {
+    const renderAchieverGoal = (achieverGoal: TAchieverGoal) => {
         return (
             <div key={achieverUUID}>{achieverGoal}</div>
         )
     }
     return (
         <Fragment>
-            {renderAchieverGoal()}
+            {achieverGoal && renderAchieverGoal(achieverGoal)}
         </Fragment>
     )
 }

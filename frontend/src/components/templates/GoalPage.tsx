@@ -14,9 +14,12 @@ export const GoalPage = ({ id }: { id: number }) => {
     const goal = useSelector((state: RootState) => {
         return state.app.goals && state.app.goals[id]
     })
-    const achievers = goal?.achievers
+    const achieverUUIDs = goal?.achievers && Object.getOwnPropertyNames(goal.achievers)
 
     const [metadata, setMetadata] = useState<TMetadata>({})
+    const [selectedAchiever, setSelectedAchiever] = useState<string>()
+    const [openAchiever, setOpenAchiever] = useState<boolean>(false)
+
 
     useEffect(() => {
         if (goal) {
@@ -25,23 +28,39 @@ export const GoalPage = ({ id }: { id: number }) => {
         }
     }, [goal])
 
-    const renderAchievers = (achievers: TAchievers) => {
-        return Object.entries(achievers).map(([achieverUUID, achieverGoal]) => {
+    const renderAchieverList = (achieverUUIDs: Array<string>) => {
+        return achieverUUIDs.map((achieverUUID) => {
             return (
-                // TODO: pass the necessary achiever data to create goal component
-                <Goal achieverUUID={achieverUUID} achieverGoal={achieverGoal} />
+                // Todo change to modal
+                <div
+                    key={achieverUUID}
+                    onClick={() => {
+                        setSelectedAchiever(achieverUUID);
+                        setOpenAchiever(!openAchiever);
+                    }}
+                >
+                    {"need achiever name here"}
+                </div>
             )
         })
+    }
+    const renderAchieverGoal = (achieverUUID: string, id: number) => {
+        return (
+            openAchiever && <Goal id={id} achieverUUID={achieverUUID} />
+        )
+
     }
     const renderMetadata = (metatdata: TMetadata) => {
         return (
             <div>{metadata}</div>
         )
     }
+
     return (
         <Fragment>
-            {achievers && renderAchievers(achievers)}
+            {achieverUUIDs && renderAchieverList(achieverUUIDs)}
             {metadata && renderMetadata(metadata)}
+            {selectedAchiever && renderAchieverGoal(selectedAchiever, id)}
         </Fragment>
     )
 }
