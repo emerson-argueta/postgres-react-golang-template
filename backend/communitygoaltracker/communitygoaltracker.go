@@ -125,9 +125,31 @@ func (s *Service) UnRegister(a *achiever.Achiever) (e error) {
 	return s.Achiever.DeleteAchiever(*a.UUID)
 }
 
-// GetGoals using the following business logic
+// RetrieveAchievers using the following business logic
+// For a goal retrieve all of its achievers. Do not send sensitive information
+// like address, phone number, role, address, phone, email, and password.
+func (s *Service) RetrieveAchievers(id int64) (res []*achiever.Achiever, e error) {
+	g, e := s.Goal.RetrieveGoal(id)
+	if e != nil {
+		return nil, e
+	}
+	achieverUUIDs := g.Achievers.Keys()
+	aa, e := s.Achiever.RetrieveAchievers(achieverUUIDs)
+	res = make([]*achiever.Achiever, len(aa))
+
+	for i, a := range aa {
+		tmp := achiever.Achiever{}
+		tmp.Firstname = a.Firstname
+		tmp.Lastname = a.Lastname
+		tmp.UUID = a.UUID
+		res[i] = &tmp
+	}
+	return res, e
+}
+
+// RetrieveGoals using the following business logic
 // For an achiever retrieve all of their goals.
-func (s *Service) GetGoals(uuid string) (res []*goal.Goal, e error) {
+func (s *Service) RetrieveGoals(uuid string) (res []*goal.Goal, e error) {
 	a, e := s.Achiever.RetrieveAchiever(uuid)
 	if e != nil {
 		return nil, e

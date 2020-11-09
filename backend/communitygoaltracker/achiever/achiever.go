@@ -68,6 +68,9 @@ type Processes interface {
 	// RetrieveAchiever implementation must return ErrAchieverNotFound if the
 	// achiever is not found.
 	RetrieveAchiever(uuid string) (*Achiever, error)
+	// RetrieveGoals implementation must return ErrAchieverNotFound if the
+	// none of the achievers are found.
+	RetrieveAchievers(uuids []string) ([]*Achiever, error)
 	// UpdateAchiever implementation must search achiever by uuid and return
 	// ErrAchieverNotFound if achiever is not found.
 	UpdateAchiever(*Achiever) error

@@ -69,6 +69,33 @@ func (s *achieverservice) RetrieveAchiever(uuid string) (res *achiever.Achiever,
 
 }
 
+// RetrieveAchievers searching by uuids. Returns ErrAchiverNotFound if none of the achievers
+// are found.
+func (s *achieverservice) RetrieveAchievers(uuids []string) (res []*achiever.Achiever, e error) {
+
+	query, err := NewQuery(&achiever.Achiever{})
+	if err != nil {
+		return nil, err
+	}
+	var queryParams []interface{}
+	for _, elem := range uuids {
+		queryParams = append(queryParams, elem)
+	}
+
+	filter := query.CreateMultipleValueFilter("UUID", len(queryParams))
+
+	achieverSelectQuery := query.Read(CommunitygoaltrackerSchema, AchieverTable, filter)
+	achieverSelectQuery = s.client.db.Rebind(achieverSelectQuery)
+
+	if err := s.client.db.Select(&res, achieverSelectQuery, queryParams...); err == sql.ErrNoRows {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
 // UpdateAchiever searching by uuid. If the achiever does not exists, returns
 // ErrAchieverNotFound.
 func (s *achieverservice) UpdateAchiever(a *achiever.Achiever) (e error) {

@@ -209,7 +209,7 @@ func (h *CommunitygoaltrackerHandler) handleRetrieveGoals(ctx echo.Context) erro
 		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
 	}
 
-	switch gg, e := h.Communitygoaltracker.GetGoals(*uuid); e {
+	switch gg, e := h.Communitygoaltracker.RetrieveGoals(*uuid); e {
 	case nil:
 		ggResponse := make([]*goalResponse, len(gg))
 		for i, g := range gg {
