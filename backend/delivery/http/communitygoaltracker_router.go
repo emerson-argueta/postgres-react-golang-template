@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/labstack/echo"
 )
@@ -52,6 +53,7 @@ func NewCommunitygoaltrackerHandler(middleware middleware.Processes) *Communityg
 
 	restricted := h.Group(RoutePrefix)
 	restricted.Use(h.Middleware.MiddlewareFunc())
+	restricted.GET(AchieverURL, h.handleRetrieveAchievers)
 	restricted.PATCH(AchieverURL, h.handleUpdateAchiever)
 	restricted.DELETE(AchieverURL, h.handleUnRegister)
 
@@ -194,6 +196,29 @@ func (h *CommunitygoaltrackerHandler) handleUnRegister(ctx echo.Context) error {
 		EncodeJSON(ctx.Response().Writer, &achieverResponse{Achiever: a}, h.Logger)
 	case communitygoaltracker.ErrAchieverNotFound, communitygoaltracker.ErrGoalNotFound:
 		return ResponseError(ctx.Response().Writer, e, http.StatusNotFound, h.Logger)
+	default:
+		return ResponseError(ctx.Response().Writer, e, http.StatusInternalServerError, h.Logger)
+	}
+
+	return nil
+}
+func (h *CommunitygoaltrackerHandler) handleRetrieveAchievers(ctx echo.Context) error {
+	goalID, _ := strconv.ParseInt(ctx.QueryParam("goalID"), 10, 64)
+	// extract administrator uuid from authKey stored by JwtMiddleware handler func
+	authKey := ctx.Get("user")
+	uuid, err := h.Authorization.Authorize(authKey)
+	if err != nil {
+		return ResponseError(ctx.Response().Writer, err, http.StatusInternalServerError, h.Logger)
+	}
+
+	switch aa, e := h.Communitygoaltracker.RetrieveAchievers(*uuid, goalID); e {
+	case nil:
+		aaResponse := make([]*achieverResponse, len(aa))
+		for i, a := range aa {
+			aResponse := achieverResponse{Achiever: a}
+			aaResponse[i] = &aResponse
+		}
+		EncodeJSON(ctx.Response().Writer, aaResponse, h.Logger)
 	default:
 		return ResponseError(ctx.Response().Writer, e, http.StatusInternalServerError, h.Logger)
 	}

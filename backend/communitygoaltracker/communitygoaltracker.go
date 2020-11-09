@@ -126,10 +126,18 @@ func (s *Service) UnRegister(a *achiever.Achiever) (e error) {
 }
 
 // RetrieveAchievers using the following business logic
-// For a goal retrieve all of its achievers. Do not send sensitive information
+// For an achiever's goal retrieve all of its achievers. Do not send sensitive information
 // like address, phone number, role, address, phone, email, and password.
-func (s *Service) RetrieveAchievers(id int64) (res []*achiever.Achiever, e error) {
-	g, e := s.Goal.RetrieveGoal(id)
+func (s *Service) RetrieveAchievers(achieverUUID string, goalID int64) (res []*achiever.Achiever, e error) {
+	if a, e := s.Achiever.RetrieveAchiever(achieverUUID); e != nil {
+		return nil, e
+	} else if a.Goals == nil {
+		return nil, ErrGoalNotFound
+	} else if _, ok := (*a.Goals)[goalID]; !ok {
+		return nil, ErrGoalNotFound
+	}
+
+	g, e := s.Goal.RetrieveGoal(goalID)
 	if e != nil {
 		return nil, e
 	}
