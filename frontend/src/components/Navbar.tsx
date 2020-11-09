@@ -12,8 +12,6 @@ import { useStyles } from './navbar/MaterialUIStyles';
 import { RootState } from '../redux/reducers';
 
 export const Navbar = () => {
-    console.log("rendering");
-
     const auth = useSelector((state: RootState) => { return state.auth })
     const user = useSelector((state: RootState) => { return state.app.achiever })
 

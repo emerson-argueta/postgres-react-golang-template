@@ -4,9 +4,11 @@ import * as TYPES from '../../types/Types'
 import * as APP_TYPES from '../../types/AppTypes'
 import { IAchiever, TAchieverAPIRequest, IAchieverAPIResponse } from '../../types/AchieverTypes'
 import { Dispatch } from 'redux'
+import { useDispatch } from 'react-redux'
+import { loadAchieverACT } from './AppActions'
 
 
-export const userLoginACT = (achiever: IAchiever) => async (dispatch: Dispatch<AUTH_TYPES.TAuthActions>) => {
+export const userLoginACT = (achiever: IAchiever) => async (dispatch: Dispatch<AUTH_TYPES.TAuthActions | APP_TYPES.TAppActions>) => {
     const url = TYPES.API_URL_PREFIX + AUTH_TYPES.LOGIN_URL_POSTFIX
     const req: TAchieverAPIRequest = { achiever: achiever }
 
@@ -14,6 +16,9 @@ export const userLoginACT = (achiever: IAchiever) => async (dispatch: Dispatch<A
         const res: AxiosResponse<IAchieverAPIResponse> = await axios.post(url, req)
         dispatch({ type: AUTH_TYPES.CLEAR_ERROR });
         dispatch({ type: AUTH_TYPES.LOGIN_SUCCESS, payload: res.data });
+
+        dispatch(loadAchieverACT(res.data))
+
     } catch (err) {
         const error: TYPES.IError = { id: AUTH_TYPES.LOGIN_FAIL, status: err?.response.status, msg: err?.response?.data?.error }
         dispatch({ type: AUTH_TYPES.LOGIN_FAIL, error: error })
@@ -40,7 +45,7 @@ export const userRegisterACT = (achiever: IAchiever) => async (dispatch: Dispatc
     }
 }
 
-export const userReAuthorizeACT = (retryAction?: APP_TYPES.TAppActions | AUTH_TYPES.TAuthActions) => async (dispatch: Dispatch<APP_TYPES.TAppActions | AUTH_TYPES.TAuthActions>) => {
+export const userReAuthorizeACT = (retryAction?: APP_TYPES.TAppActions | AUTH_TYPES.TAuthActions) => async (dispatch: Dispatch<AUTH_TYPES.TAuthActions>) => {
     const url = TYPES.API_URL_PREFIX + AUTH_TYPES.REAUTHORIZE_URL_POSTFIX
 
     const token: AUTH_TYPES.IAuthorization = {
@@ -53,7 +58,8 @@ export const userReAuthorizeACT = (retryAction?: APP_TYPES.TAppActions | AUTH_TY
         const res: AxiosResponse<IAchieverAPIResponse> = await axios.post(url, req)
         dispatch({ type: AUTH_TYPES.REAUTHORIZE_SUCCESS, payload: res.data });
         if (retryAction) {
-            dispatch(retryAction)
+            const appActionDispatch = useDispatch()
+            appActionDispatch(retryAction)
         }
     } catch (err) {
         const error: TYPES.IError = { id: AUTH_TYPES.REAUTHORIZE_FAIL, status: err?.response.status, msg: err?.response?.data?.error }

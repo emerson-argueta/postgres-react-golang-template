@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../redux/reducers'
-import { IGoal, TAchieverGoal, TAchievers, TAchieverStats } from '../../types/GoalTypes'
+import { TAchieverGoal, TAchievers, TAchieverStats } from '../../types/GoalTypes'
 import { Goal } from '../Goal'
 
 interface TMetadata {
@@ -22,7 +22,7 @@ export const GoalPage = ({ id }: { id: number }) => {
 
 
     useEffect(() => {
-        if (goal) {
+        if (goal?.achievers) {
             const achieverStats: TAchieverStats = caculateAchieverStats(goal.achievers)
             setMetadata({ name: goal.name, id: goal.id, achieversStats: achieverStats })
         }

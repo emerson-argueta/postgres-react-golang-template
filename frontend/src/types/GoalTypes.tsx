@@ -1,9 +1,9 @@
 import { IAuthorization } from "./AuthTypes"
 
 export interface IGoal {
-    id: number
-    name: string
-    achievers: TAchievers
+    id?: number
+    name?: string
+    achievers?: TAchievers
 }
 export type TGoals = { [id: number]: IGoal }
 
@@ -22,13 +22,10 @@ export type TAchieverStats = {
 }
 export type TMessages = { [timestamp: string]: string }
 
-export interface IGoalAPIResponse {
-    id?: string
-    name?: string
-    achievers?: string
+export interface IGoalAPIResponse extends IGoal {
     error?: string
 }
-export interface IGoalAPIRequest {
+export type TGoalAPIRequest = {
     id?: number
     name?: string
     state?: string

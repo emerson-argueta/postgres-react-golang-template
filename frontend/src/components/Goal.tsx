@@ -9,7 +9,8 @@ type TProps = {
 }
 export const Goal = ({ id, achieverUUID }: TProps) => {
     const achieverGoal = useSelector((state: RootState) => {
-        return state.app.goals && state.app.goals[id].achievers[achieverUUID]
+        const achievers = state.app.goals && state.app.goals[id].achievers
+        return achievers && achievers[achieverUUID]
     })
 
     const renderAchieverGoal = (achieverGoal: TAchieverGoal) => {
