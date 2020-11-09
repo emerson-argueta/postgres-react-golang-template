@@ -1,3 +1,4 @@
+import { Button } from '@material-ui/core'
 import React, { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { retrieveGoalsACT } from '../../redux/actions/AppActions'
@@ -10,6 +11,9 @@ export const AchieverProfile = () => {
     const achiever = useSelector((state: RootState) => { return state.app.achiever })
     const goals = useSelector((state: RootState) => { return state.app.goals })
 
+    const [selectedGoal, setSelectedGoal] = useState<number>()
+    const [openGoal, setOpenGoal] = useState<boolean>(false)
+
     const dispatch = useDispatch()
     useEffect(() => {
         console.log("using effect in achevier profile");
@@ -21,9 +25,6 @@ export const AchieverProfile = () => {
         }
     }, [achiever, dispatch]);
 
-    const [selectedGoal, setSelectedGoal] = useState<number>()
-    const [openGoal, setOpenGoal] = useState<boolean>(false)
-
     const renderAchiever = () => {
         return (
             achiever && <Achiever achiever={achiever} />
@@ -33,11 +34,11 @@ export const AchieverProfile = () => {
         return Object.entries(goals).map(([key, value]) => {
             const goalID = parseInt(key)
             const goal = value
-            console.log("rendering goal list", goal);
 
             return (
                 // Todo change to modal
-                <div
+
+                <Button
                     key={goalID}
                     onClick={() => {
                         setSelectedGoal(goalID);
@@ -45,11 +46,13 @@ export const AchieverProfile = () => {
                     }}
                 >
                     {goal.name}
-                </div>
+                </Button>
             )
         })
     }
     const renderGoal = (goalID: number) => {
+        console.log("rendering goal", goalID);
+
         return (
             openGoal && <GoalPage id={goalID} />
         )

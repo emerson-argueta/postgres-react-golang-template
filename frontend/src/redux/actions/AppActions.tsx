@@ -21,3 +21,15 @@ export const retrieveGoalsACT = () => async (dispatch: Dispatch<APP_TYPES.TAppAc
         dispatch({ type: APP_TYPES.RETRIEVE_GOALS_FAIL, error: error })
     }
 }
+
+export const retreiveGoalAchievers = (goalID: number) => async (dispatch: Dispatch<APP_TYPES.TAppActions>) => {
+    const url = TYPES.API_URL_PREFIX + APP_TYPES.GOAL_ACHIEVERS_URL_POSTFIX + goalID
+
+    try {
+        const res: AxiosResponse<Array<IAchieverAPIResponse>> = await axios.get(url, tokenConfig())
+        dispatch({ type: APP_TYPES.RETRIEVE_GOAL_ACHIEVERS_SUCCESS, payload: res.data });
+    } catch (err) {
+        const error: TYPES.IError = { id: APP_TYPES.RETRIEVE_GOAL_ACHIEVERS_FAIL, status: err?.response.status, msg: err?.response?.data?.error }
+        dispatch({ type: APP_TYPES.RETRIEVE_GOAL_ACHIEVERS_FAIL, error: error })
+    }
+}

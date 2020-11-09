@@ -1,46 +1,56 @@
+import { Button } from '@material-ui/core'
 import React, { Fragment, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { retreiveGoalAchievers } from '../../redux/actions/AppActions'
 import { RootState } from '../../redux/reducers'
-import { TAchieverGoal, TAchievers, TAchieverStats } from '../../types/GoalTypes'
+import * as ACHIEVER_TYPES from '../../types/AchieverTypes'
+import * as GOAL_TYPES from '../../types/GoalTypes'
 import { Goal } from '../Goal'
 
 interface TMetadata {
-    achieversStats?: TAchieverStats
+    achieversStats?: GOAL_TYPES.TAchieverStats
     name?: string
     id?: number
 }
 export const GoalPage = ({ id }: { id: number }) => {
-
     const goal = useSelector((state: RootState) => {
         return state.app.goals && state.app.goals[id]
     })
-    const achieverUUIDs = goal?.achievers && Object.getOwnPropertyNames(goal.achievers)
+    const achievers = useSelector((state: RootState) => {
+        return state.app.achievers
+    })
+
 
     const [metadata, setMetadata] = useState<TMetadata>({})
     const [selectedAchiever, setSelectedAchiever] = useState<string>()
     const [openAchiever, setOpenAchiever] = useState<boolean>(false)
 
-
+    const dispatch = useDispatch()
     useEffect(() => {
         if (goal?.achievers) {
-            const achieverStats: TAchieverStats = caculateAchieverStats(goal.achievers)
+            const achieverStats: GOAL_TYPES.TAchieverStats = caculateAchieverStats(goal.achievers)
             setMetadata({ name: goal.name, id: goal.id, achieversStats: achieverStats })
         }
-    }, [goal])
 
-    const renderAchieverList = (achieverUUIDs: Array<string>) => {
-        return achieverUUIDs.map((achieverUUID) => {
+        const achieverUUIDs = goal?.achievers && Object.getOwnPropertyNames(goal.achievers)
+        if (achieverUUIDs && achieverUUIDs.length > 0) {
+            dispatch(retreiveGoalAchievers(id))
+        }
+    }, [goal, dispatch, id])
+
+    const renderAchieverList = (achievers: ACHIEVER_TYPES.TAchievers) => {
+        return Object.entries(achievers).map(([achieverUUID, achiever]) => {
             return (
                 // Todo change to modal
-                <div
+                <Button
                     key={achieverUUID}
                     onClick={() => {
                         setSelectedAchiever(achieverUUID);
                         setOpenAchiever(!openAchiever);
                     }}
                 >
-                    {"need achiever name here"}
-                </div>
+                    {achiever.firstname + " " + achiever.lastname}
+                </Button>
             )
         })
     }
@@ -52,22 +62,26 @@ export const GoalPage = ({ id }: { id: number }) => {
     }
     const renderMetadata = (metatdata: TMetadata) => {
         return (
-            <div>{metadata}</div>
+            <Fragment>
+                <div>{metadata.name}</div>
+                <div>{"Achievers with this goal: " + metadata.achieversStats?.countAchievers}</div>
+                <div>{"Achievers who completed the goal: " + metadata.achieversStats?.achieversCompleted}</div>
+            </Fragment>
         )
     }
 
     return (
         <Fragment>
-            {achieverUUIDs && renderAchieverList(achieverUUIDs)}
             {metadata && renderMetadata(metadata)}
+            {achievers && renderAchieverList(achievers)}
             {selectedAchiever && renderAchieverGoal(selectedAchiever, id)}
         </Fragment>
     )
 }
 
-const caculateAchieverStats = (achievers: TAchievers): TAchieverStats => {
+const caculateAchieverStats = (achievers: GOAL_TYPES.TAchievers): GOAL_TYPES.TAchieverStats => {
     const countAchievers: number = Object.getOwnPropertyNames(achievers).length
-    const achieversCompletedReducer = (accumulator: number, achieverGoal: TAchieverGoal) => {
+    const achieversCompletedReducer = (accumulator: number, achieverGoal: GOAL_TYPES.TAchieverGoal) => {
 
         return accumulator + (achieverGoal.progress === 100 ? 1 : 0)
     }

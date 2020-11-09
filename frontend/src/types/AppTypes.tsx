@@ -1,4 +1,4 @@
-import { IAchiever, IAchieverAPIResponse } from "./AchieverTypes";
+import { IAchiever, IAchieverAPIResponse, TAchievers } from "./AchieverTypes";
 import { IGoalAPIResponse, TGoals } from "./GoalTypes";
 import { IError } from "./Types";
 
@@ -24,11 +24,20 @@ interface IRetrieveGoalAction {
     payload?: Array<IGoalAPIResponse>
     error?: IError
 }
+export const GOAL_ACHIEVERS_URL_POSTFIX = '/achiever?goalID='
+export const RETRIEVE_GOAL_ACHIEVERS_SUCCESS = "APP_RETRIEVE_GOAL_ACHIEVERS_SUCCESS"
+export const RETRIEVE_GOAL_ACHIEVERS_FAIL = "APP_RETRIEVE_GOAL_ACHIEVERS_FAIL"
+interface IRetrieveGoalAchieversAction {
+    type: typeof RETRIEVE_GOAL_ACHIEVERS_SUCCESS | typeof RETRIEVE_GOAL_ACHIEVERS_FAIL
+    payload?: Array<IAchieverAPIResponse>
+    error?: IError
+}
 
-export type TAppActions = IAchieverAction | ICreateGoalAction | IRetrieveGoalAction
+export type TAppActions = IAchieverAction | ICreateGoalAction | IRetrieveGoalAction | IRetrieveGoalAchieversAction
 
 export interface IAppState {
     achiever?: IAchiever
+    achievers?: TAchievers
     goals?: TGoals
     error?: IError
     loading: boolean

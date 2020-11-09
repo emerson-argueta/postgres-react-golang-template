@@ -4,7 +4,7 @@ import { RootState } from '../redux/reducers'
 import { AchieverProfile } from './templates/AchieverProfile'
 
 export const CommunityGaolTracker = () => {
-    const auth = useSelector((state: RootState) => { return state.auth })
+    const isAuthenticated = useSelector((state: RootState) => { return state.auth.isAuthenticated })
 
     const renderAchieverProfile = () => {
         return (
@@ -13,7 +13,7 @@ export const CommunityGaolTracker = () => {
     }
     return (
         <Fragment>
-            {auth.isAuthenticated && renderAchieverProfile()}
+            {isAuthenticated && renderAchieverProfile()}
         </Fragment>
     )
 }

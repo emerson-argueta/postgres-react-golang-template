@@ -11,6 +11,7 @@ export interface IAchiever {
     email?: string
     password?: string
 }
+export type TAchievers = { [uuid: string]: IAchiever }
 // TGoals is an object where the keys represent the goal ID and the
 // value indicates true if the goal has not been abandoned, false
 // otherwise.

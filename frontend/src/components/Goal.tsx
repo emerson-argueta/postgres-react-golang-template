@@ -15,7 +15,23 @@ export const Goal = ({ id, achieverUUID }: TProps) => {
 
     const renderAchieverGoal = (achieverGoal: TAchieverGoal) => {
         return (
-            <div key={achieverUUID}>{achieverGoal}</div>
+            <div key={achieverUUID}>
+                <div>
+                    {achieverGoal.progress}
+                </div>
+                <div>
+                    {achieverGoal.state}
+                </div>
+                {
+                    achieverGoal.messages && Object.entries(achieverGoal.messages).map(([timestamp, message]) => {
+                        return (
+                            <div key={timestamp}>
+                                {timestamp + '--->' + message}
+                            </div>
+                        )
+                    })
+                }
+            </div>
         )
     }
     return (
