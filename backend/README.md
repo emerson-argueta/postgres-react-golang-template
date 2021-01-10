@@ -1,1 +1,1 @@
-## Trustdonations REST WEB SERVER API written in GO using Domain Driven Design pattern
+## Sample REST API written in GO using Clean Architecture Domain Driven Design principles
