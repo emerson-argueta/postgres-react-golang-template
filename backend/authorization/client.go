@@ -1,12 +1,13 @@
 package authorization
 
-import "emersonargueta/m/v1/config"
+import "emersonargueta/m/v1/shared/infrastructure"
 
-// Multiple service structure for client
+// AuthorizationService has a multiple service structure for client
+var AuthorizationService = newClient(infrastructure.NewConfig)
 
 // Client to the jwt authorization service.
 type Client struct {
-	config   *config.Config
+	config   *infrastructure.Config
 	services services
 }
 type services struct {
@@ -14,7 +15,7 @@ type services struct {
 }
 
 // NewClient to the jwt authorization service.
-func NewClient(config *config.Config) *Client {
+func newClient(config *infrastructure.Config) *Client {
 	c := &Client{}
 
 	c.services.jwt.client = c
