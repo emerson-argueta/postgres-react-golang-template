@@ -3,7 +3,7 @@ package authorization
 import "emersonargueta/m/v1/shared/infrastructure"
 
 // AuthorizationService has a multiple service structure for client
-var AuthorizationService = newClient(infrastructure.NewConfig)
+var AuthorizationService = newClient(infrastructure.GlobalConfig)
 
 // Client to the jwt authorization service.
 type Client struct {

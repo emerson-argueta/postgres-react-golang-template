@@ -17,7 +17,7 @@ func (g *Goals) Names() []string {
 	return keys
 }
 
-// Remove a goal by iven the goal name from an Achiever's Goals.
+// Remove a goal given the goal name from an Achiever's Goals.
 func (g *Goals) Remove(goalName string) (e error) {
 	if g == nil {
 		return nil

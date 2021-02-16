@@ -15,7 +15,7 @@ const (
 	ReAuthorizeURL = "/reauthorize"
 )
 
-func (h *IdentityHandler) handleRegisterUser(ctx echo.Context) error {
+func (h *IdentityHandler) HandleRegisterUser(ctx echo.Context) error {
 	return h.Controllers.RegisterUserController.Execute(ctx)
 }
 func (h *IdentityHandler) handleLoginUser(ctx echo.Context) error {

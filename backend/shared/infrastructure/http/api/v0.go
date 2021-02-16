@@ -3,6 +3,7 @@ package api
 import (
 	cgt_routes "emersonargueta/m/v1/modules/communitygoaltracker/infrastructure/http/routes"
 	identity_routes "emersonargueta/m/v1/modules/identity/infrastructure/http/routes"
+
 	"net/http"
 )
 
@@ -20,14 +21,11 @@ func NewBaseHandler(basePath string) *BaseHandler {
 	mux := http.NewServeMux()
 	mux.Handle(basePath, bh)
 
-	userHandler := identity_routes.NewIdentityHandler(basePath)
-	mux.Handle(basePath+identity_routes.IdentityURLPrefix+"/", userHandler)
+	productFinderHandler := cgt_routes.NewCommunityGoalTrackerHandler(basePath)
+	mux.Handle(basePath+cgt_routes.CommunitygoalTrackerURLPrefix+"/", productFinderHandler)
 
-	cgtHandler := cgt_routes.NewCommunityGoalTrackerHandler(basePath)
-	mux.Handle(basePath+cgt_routes.CommunitygoalTrackerURLPrefix+"/", cgtHandler)
-
-	// goalHandler := cgt_routes.NewGoalHandler(basePath)
-	// mux.Handle(basePath+cgt_routes.CommunitygoalTrackerURLPrefix+"/goal", goalHandler)
+	identityHandler := identity_routes.NewIdentityHandler(basePath)
+	mux.Handle(basePath+identity_routes.IdentityURLPrefix+"/", identityHandler)
 
 	bh.ServeMux = mux
 

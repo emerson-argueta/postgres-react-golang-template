@@ -2,8 +2,8 @@ package infrastructure
 
 import "emersonargueta/m/v1/env"
 
-// NewConfig creates a new Config struct.
-var NewConfig = newConfig()
+// GlobalConfig creates a new Config struct.
+var GlobalConfig = newConfig()
 
 // Config is a struct that contains configuration variables.
 type Config struct {
@@ -39,8 +39,10 @@ type PaymentGateway struct {
 
 // Authorization contains configuration variables for the auth client.
 type Authorization struct {
-	APIKey string
-	Secret string
+	APIKey         string
+	Secret         string
+	PrivateKeyPath string
+	PublicKeyPath  string
 }
 
 func newConfig() *Config {
@@ -66,8 +68,10 @@ func newConfig() *Config {
 		APIKey: env.MustGet("PAYMENT_GATEWAY_API_KEY"),
 	}
 	authorization := &Authorization{
-		APIKey: env.MustGet("AUTH_API_KEY"),
-		Secret: env.MustGet("SECRET"),
+		APIKey:         env.Get("AUTH_API_KEY"),
+		Secret:         env.Get("SECRET"),
+		PrivateKeyPath: env.Get("PRIVATE_KEY_PATH"),
+		PublicKeyPath:  env.Get("PUBLIC_KEY_PATH"),
 	}
 
 	return &Config{

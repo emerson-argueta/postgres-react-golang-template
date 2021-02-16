@@ -37,7 +37,7 @@ func NewIdentityHandler(apiBaseURL string) *IdentityHandler {
 	h.Controllers = controllers
 
 	public := h.Group(apiBaseURL + IdentityURLPrefix)
-	public.POST(RegisterURL, h.handleRegisterUser)
+	public.POST(RegisterURL, h.HandleRegisterUser)
 	public.POST(LoginURL, h.handleLoginUser)
 	public.POST(ReAuthorizeURL, h.handleReauthorize)
 

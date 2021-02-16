@@ -38,7 +38,7 @@ func new() Client {
 	c := &client{}
 
 	query := NewQuery()
-	config := infrastructure.NewConfig
+	config := infrastructure.GlobalConfig
 
 	c.config = config
 	c.query = query

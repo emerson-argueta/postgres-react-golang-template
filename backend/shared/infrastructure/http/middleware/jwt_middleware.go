@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"emersonargueta/m/v1/env"
 	"time"
+
+	"emersonargueta/m/v1/env"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/middleware"

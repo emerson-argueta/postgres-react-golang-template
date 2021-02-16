@@ -21,7 +21,7 @@ type Server struct {
 
 // NewServer returns a new instance of Server.
 func NewServer() *Server {
-	config := infrastructure.NewConfig
+	config := infrastructure.GlobalConfig
 
 	return &Server{Addr: ":" + config.HTTPServer.Port, config: config}
 }
