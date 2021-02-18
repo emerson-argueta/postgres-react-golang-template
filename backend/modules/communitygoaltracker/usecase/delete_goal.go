@@ -1,19 +1,19 @@
 package usecase
 
 import (
-	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/modules/communitygoaltracker/repository"
+	"emersonargueta/m/v1/shared/infrastructure/http/authorization"
 )
 
 // DeleteGoalUsecase performs registering
 type DeleteGoalUsecase struct {
 	AchieverRepo         repository.AchieverRepo
 	GoalRepo             repository.GoalRepo
-	AuthorizationService *authorization.Client
+	AuthorizationService authorization.JwtService
 }
 
 // NewDeleteGoalUsecase to register user
-func NewDeleteGoalUsecase(achieverRepo repository.AchieverRepo, goalRepo repository.GoalRepo, authorizationService *authorization.Client) *DeleteGoalUsecase {
+func NewDeleteGoalUsecase(achieverRepo repository.AchieverRepo, goalRepo repository.GoalRepo, authorizationService authorization.JwtService) *DeleteGoalUsecase {
 	return &DeleteGoalUsecase{
 		AchieverRepo:         achieverRepo,
 		GoalRepo:             goalRepo,

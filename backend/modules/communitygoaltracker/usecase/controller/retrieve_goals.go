@@ -1,12 +1,12 @@
 package controller
 
 import (
-	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/modules/communitygoaltracker/domain/achiever"
 	"emersonargueta/m/v1/modules/communitygoaltracker/domain/goal"
 	"emersonargueta/m/v1/modules/communitygoaltracker/dto"
 	"emersonargueta/m/v1/modules/communitygoaltracker/infrastructure/persistence"
 	"emersonargueta/m/v1/modules/communitygoaltracker/usecase"
+	"emersonargueta/m/v1/shared/infrastructure/http/authorization"
 	"emersonargueta/m/v1/shared/infrastructure/http/response"
 	"log"
 	"net/http"
@@ -19,11 +19,11 @@ var _ Controller = &retrieveGoalsController{}
 type retrieveGoalsController struct {
 	Usecase       *usecase.RetrieveGoalsUsecase
 	Logger        *log.Logger
-	Authorization *authorization.Client
+	Authorization authorization.JwtService
 }
 
 // NewRetrieveGoalsController for retrieveGoals achiever usecase
-func NewRetrieveGoalsController(cgtRepos *persistence.Services, logger *log.Logger, authorizationService *authorization.Client) Controller {
+func NewRetrieveGoalsController(cgtRepos *persistence.Services, logger *log.Logger, authorizationService authorization.JwtService) Controller {
 	retrieveGoalsUsecase := usecase.NewRetrieveGoalsUsecase(&cgtRepos.Achiever, &cgtRepos.Goal, authorizationService)
 
 	ctrl := &retrieveGoalsController{
@@ -38,13 +38,13 @@ func NewRetrieveGoalsController(cgtRepos *persistence.Services, logger *log.Logg
 func (ctrl *retrieveGoalsController) Execute(ctx echo.Context) (e error) {
 
 	// extract user id from authKey stored by JwtMiddleware handler func
-	authKey := ctx.Get("user")
-	userID, e := ctrl.Authorization.JwtService().Authorize(authKey)
-	if e != nil || userID == nil {
+	authKey := ctx.Get("user").(string)
+	userID, e := ctrl.Authorization.VerifyTokenAndExtractIDClaim(authKey)
+	if e != nil {
 		return response.ErrorResponse(ctx.Response().Writer, e, http.StatusInternalServerError, ctrl.Logger)
 	}
 
-	ggDto := &usecase.RetrieveGoalsDTO{AchieverUserID: *userID}
+	ggDto := &usecase.RetrieveGoalsDTO{AchieverUserID: userID}
 	switch retrievedGoals, e := ctrl.Usecase.Execute(ggDto); e {
 	case nil:
 		ggRes := make([]*dto.GoalDTO, len(retrievedGoals))

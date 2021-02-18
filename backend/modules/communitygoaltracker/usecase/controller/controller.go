@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/modules/communitygoaltracker/infrastructure/persistence"
+	"emersonargueta/m/v1/shared/infrastructure/http/authorization"
 	"log"
 
 	"github.com/labstack/echo"
@@ -27,7 +27,7 @@ type Controllers struct {
 
 // New controller holds all necessary controllers
 func New(
-	authorizationService *authorization.Client,
+	authorizationService authorization.JwtService,
 	logger *log.Logger,
 ) *Controllers {
 	controllers := &Controllers{}

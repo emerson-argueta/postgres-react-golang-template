@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/modules/communitygoaltracker/domain/achiever"
 	"emersonargueta/m/v1/modules/communitygoaltracker/domain/goal"
 	"emersonargueta/m/v1/modules/communitygoaltracker/infrastructure/persistence"
 	"emersonargueta/m/v1/modules/communitygoaltracker/usecase"
+	"emersonargueta/m/v1/shared/infrastructure/http/authorization"
 	"emersonargueta/m/v1/shared/infrastructure/http/response"
 	"log"
 	"net/http"
@@ -18,11 +18,11 @@ var _ Controller = &updateGoalProgressController{}
 type updateGoalProgressController struct {
 	Usecase       *usecase.UpdateGoalProgressUsecase
 	Logger        *log.Logger
-	Authorization *authorization.Client
+	Authorization authorization.JwtService
 }
 
 // NewUpdateGoalProgressController for updateGoalProgress achiever usecase
-func NewUpdateGoalProgressController(cgtRepos *persistence.Services, logger *log.Logger, authorizationService *authorization.Client) Controller {
+func NewUpdateGoalProgressController(cgtRepos *persistence.Services, logger *log.Logger, authorizationService authorization.JwtService) Controller {
 	updateGoalProgressUsecase := usecase.NewUpdateGoalProgressUsecase(&cgtRepos.Goal, authorizationService)
 
 	ctrl := &updateGoalProgressController{
@@ -43,13 +43,13 @@ func (ctrl *updateGoalProgressController) Execute(ctx echo.Context) (e error) {
 	}
 
 	// extract user id from authKey stored by JwtMiddleware handler func
-	authKey := ctx.Get("user")
-	userID, err := ctrl.Authorization.JwtService().Authorize(authKey)
+	authKey := ctx.Get("user").(string)
+	userID, err := ctrl.Authorization.VerifyTokenAndExtractIDClaim(authKey)
 	if err != nil {
 		return response.ErrorResponse(ctx.Response().Writer, err, http.StatusInternalServerError, ctrl.Logger)
 	}
 
-	dto := &usecase.UpdateGoalProgressDTO{AchieverUserID: *userID, Name: *req.Name, Progress: *req.Progress}
+	dto := &usecase.UpdateGoalProgressDTO{AchieverUserID: userID, Name: *req.Name, Progress: *req.Progress}
 	switch e := ctrl.Usecase.Execute(dto); e {
 	case nil:
 		response.EncodeJSON(

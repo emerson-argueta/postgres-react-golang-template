@@ -1,22 +1,22 @@
 package usecase
 
 import (
-	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/modules/communitygoaltracker/domain/achiever"
 	"emersonargueta/m/v1/modules/communitygoaltracker/repository"
+	"emersonargueta/m/v1/shared/infrastructure/http/authorization"
 )
 
 // RetrieveAchieverUsecase performs registering
 type RetrieveAchieverUsecase struct {
 	AchieverRepo         repository.AchieverRepo
 	GoalRepo             repository.GoalRepo
-	AuthorizationService *authorization.Client
+	AuthorizationService authorization.JwtService
 }
 
 // NewRetrieveAchieverUsecase to register user
 func NewRetrieveAchieverUsecase(
 	achieverRepo repository.AchieverRepo,
-	authorizationService *authorization.Client,
+	authorizationService authorization.JwtService,
 ) *RetrieveAchieverUsecase {
 	return &RetrieveAchieverUsecase{
 		AchieverRepo:         achieverRepo,

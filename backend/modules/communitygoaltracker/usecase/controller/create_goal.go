@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/modules/communitygoaltracker/domain/goal"
 	"emersonargueta/m/v1/modules/communitygoaltracker/infrastructure/persistence"
 	"emersonargueta/m/v1/modules/communitygoaltracker/usecase"
+	"emersonargueta/m/v1/shared/infrastructure/http/authorization"
 	"emersonargueta/m/v1/shared/infrastructure/http/response"
 	"log"
 	"net/http"
@@ -17,11 +17,11 @@ var _ Controller = &createGoalController{}
 type createGoalController struct {
 	Usecase       *usecase.CreateGoalUsecase
 	Logger        *log.Logger
-	Authorization *authorization.Client
+	Authorization authorization.JwtService
 }
 
 // NewCreateGoalController for createGoal achiever usecase
-func NewCreateGoalController(cgtRepos *persistence.Services, logger *log.Logger, authorizationService *authorization.Client) Controller {
+func NewCreateGoalController(cgtRepos *persistence.Services, logger *log.Logger, authorizationService authorization.JwtService) Controller {
 	createGoalUsecase := usecase.NewCreateGoalUsecase(&cgtRepos.Achiever, &cgtRepos.Goal, authorizationService)
 
 	ctrl := &createGoalController{
@@ -42,13 +42,13 @@ func (ctrl *createGoalController) Execute(ctx echo.Context) (e error) {
 	}
 
 	// extract user id from authKey stored by JwtMiddleware handler func
-	authKey := ctx.Get("user")
-	userID, e := ctrl.Authorization.JwtService().Authorize(authKey)
-	if e != nil || userID == nil {
+	authKey := ctx.Get("user").(string)
+	userID, e := ctrl.Authorization.VerifyTokenAndExtractIDClaim(authKey)
+	if e != nil {
 		return response.ErrorResponse(ctx.Response().Writer, e, http.StatusInternalServerError, ctrl.Logger)
 	}
 
-	dto := &usecase.CreateGoalDTO{AchieverUserID: *userID, Name: *req.Name}
+	dto := &usecase.CreateGoalDTO{AchieverUserID: userID, Name: *req.Name}
 	switch e := ctrl.Usecase.Execute(dto); e {
 	case nil:
 		response.EncodeJSON(ctx.Response().Writer, &createGoalResponse{Message: "Successfully created goal"}, ctrl.Logger)

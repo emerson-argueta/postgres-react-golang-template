@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/modules/communitygoaltracker/domain/achiever"
 	"emersonargueta/m/v1/modules/communitygoaltracker/dto"
 	"emersonargueta/m/v1/modules/communitygoaltracker/infrastructure/persistence"
 	"emersonargueta/m/v1/modules/communitygoaltracker/usecase"
+	"emersonargueta/m/v1/shared/infrastructure/http/authorization"
 	"emersonargueta/m/v1/shared/infrastructure/http/response"
 	"log"
 	"net/http"
@@ -18,11 +18,11 @@ var _ Controller = &retrieveAchieverController{}
 type retrieveAchieverController struct {
 	Usecase       *usecase.RetrieveAchieverUsecase
 	Logger        *log.Logger
-	Authorization *authorization.Client
+	Authorization authorization.JwtService
 }
 
 // NewRetrieveAchieverController for retrieveAchiever achiever usecase
-func NewRetrieveAchieverController(cgtRepos *persistence.Services, logger *log.Logger, authorizationService *authorization.Client) Controller {
+func NewRetrieveAchieverController(cgtRepos *persistence.Services, logger *log.Logger, authorizationService authorization.JwtService) Controller {
 	retrieveAchieverUsecase := usecase.NewRetrieveAchieverUsecase(&cgtRepos.Achiever, authorizationService)
 
 	ctrl := &retrieveAchieverController{
@@ -36,13 +36,13 @@ func NewRetrieveAchieverController(cgtRepos *persistence.Services, logger *log.L
 // Execute the usecase
 func (ctrl *retrieveAchieverController) Execute(ctx echo.Context) (e error) {
 	// extract user id from authKey stored by JwtMiddleware handler func
-	authKey := ctx.Get("user")
-	userID, err := ctrl.Authorization.JwtService().Authorize(authKey)
-	if err != nil || userID == nil {
+	authKey := ctx.Get("user").(string)
+	userID, err := ctrl.Authorization.VerifyTokenAndExtractIDClaim(authKey)
+	if err != nil {
 		return response.ErrorResponse(ctx.Response().Writer, err, http.StatusInternalServerError, ctrl.Logger)
 	}
 
-	rDTO := &usecase.RetrieveAchieverDTO{AchieverUserID: *userID}
+	rDTO := &usecase.RetrieveAchieverDTO{AchieverUserID: userID}
 	switch retrievedAchiever, e := ctrl.Usecase.Execute(rDTO); e {
 	case nil:
 		achieverDTO := dto.ToDTO(retrievedAchiever)

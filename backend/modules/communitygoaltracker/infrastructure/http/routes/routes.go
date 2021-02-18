@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/modules/communitygoaltracker/usecase/controller"
+	"emersonargueta/m/v1/shared/infrastructure"
+	"emersonargueta/m/v1/shared/infrastructure/http/authorization"
 	"emersonargueta/m/v1/shared/infrastructure/http/middleware"
 	"log"
 	"os"
@@ -29,7 +30,7 @@ func NewCommunityGoalTrackerHandler(apiBaseURL string) *CommunityGoalTrackerHand
 	echoRouter := echo.New()
 	logger := log.New(os.Stderr, "", log.LstdFlags)
 
-	authorizationService := authorization.AuthorizationService
+	authorizationService := authorization.NewJWTService(infrastructure.GlobalConfig)
 	controllers := controller.New(authorizationService, logger)
 
 	h.Echo = echoRouter
