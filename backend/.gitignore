@@ -12,3 +12,5 @@ test.env
 
 #
 __debug_bin
+
+.keys

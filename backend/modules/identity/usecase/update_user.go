@@ -1,20 +1,20 @@
 package usecase
 
 import (
-	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/modules/identity/domain/user"
 	"emersonargueta/m/v1/modules/identity/dto"
 	"emersonargueta/m/v1/modules/identity/repository"
+	"emersonargueta/m/v1/shared/infrastructure/http/authorization"
 )
 
 // UpdateUserUsecase performs registering
 type UpdateUserUsecase struct {
 	UserRepo             repository.UserRepo
-	AuthorizationService *authorization.Client
+	AuthorizationService authorization.JwtService
 }
 
 // NewUpdateUserUsecase to register user
-func NewUpdateUserUsecase(userRepo repository.UserRepo, authorizationService *authorization.Client) *UpdateUserUsecase {
+func NewUpdateUserUsecase(userRepo repository.UserRepo, authorizationService authorization.JwtService) *UpdateUserUsecase {
 	return &UpdateUserUsecase{
 		UserRepo:             userRepo,
 		AuthorizationService: authorizationService,

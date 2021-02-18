@@ -6,12 +6,12 @@ import (
 )
 
 type userRequest struct {
-	User          *dto.UserDTO            `json:"user,omitempty"`
-	Authorization *usecase.ReauthorizeDTO `json:"authorization,omitempty"`
+	User          *dto.UserDTO      `json:"user,omitempty"`
+	Authorization *usecase.TokenDTO `json:"authorization,omitempty"`
 }
 type userResponse struct {
-	User          *dto.UserDTO       `json:"user,omitempty"`
-	Authorization *map[string]string `json:"authorization,omitempty"`
+	User          *dto.UserDTO      `json:"user,omitempty"`
+	Authorization *usecase.TokenDTO `json:"authorization,omitempty"`
 }
 type registerResponse struct {
 	Message string `json:"message,omitempty"`
@@ -24,5 +24,5 @@ type loginRequest struct {
 	Password *string `json:"password,omitempty"`
 }
 type loginResponse struct {
-	Authorization *map[string]string `json:"authorization,omitempty"`
+	Authorization *usecase.TokenDTO `json:"authorization,omitempty"`
 }

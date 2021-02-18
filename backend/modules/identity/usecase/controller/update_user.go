@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/modules/identity/domain/user"
 	"emersonargueta/m/v1/modules/identity/repository"
 	"emersonargueta/m/v1/modules/identity/usecase"
+	"emersonargueta/m/v1/shared/infrastructure/http/authorization"
 	"emersonargueta/m/v1/shared/infrastructure/http/response"
 	"log"
 	"net/http"
@@ -17,11 +17,11 @@ var _ Controller = &updateUserController{}
 type updateUserController struct {
 	Usecase       *usecase.UpdateUserUsecase
 	Logger        *log.Logger
-	Authorization *authorization.Client
+	Authorization authorization.JwtService
 }
 
 // NewUpdateUserController for updateUser user usecase
-func NewUpdateUserController(userRepo repository.UserRepo, logger *log.Logger, authorizationService *authorization.Client) Controller {
+func NewUpdateUserController(userRepo repository.UserRepo, logger *log.Logger, authorizationService authorization.JwtService) Controller {
 	updateUserUsecase := usecase.NewUpdateUserUsecase(userRepo, authorizationService)
 
 	ctrl := &updateUserController{
@@ -42,13 +42,13 @@ func (ctrl *updateUserController) Execute(ctx echo.Context) (e error) {
 	}
 
 	// extract user id from authKey stored by JwtMiddleware handler func
-	authKey := ctx.Get("user")
-	id, err := ctrl.Authorization.JwtService().Authorize(authKey)
+	authKey := ctx.Get("user").(string)
+	id, err := ctrl.Authorization.VerifyTokenAndExtractIDClaim(authKey)
 	if err != nil {
 		return response.ErrorResponse(ctx.Response().Writer, err, http.StatusInternalServerError, ctrl.Logger)
 	}
 
-	req.User.ID = id
+	req.User.ID = &id
 	switch e := ctrl.Usecase.Execute(*req.User); e {
 	case nil:
 		response.EncodeJSON(ctx.Response().Writer, &updateUserResponse{Message: "successfully updated user"}, ctrl.Logger)

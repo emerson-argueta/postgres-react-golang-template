@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/modules/identity/domain/user"
 	"emersonargueta/m/v1/modules/identity/repository"
 	"emersonargueta/m/v1/modules/identity/usecase"
+	"emersonargueta/m/v1/shared/infrastructure/http/authorization"
 	"emersonargueta/m/v1/shared/infrastructure/http/response"
 	"log"
 	"net/http"
@@ -21,7 +21,7 @@ type loginUserController struct {
 }
 
 // NewLoginUserController for login user usecase
-func NewLoginUserController(userRepo repository.UserRepo, logger *log.Logger, authorizationService *authorization.Client) Controller {
+func NewLoginUserController(userRepo repository.UserRepo, logger *log.Logger, authorizationService authorization.JwtService) Controller {
 	loginUsecase := usecase.NewLoginUserUsecase(userRepo, authorizationService)
 
 	ctrl := &loginUserController{
@@ -44,9 +44,13 @@ func (ctrl *loginUserController) Execute(ctx echo.Context) (e error) {
 		Email:    *req.Email,
 		Password: *req.Password,
 	}
-	switch newKey, e := ctrl.Usecase.Execute(dto); e {
+	switch newToken, e := ctrl.Usecase.Execute(dto); e {
 	case nil:
-		response.EncodeJSON(ctx.Response().Writer, &loginResponse{Authorization: &newKey}, ctrl.Logger)
+		tokenDTO := &usecase.TokenDTO{
+			AccessToken:  newToken.Accesstoken,
+			RefreshToken: newToken.Refreshtoken,
+		}
+		response.EncodeJSON(ctx.Response().Writer, &loginResponse{Authorization: tokenDTO}, ctrl.Logger)
 	case user.ErrUserIncorrectCredentials:
 		return response.ErrorResponse(ctx.Response().Writer, e, http.StatusUnauthorized, ctrl.Logger)
 	case user.ErrUserNotFound:

@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/modules/identity/repository"
 	"emersonargueta/m/v1/modules/identity/usecase"
+	"emersonargueta/m/v1/shared/infrastructure/http/authorization"
 	"emersonargueta/m/v1/shared/infrastructure/http/response"
 	"log"
 	"net/http"
@@ -20,7 +20,7 @@ type reauthorizeController struct {
 }
 
 // NewReauthorizeController for reauthorize user usecase
-func NewReauthorizeController(userRepo repository.UserRepo, logger *log.Logger, authorizationService *authorization.Client) Controller {
+func NewReauthorizeController(userRepo repository.UserRepo, logger *log.Logger, authorizationService authorization.JwtService) Controller {
 	reauthorizeUsecase := usecase.NewReauthorizeUsecase(userRepo, authorizationService)
 
 	ctrl := &reauthorizeController{
@@ -41,8 +41,12 @@ func (ctrl *reauthorizeController) Execute(ctx echo.Context) (e error) {
 
 	switch newKey, e := ctrl.Usecase.Execute(*req.Authorization); e {
 	case nil:
-		response.EncodeJSON(ctx.Response().Writer, &userResponse{Authorization: &newKey}, ctrl.Logger)
-	case authorization.ErrAuthorizationInvalidKey:
+		reauthorizeDTO := &usecase.TokenDTO{
+			AccessToken:  newKey.Accesstoken,
+			RefreshToken: newKey.Refreshtoken,
+		}
+		response.EncodeJSON(ctx.Response().Writer, &userResponse{Authorization: reauthorizeDTO}, ctrl.Logger)
+	case authorization.ErrAuthorizationInvalidKey, authorization.ErrAuthorizationFailed:
 		response.ErrorResponse(ctx.Response().Writer, e, http.StatusUnauthorized, ctrl.Logger)
 	default:
 		return response.ErrorResponse(ctx.Response().Writer, e, http.StatusInternalServerError, ctrl.Logger)

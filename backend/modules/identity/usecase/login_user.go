@@ -1,19 +1,19 @@
 package usecase
 
 import (
-	"emersonargueta/m/v1/authorization"
 	"emersonargueta/m/v1/modules/identity/domain/user"
 	"emersonargueta/m/v1/modules/identity/repository"
+	"emersonargueta/m/v1/shared/infrastructure/http/authorization"
 )
 
 // LoginUserUsecase performs registering
 type LoginUserUsecase struct {
 	UserRepo             repository.UserRepo
-	AuthorizationService *authorization.Client
+	AuthorizationService authorization.JwtService
 }
 
 // NewLoginUserUsecase to register user
-func NewLoginUserUsecase(userRepo repository.UserRepo, authorizationService *authorization.Client) *LoginUserUsecase {
+func NewLoginUserUsecase(userRepo repository.UserRepo, authorizationService authorization.JwtService) *LoginUserUsecase {
 	return &LoginUserUsecase{
 		UserRepo:             userRepo,
 		AuthorizationService: authorizationService,
@@ -23,7 +23,8 @@ func NewLoginUserUsecase(userRepo repository.UserRepo, authorizationService *aut
 // Execute LoginUser using the following business logic:
 // Check if user exists.
 // Check if password matches.
-func (uc *LoginUserUsecase) Execute(dto *LoginUserDTO) (res map[string]string, e error) {
+func (uc *LoginUserUsecase) Execute(dto *LoginUserDTO) (res *authorization.TokenPair, e error) {
+
 	email, e := user.NewEmail(&dto.Email)
 	if e != nil {
 		return nil, e
@@ -36,6 +37,6 @@ func (uc *LoginUserUsecase) Execute(dto *LoginUserDTO) (res map[string]string, e
 	if e != nil {
 		return nil, e
 	}
-
-	return uc.AuthorizationService.JwtService().NewKey(retrievedUser.GetID())
+	tokenPair, e := uc.AuthorizationService.IssueTokenPair(retrievedUser.GetID(), nil, nil)
+	return tokenPair, e
 }

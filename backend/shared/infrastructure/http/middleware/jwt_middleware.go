@@ -32,7 +32,8 @@ type TokenPairJWT struct {
 
 // JwtMiddleware function
 var JwtMiddleware = middleware.JWTWithConfig(middleware.JWTConfig{
-	SigningKey: []byte(env.MustGet("SECRET")),
+	SigningKey:    []byte(env.MustGet("SECRET")),
+	SigningMethod: jwt.SigningMethodRS256.Name,
 })
 
 // GenerateTokenPair creates a token pair which contains access token and
