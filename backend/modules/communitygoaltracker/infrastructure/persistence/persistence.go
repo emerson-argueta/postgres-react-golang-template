@@ -3,7 +3,7 @@ package persistence
 import "emersonargueta/m/v1/shared/infrastructure/database/postgres"
 
 const (
-	// CommunitygoaltrackerSchema used to group tables used in the identity domain
+	// CommunitygoaltrackerSchema used to group tables used in the communitygoaltracker domain
 	CommunitygoaltrackerSchema = "COMMUNITY_GOAL_TRACKER"
 	// AchieverTable stores Achiever information for the communitygoaltracker domain
 	AchieverTable = "ACHIEVER"
